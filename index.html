@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PM Foreign Visits Dashboard — Auto Updating</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#f7f6f2; --surface:#fcfbf8; --surface2:#f1ede6; --border:#ddd7cd; --text:#1f1c18; --muted:#6b655d;
+      --primary:#01696f; --primary2:#0c4e54; --accent:#d19900; --ok:#437a22; --warn:#964219; --bad:#a12c7b;
+      --radius:18px; --shadow:0 12px 30px rgba(27,22,17,.08);
+    }
+    [data-theme="dark"] {
+      --bg:#171614; --surface:#1f1d1a; --surface2:#282521; --border:#3b3833; --text:#ece7df; --muted:#b4ab9f;
+      --primary:#5ca4af; --primary2:#8bc4ce; --accent:#e8af34; --ok:#7db35d; --warn:#c17e59; --bad:#d27aad;
+      --shadow:0 14px 34px rgba(0,0,0,.28);
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 Inter, system-ui, sans-serif; }
+    a { color:var(--primary); }
+    .app { max-width:1500px; margin:0 auto; padding:24px; }
+    .hero,.layout,.charts,.kpis,.method { display:grid; gap:16px; }
+    .hero { grid-template-columns:1.25fr .75fr; }
+    .layout { grid-template-columns:310px 1fr; align-items:start; }
+    .charts { grid-template-columns:1fr 1fr; }
+    .kpis { grid-template-columns:repeat(5,minmax(0,1fr)); margin:18px 0; }
+    .method { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .wide { grid-column:1 / -1; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
+    h1,h2,h3 { margin:0; line-height:1.12; }
+    h1 { font-family:'Source Serif 4',serif; font-size:clamp(2.1rem,4vw,4.25rem); margin-bottom:12px; }
+    h2 { font-size:1.1rem; margin-bottom:10px; }
+    h3 { font-size:1rem; margin-bottom:8px; }
+    .lede,.small { color:var(--muted); }
+    .lede { max-width:72ch; }
+    .topline,.sectionhead,.topmeta { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .btn,.chip,.tag,.status { display:inline-flex; align-items:center; }
+    .btn { justify-content:center; padding:10px 14px; border-radius:999px; border:1px solid var(--border); background:var(--surface2); color:var(--text); cursor:pointer; text-decoration:none; }
+    .chip,.tag { padding:7px 11px; border-radius:999px; border:1px solid var(--border); background:var(--surface2); color:var(--muted); font-size:.86rem; }
+    .status { padding:5px 9px; border-radius:999px; font-size:.78rem; font-weight:700; }
+    .s-ok { background:rgba(67,122,34,.16); color:var(--ok); }
+    .s-warn { background:rgba(209,153,0,.16); color:var(--accent); }
+    .s-info { background:rgba(1,105,111,.16); color:var(--primary); }
+    .s-bad { background:rgba(161,44,123,.16); color:var(--bad); }
+    .meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .k-label { color:var(--muted); font-size:.84rem; margin-bottom:8px; }
+    .k-value { font-size:1.95rem; font-weight:800; font-variant-numeric:tabular-nums; }
+    .k-sub { color:var(--muted); font-size:.88rem; margin-top:8px; }
+    .field { margin-bottom:14px; }
+    label { display:block; margin-bottom:6px; color:var(--muted); font-size:.84rem; font-weight:700; }
+    select,input { width:100%; padding:11px 12px; border-radius:12px; border:1px solid var(--border); background:var(--bg); color:var(--text); }
+    .table-wrap { overflow:auto; border:1px solid var(--border); border-radius:14px; }
+    table { width:100%; border-collapse:collapse; }
+    th,td { text-align:left; padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+    th { background:var(--surface2); position:sticky; top:0; z-index:1; font-size:.88rem; }
+    td { font-size:.92rem; }
+    ul { margin:0; padding-left:18px; }
+    li { margin-bottom:8px; }
+    .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .footer { margin:24px 0 10px; color:var(--muted); font-size:.84rem; }
+    @media (max-width:1180px){ .hero,.layout,.charts,.method { grid-template-columns:1fr; } .kpis{grid-template-columns:repeat(2,minmax(0,1fr));} }
+    @media (max-width:640px){ .app{padding:14px;} .kpis{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="card">
+        <div class="topline">
+          <div>
+            <h1>PM Foreign Visits Dashboard</h1>
+            <p class="lede">This version can refresh itself whenever the page opens. It tries to pull the latest published foreign-visit registry from PM India through a public text mirror, parses newly announced trips, and falls back to the embedded official snapshot if live refresh is unavailable.</p>
+          </div>
+          <button id="themeToggle" class="btn" aria-label="Toggle theme">Theme</button>
+        </div>
+        <div class="meta">
+          <span class="chip">Auto-refresh on load</span>
+          <span class="chip">Embedded official fallback</span>
+          <span class="chip">Designed for future outcome enrichment</span>
+          <span class="chip">Single-file shareable HTML</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Update status</h2>
+        <div id="updateStatus" class="small">Checking latest PM India registry…</div>
+        <div class="meta" id="statusChips"></div>
+      </div>
+    </section>
+
+    <section class="kpis" id="kpis"></section>
+
+    <div class="layout">
+      <aside class="card">
+        <h2>Filters</h2>
+        <div class="field"><label for="year">Year</label><select id="year"></select></div>
+        <div class="field"><label for="country">Country</label><select id="country"></select></div>
+        <div class="field"><label for="visitType">Visit type</label><select id="visitType"></select></div>
+        <div class="field"><label for="q">Search</label><input id="q" placeholder="Israel, USA, Jordan, summit" /></div>
+        <p class="small">To keep the rest of the dashboard updated, connect the same trip IDs to MEA outputs, parliamentary expenditure records, RBI/DPIIT inflow windows, and a scheduled refresh pipeline.</p>
+      </aside>
+
+      <main>
+        <section class="charts">
+          <div class="card">
+            <div class="sectionhead"><h2>Trip frequency map</h2><span class="small">Country touches from current dataset</span></div>
+            <div id="map" style="height:420px"></div>
+          </div>
+          <div class="card">
+            <div class="sectionhead"><h2>Timeline</h2><span class="small">Trips per month</span></div>
+            <div id="timeline" style="height:420px"></div>
+          </div>
+          <div class="card wide">
+            <div class="sectionhead"><h2>Country frequency ranking</h2><span class="small">Top destinations in loaded data</span></div>
+            <div id="ranking" style="height:340px"></div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:16px;">
+          <div class="sectionhead"><h2>Trip registry</h2><span class="small">Live if refresh succeeds, fallback otherwise</span></div>
+          <div class="table-wrap"><table id="tripTable"></table></div>
+        </section>
+
+        <section class="card" style="margin-top:16px;">
+          <div class="sectionhead"><h2>Keeping it updated</h2><span class="small">Operational model</span></div>
+          <div class="method small">
+            <div>
+              <h3>1. Trip detection</h3>
+              <p>Each page load attempts to fetch the PM India registry and parse the published foreign-visit rows. If a new trip appears there, it shows up automatically without manually editing the HTML file.</p>
+            </div>
+            <div>
+              <h3>2. Evidence enrichment</h3>
+              <p>For a full production stack, pair each detected trip with a JSON or database record keyed by date and destination. That second layer should store costs, MoUs, implementation events, and citations as they become public.</p>
+            </div>
+            <div>
+              <h3>3. Scheduled upkeep</h3>
+              <p>The most robust setup is a nightly job or GitHub Action that refreshes the dataset, republishes the page, and logs any newly detected trip for review. The page already supports client-side refresh; scheduled publishing adds reliability.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="footer">Sources baked into this page: PM India registry, PM India visits archive, and a live-refresh text mirror endpoint.</div>
+  </div>
+<script>
+const FALLBACK_TRIPS = [
+  {label:'Israel',start:'2026-02-25',end:'2026-02-26'},
+  {label:'Malaysia',start:'2026-02-07',end:'2026-02-08'},
+  {label:'Jordan, Ethiopia, and Oman',start:'2025-12-15',end:'2025-12-18'},
+  {label:'South Africa',start:'2025-11-21',end:'2025-11-23'},
+  {label:'Bhutan',start:'2025-11-11',end:'2025-11-12'},
+  {label:'Japan & China',start:'2025-08-28',end:'2025-09-01'},
+  {label:'United Kingdom & Maldives',start:'2025-07-23',end:'2025-07-26'},
+  {label:'Ghana, Trinidad & Tobago, Argentina, Brazil & Namibia',start:'2025-07-02',end:'2025-07-09'},
+  {label:'Cyprus, Canada and Croatia',start:'2025-06-15',end:'2025-06-19'},
+  {label:'Saudi Arabia',start:'2025-04-22',end:'2025-04-22'},
+  {label:'Thailand & Sri Lanka',start:'2025-04-03',end:'2025-04-06'},
+  {label:'Mauritius',start:'2025-03-11',end:'2025-03-12'},
+  {label:'France & USA',start:'2025-02-10',end:'2025-02-14'},
+  {label:'Kuwait',start:'2024-12-21',end:'2024-12-22'},
+  {label:'Nigeria, Brazil & Guyana',start:'2024-11-16',end:'2024-11-22'},
+  {label:'Russia',start:'2024-10-22',end:'2024-10-23'},
+  {label:'Laos',start:'2024-10-10',end:'2024-10-11'},
+  {label:'USA',start:'2024-09-21',end:'2024-09-24'},
+  {label:'Brunei & Singapore',start:'2024-09-03',end:'2024-09-05'},
+  {label:'Poland & Ukraine',start:'2024-08-21',end:'2024-08-23'},
+  {label:'Russia & Austria',start:'2024-07-08',end:'2024-07-10'},
+  {label:'Italy',start:'2024-06-13',end:'2024-06-14'},
+  {label:'Bhutan',start:'2024-03-22',end:'2024-03-23'},
+  {label:'United Arab Emirates (UAE) & Qatar',start:'2024-02-13',end:'2024-02-15'},
+  {label:'Dubai',start:'2023-11-30',end:'2023-12-01'},
+  {label:'Indonesia',start:'2023-09-06',end:'2023-09-07'},
+  {label:'South Africa & Greece',start:'2023-08-22',end:'2023-08-25'},
+  {label:'France & United Arab Emirates (UAE)',start:'2023-07-13',end:'2023-07-15'},
+  {label:'United States of America (USA) & Egypt',start:'2023-06-20',end:'2023-06-25'},
+  {label:'Japan, Papua New Guinea & Australia',start:'2023-05-19',end:'2023-05-25'},
+  {label:'Indonesia',start:'2022-11-14',end:'2022-11-16'},
+  {label:'Japan',start:'2022-09-26',end:'2022-09-27'},
+  {label:'Samarkand, Uzbekistan',start:'2022-09-15',end:'2022-09-16'},
+  {label:'Germany and UAE',start:'2022-06-26',end:'2022-06-28'},
+  {label:'Japan',start:'2022-05-23',end:'2022-05-24'},
+  {label:'Nepal',start:'2022-05-16',end:'2022-05-16'},
+  {label:'Germany, Denmark & France',start:'2022-05-02',end:'2022-05-05'},
+  {label:'Italy and UK',start:'2021-10-29',end:'2021-11-02'},
+  {label:'USA',start:'2021-09-22',end:'2021-09-26'},
+  {label:'Bangladesh',start:'2021-03-26',end:'2021-03-27'}
+];
+
+const LIVE_TEXT_URL = 'https://r.jina.ai/http://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/';
+const REGISTRY_URL = 'https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/';
+const ARCHIVE_URL = 'https://www.pmindia.gov.in/en/pm-visits/';
+let trips = [];
+const state = {year:'All', country:'All', visitType:'All', q:''};
+
+function normalizeTrips(rows, sourceMode='fallback') {
+  return rows.map((t, i) => {
+    const countries = t.label
+      .replace(/\s+and\s+/g, ', ')
+      .replace(/\s*&\s*/g, ', ')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+    const start = new Date(t.start + 'T00:00:00');
+    const end = new Date(t.end + 'T00:00:00');
+    const days = Math.round((end - start)/(1000*60*60*24)) + 1;
+    return {
+      id: i + 1,
+      ...t,
+      countries,
+      primaryCountry: countries[0],
+      days,
+      year: Number(t.start.slice(0,4)),
+      month: t.start.slice(0,7),
+      visitType: countries.length > 1 ? 'Multi-country' : 'Single-country',
+      sourceMode
+    };
+  }).sort((a,b) => b.start.localeCompare(a.start));
+}
+
+function parseMonth(mon) {
+  const map = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12',January:'01',February:'02',March:'03',April:'04',June:'06',July:'07',August:'08',September:'09',October:'10',November:'11',December:'12'};
+  return map[mon] || '01';
+}
+
+function cleanDate(dateStr, fallbackYear) {
+  let s = dateStr.replace(/,/g,' ').replace(/\s+/g,' ').trim();
+  const parts = s.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (parts) return `${parts[3]}-${parseMonth(parts[2])}-${String(parts[1]).padStart(2,'0')}`;
+  const short = s.match(/(\d{1,2})\s+([A-Za-z]+)/);
+  if (short && fallbackYear) return `${fallbackYear}-${parseMonth(short[2])}-${String(short[1]).padStart(2,'0')}`;
+  return null;
+}
+
+function parseRegistryText(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const out = [];
+  for (const line of lines) {
+    const m = line.match(/^\|(\d+)\|(.+?)\|(.*?)\|$/);
+    if (!m) continue;
+    const label = m[2].trim();
+    const rawDate = m[3].trim().replace(/\u2013/g,'-').replace(/\u2014/g,'-');
+    let dm = rawDate.match(/(\d{1,2})\s*-\s*(\d{1,2})\s*([A-Za-z]+)\s*,?\s*(\d{4})/);
+    if (dm) {
+      const year = dm[4];
+      const month = parseMonth(dm[3]);
+      out.push({label, start:`${year}-${month}-${String(dm[1]).padStart(2,'0')}`, end:`${year}-${month}-${String(dm[2]).padStart(2,'0')}`});
+      continue;
+    }
+    dm = rawDate.match(/(\d{1,2})\s+([A-Za-z]+)\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s*,?\s*(\d{4})/);
+    if (dm) {
+      out.push({label, start:`${dm[5]}-${parseMonth(dm[2])}-${String(dm[1]).padStart(2,'0')}`, end:`${dm[5]}-${parseMonth(dm[4])}-${String(dm[3]).padStart(2,'0')}`});
+      continue;
+    }
+    dm = rawDate.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+    if (dm) {
+      out.push({label, start:`${dm[3]}-${parseMonth(dm[2])}-${String(dm[1]).padStart(2,'0')}`, end:`${dm[6]}-${parseMonth(dm[5])}-${String(dm[4]).padStart(2,'0')}`});
+      continue;
+    }
+    dm = rawDate.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+    if (dm) {
+      out.push({label, start:`${dm[3]}-${parseMonth(dm[2])}-${String(dm[1]).padStart(2,'0')}`, end:`${dm[6]}-${parseMonth(dm[5])}-${String(dm[4]).padStart(2,'0')}`});
+    }
+  }
+  return out;
+}
+
+function uniq(arr) { return ['All', ...Array.from(new Set(arr)).sort()]; }
+function fmt(n) { return Number(n).toLocaleString('en-IN'); }
+function byMonth(rows) {
+  const m = {};
+  rows.forEach(r => { m[r.month] = (m[r.month] || 0) + 1; });
+  return Object.entries(m).sort((a,b) => a[0].localeCompare(b[0]));
+}
+function filtered() {
+  return trips.filter(t =>
+    (state.year === 'All' || String(t.year) === state.year) &&
+    (state.country === 'All' || t.countries.includes(state.country) || t.label.includes(state.country)) &&
+    (state.visitType === 'All' || t.visitType === state.visitType) &&
+    (!state.q || JSON.stringify(t).toLowerCase().includes(state.q))
+  );
+}
+function setStatus(mode, extra='') {
+  const box = document.getElementById('updateStatus');
+  const chips = document.getElementById('statusChips');
+  if (mode === 'live') {
+    box.innerHTML = 'Live refresh succeeded. The page is showing the latest trip registry it could parse from the PM India source mirror.';
+    chips.innerHTML = `<span class="status s-ok">Live sync active</span><span class="status s-info">Source: PM India text mirror</span>${extra ? `<span class="status s-info">${extra}</span>` : ''}`;
+  } else if (mode === 'fallback') {
+    box.innerHTML = 'Live refresh was unavailable, so the page fell back to the embedded official snapshot shipped with this file.';
+    chips.innerHTML = `<span class="status s-warn">Fallback snapshot in use</span><span class="status s-info">Snapshot source: PM India registry</span>`;
+  } else {
+    box.innerHTML = 'Checking latest PM India registry…';
+    chips.innerHTML = `<span class="status s-info">Refresh in progress</span>`;
+  }
+}
+function populateFilters() {
+  const set = (id, vals, key) => {
+    const el = document.getElementById(id);
+    el.innerHTML = vals.map(v => `<option>${v}</option>`).join('');
+    el.value = state[key];
+    el.onchange = e => { state[key] = e.target.value; render(); };
+  };
+  set('year', uniq(trips.map(t => String(t.year))), 'year');
+  set('country', uniq(trips.flatMap(t => t.countries)), 'country');
+  set('visitType', ['All','Single-country','Multi-country'], 'visitType');
+  document.getElementById('q').addEventListener('input', e => { state.q = e.target.value.toLowerCase(); render(); }, {once:true});
+}
+function renderKpis(rows) {
+  const countryTouches = rows.reduce((s,t) => s + t.countries.length, 0);
+  const multi = rows.filter(t => t.visitType === 'Multi-country').length;
+  const months = byMonth(rows).length;
+  const topCountry = Object.entries(rows.flatMap(t => t.countries).reduce((m,c) => ((m[c] = (m[c] || 0) + 1), m), {})).sort((a,b) => b[1] - a[1])[0];
+  const liveCount = rows.filter(t => t.sourceMode === 'live').length;
+  const cards = [
+    ['Registry rows', fmt(rows.length), 'Trips in current filtered view'],
+    ['Country touches', fmt(countryTouches), 'Destinations across selected trips'],
+    ['Multi-country tours', fmt(multi), 'Entries with more than one destination'],
+    ['Active months', fmt(months), 'Distinct trip months in current view'],
+    ['Live-synced rows', fmt(liveCount), 'Rows loaded from live refresh in current view']
+  ];
+  document.getElementById('kpis').innerHTML = cards.map(([a,b,c]) => `<div class="card"><div class="k-label">${a}</div><div class="k-value">${b}</div><div class="k-sub">${c}</div></div>`).join('');
+}
+function renderCharts(rows) {
+  const countryCounts = rows.flatMap(t => t.countries).reduce((m,c) => ((m[c] = (m[c] || 0) + 1), m), {});
+  Plotly.newPlot('map', [{type:'choropleth',locationmode:'country names',locations:Object.keys(countryCounts),z:Object.values(countryCounts),colorscale:[[0,'#d7e6e3'],[1,'#01696f']],marker:{line:{color:'#fff',width:.4}},hovertemplate:'%{location}: %{z} visits<extra></extra>'}], {margin:{t:0,l:0,r:0,b:0},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',geo:{projection:{type:'natural earth'},bgcolor:'rgba(0,0,0,0)'}}, {displayModeBar:false,responsive:true});
+  const months = byMonth(rows);
+  Plotly.newPlot('timeline', [{type:'scatter',mode:'lines+markers',x:months.map(d => d[0] + '-01'),y:months.map(d => d[1]),line:{color:'#01696f',width:3},marker:{size:10,color:'#d19900'},hovertemplate:'%{x|%b %Y}: %{y} trip(s)<extra></extra>'}], {margin:{t:0,l:40,r:10,b:35},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',xaxis:{title:'Month'},yaxis:{title:'Trips'}}, {displayModeBar:false,responsive:true});
+  const ranking = Object.entries(countryCounts).sort((a,b) => b[1] - a[1]).slice(0,15);
+  Plotly.newPlot('ranking', [{type:'bar',orientation:'h',x:ranking.map(r => r[1]).reverse(),y:ranking.map(r => r[0]).reverse(),marker:{color:'#01696f'},hovertemplate:'%{y}: %{x} visits<extra></extra>'}], {margin:{t:0,l:140,r:10,b:30},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',xaxis:{title:'Visits'}}, {displayModeBar:false,responsive:true});
+}
+function renderTable(rows) {
+  document.getElementById('tripTable').innerHTML = `<thead><tr><th>Start</th><th>End</th><th>Published itinerary</th><th>Visit type</th><th>Duration</th><th>Country tags</th><th>Refresh source</th></tr></thead><tbody>${rows.map(t => `<tr><td>${t.start}</td><td>${t.end}</td><td><strong>${t.label}</strong></td><td>${t.visitType}</td><td>${t.days} day(s)</td><td>${t.countries.map(c => `<span class="tag">${c}</span>`).join(' ')}</td><td><span class="status ${t.sourceMode === 'live' ? 's-ok' : 's-warn'}">${t.sourceMode === 'live' ? 'Live' : 'Fallback'}</span><br><a href="${REGISTRY_URL}" target="_blank" rel="noopener noreferrer">Registry</a><br><a href="${ARCHIVE_URL}" target="_blank" rel="noopener noreferrer">Archive</a></td></tr>`).join('')}</tbody>`;
+}
+function render() { const rows = filtered(); renderKpis(rows); renderCharts(rows); renderTable(rows); }
+async function loadTrips() {
+  setStatus('loading');
+  try {
+    const res = await fetch(LIVE_TEXT_URL, {cache:'no-store'});
+    if (!res.ok) throw new Error('Live fetch failed: ' + res.status);
+    const text = await res.text();
+    const parsed = parseRegistryText(text);
+    if (!parsed.length) throw new Error('No rows parsed from live source');
+    trips = normalizeTrips(parsed, 'live');
+    setStatus('live', `${parsed.length} row(s) parsed`);
+  } catch (err) {
+    trips = normalizeTrips(FALLBACK_TRIPS, 'fallback');
+    setStatus('fallback');
+    console.warn(err);
+  }
+  populateFilters();
+  render();
+}
+let dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+document.getElementById('themeToggle').onclick = () => { dark = !dark; document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); };
+loadTrips();
+</script>
+</body>
+</html>
