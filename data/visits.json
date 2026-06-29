@@ -1,10 +1,13 @@
 {
   "meta": {
-    "updated": "2026-06-28",
-    "source": "PM India registry",
-    "source_url": "https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/"
+    "updated": "2026-06-29",
+    "source": "PM India registry (manually verified against source)",
+    "source_url": "https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/",
+    "count": 42
   },
   "trips": [
+    {"label": "France & Slovakia", "start": "2026-06-13", "end": "2026-06-18", "pm": "Narendra Modi"},
+    {"label": "UAE, Netherlands, Sweden, Norway & Italy", "start": "2026-05-15", "end": "2026-05-20", "pm": "Narendra Modi"},
     {"label": "Israel", "start": "2026-02-25", "end": "2026-02-26", "pm": "Narendra Modi"},
     {"label": "Malaysia", "start": "2026-02-07", "end": "2026-02-08", "pm": "Narendra Modi"},
     {"label": "Jordan, Ethiopia, and Oman", "start": "2025-12-15", "end": "2025-12-18", "pm": "Narendra Modi"},
