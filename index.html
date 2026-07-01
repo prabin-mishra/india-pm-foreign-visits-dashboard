@@ -133,6 +133,18 @@
             <div class="sectionhead"><h2>Country frequency ranking</h2><span class="small">Top 15 destinations in current view</span></div>
             <div id="ranking" style="height:340px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
           </div>
+          <div class="card wide">
+            <div class="sectionhead"><h2>PM comparison</h2><span class="small">Total trips and unique countries per Prime Minister</span></div>
+            <div id="pmCompare" style="height:340px" role="img" aria-label="Grouped bar chart comparing trips and unique countries per PM"></div>
+          </div>
+          <div class="card wide">
+            <div class="sectionhead"><h2>Calendar heatmap</h2><span class="small">Trip density by year and month</span></div>
+            <div id="calHeatmap" style="height:280px" role="img" aria-label="Heatmap of trip density by year and month"></div>
+          </div>
+          <div class="card wide">
+            <div class="sectionhead"><h2>Year-over-year trips</h2><span class="small">Single-country vs multi-country tours by year</span></div>
+            <div id="yoyChart" style="height:340px" role="img" aria-label="Stacked bar chart of trips by year and visit type"></div>
+          </div>
         </section>
 
         <section class="card" style="margin-top:16px;">
@@ -353,11 +365,10 @@ function renderKpis(rows) {
 }
 
 function renderCharts(rows) {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const paper  = 'rgba(0,0,0,0)';
   const countryCounts = rows.flatMap(t => t.countries).reduce((m, c) => ((m[c] = (m[c] || 0) + 1), m), {});
 
-  Plotly.newPlot('map', [{
+  Plotly.react('map', [{
     type: 'choropleth', locationmode: 'country names',
     locations: Object.keys(countryCounts), z: Object.values(countryCounts),
     colorscale: [[0, '#d7e6e3'], [1, '#01696f']],
@@ -369,7 +380,7 @@ function renderCharts(rows) {
   }, {displayModeBar: false, responsive: true});
 
   const months = byMonth(rows);
-  Plotly.newPlot('timeline', [{
+  Plotly.react('timeline', [{
     type: 'scatter', mode: 'lines+markers',
     x: months.map(d => d[0] + '-01'), y: months.map(d => d[1]),
     line: {color:'#01696f', width:3}, marker: {size:10, color:'#d19900'},
@@ -380,7 +391,7 @@ function renderCharts(rows) {
   }, {displayModeBar: false, responsive: true});
 
   const ranking = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).slice(0, 15);
-  Plotly.newPlot('ranking', [{
+  Plotly.react('ranking', [{
     type: 'bar', orientation: 'h',
     x: ranking.map(r => r[1]).reverse(), y: ranking.map(r => r[0]).reverse(),
     marker: {color:'#01696f'},
@@ -388,6 +399,55 @@ function renderCharts(rows) {
   }], {
     margin: {t:0,l:140,r:10,b:30}, paper_bgcolor: paper, plot_bgcolor: paper,
     xaxis: {title:'Visits'},
+  }, {displayModeBar: false, responsive: true});
+
+  // 2a. PM Comparison — grouped bar: trips and unique countries per PM
+  const pmNames    = [...new Set(rows.map(t => t.pm))].sort();
+  const pmTrips    = pmNames.map(pm => rows.filter(t => t.pm === pm).length);
+  const pmCountries = pmNames.map(pm => new Set(rows.filter(t => t.pm === pm).flatMap(t => t.countries)).size);
+  Plotly.react('pmCompare', [
+    {type:'bar', name:'Total trips',      x:pmNames, y:pmTrips,     marker:{color:'#01696f'}, hovertemplate:'%{x}<br>Trips: %{y}<extra></extra>'},
+    {type:'bar', name:'Unique countries', x:pmNames, y:pmCountries, marker:{color:'#d19900'}, hovertemplate:'%{x}<br>Countries: %{y}<extra></extra>'},
+  ], {
+    barmode: 'group',
+    margin: {t:10,l:50,r:10,b:80}, paper_bgcolor: paper, plot_bgcolor: paper,
+    legend: {orientation:'h', y:-0.25},
+    yaxis: {title:'Count'},
+  }, {displayModeBar: false, responsive: true});
+
+  // 2b. Calendar heatmap — months on X, years on Y, trip count as Z
+  const allYears  = [...new Set(rows.map(t => t.year))].sort((a,b) => a - b);
+  const monthNums = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const heatZ = allYears.map(yr =>
+    monthNums.map((_, mi) => {
+      const mon = `${yr}-${String(mi + 1).padStart(2,'0')}`;
+      return rows.filter(t => t.month === mon).length;
+    })
+  );
+  Plotly.react('calHeatmap', [{
+    type: 'heatmap',
+    x: monthNums, y: allYears.map(String), z: heatZ,
+    colorscale: [[0,'#f7f6f2'],[0.33,'#b3d4d6'],[0.67,'#5ca4af'],[1,'#01696f']],
+    hovertemplate: '%{y} %{x}: %{z} trip(s)<extra></extra>',
+    xgap: 3, ygap: 3,
+    showscale: false,
+  }], {
+    margin: {t:10,l:50,r:10,b:40}, paper_bgcolor: paper, plot_bgcolor: paper,
+    yaxis: {type:'category', autorange:'reversed'},
+  }, {displayModeBar: false, responsive: true});
+
+  // 2c. Year-over-year stacked bar — by visitType
+  const years  = [...new Set(rows.map(t => String(t.year)))].sort();
+  const single = years.map(yr => rows.filter(t => String(t.year) === yr && t.visitType === 'Single-country').length);
+  const multi  = years.map(yr => rows.filter(t => String(t.year) === yr && t.visitType === 'Multi-country').length);
+  Plotly.react('yoyChart', [
+    {type:'bar', name:'Single-country', x:years, y:single, marker:{color:'#01696f'}, hovertemplate:'%{x} Single-country: %{y}<extra></extra>'},
+    {type:'bar', name:'Multi-country',  x:years, y:multi,  marker:{color:'#d19900'}, hovertemplate:'%{x} Multi-country: %{y}<extra></extra>'},
+  ], {
+    barmode: 'stack',
+    margin: {t:10,l:50,r:10,b:60}, paper_bgcolor: paper, plot_bgcolor: paper,
+    legend: {orientation:'h', y:-0.2},
+    xaxis: {title:'Year', type:'category'}, yaxis: {title:'Trips'},
   }, {displayModeBar: false, responsive: true});
 }
 
