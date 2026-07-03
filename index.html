@@ -5,11 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>India PM Foreign Visits Dashboard</title>
   <!-- SEO / OG -->
-  <meta name="description" content="Interactive dashboard tracking every foreign visit by India's Prime Ministers — countries, dates, duration, and multi-country tours." />
+  <meta name="description" id="metaDescription" content="Interactive dashboard tracking every foreign visit by India's Prime Ministers — countries, dates, duration, and multi-country tours." />
   <meta property="og:title" content="India PM Foreign Visits Dashboard" />
-  <meta property="og:description" content="Track every foreign visit by India's Prime Ministers with interactive maps, timelines, and filters." />
+  <meta property="og:description" id="ogDescription" content="Track every foreign visit by India's Prime Ministers with interactive maps, timelines, and filters." />
   <meta property="og:type" content="website" />
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" crossorigin="anonymous"></script>
+  <meta property="og:url" content="https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/" />
+  <meta property="og:image" content="https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/preview.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="India PM Foreign Visits Dashboard" />
+  <meta name="twitter:description" id="twitterDescription" content="Track every foreign visit by India's Prime Ministers with interactive maps, timelines, and filters." />
+  <meta name="twitter:image" content="https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/preview.png" />
+  <!-- JSON-LD structured data (dateModified/description patched from data/visits.json at runtime) -->
+  <script type="application/ld+json" id="jsonLd">
+  {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": "India PM Foreign Visits Dashboard",
+    "description": "Dataset of every foreign visit by India's Prime Ministers, including countries, dates, and duration.",
+    "url": "https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/",
+    "license": "https://opensource.org/licenses/MIT",
+    "isAccessibleForFree": true,
+    "creator": {"@type": "Organization", "name": "PM India registry", "url": "https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/"},
+    "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/data/visits.json"}]
+  }
+  </script>
+  <link rel="dns-prefetch" href="https://cdn.plot.ly">
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" crossorigin="anonymous" loading="lazy"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
@@ -549,6 +571,25 @@ function render() {
   renderTable(rows);
 }
 
+// Phase 4a/4b: keep SEO meta tags and JSON-LD in sync with loaded data
+function updateSeoMeta(allTrips, updated) {
+  if (!allTrips.length) return;
+  const uniqueCountries = new Set(allTrips.flatMap(t => t.countries)).size;
+  const years = allTrips.map(t => t.year);
+  const yearRange = `${Math.min(...years)}–${Math.max(...years)}`;
+  const desc = `${allTrips.length} trips · ${uniqueCountries} countries · ${yearRange}`;
+  document.getElementById('metaDescription').setAttribute('content', desc);
+  document.getElementById('ogDescription').setAttribute('content', desc);
+  document.getElementById('twitterDescription').setAttribute('content', desc);
+
+  try {
+    const ld = JSON.parse(document.getElementById('jsonLd').textContent);
+    ld.description = desc;
+    if (updated) ld.dateModified = updated;
+    document.getElementById('jsonLd').textContent = JSON.stringify(ld, null, 2);
+  } catch (e) { console.warn('[jsonld]', e); }
+}
+
 async function loadTrips() {
   readUrlState(); // Phase 3a: pre-populate state from URL params on initial load
   setStatus('loading');
@@ -563,6 +604,7 @@ async function loadTrips() {
     setStatus('json', `${trips.length} trips · updated ${data.meta?.updated || ''}`);
     populateFilters();
     render();
+    updateSeoMeta(trips, data.meta?.updated);
     return;
   } catch (e) { console.warn('[tier1]', e); }
 
@@ -576,6 +618,7 @@ async function loadTrips() {
     setStatus('live', `${trips.length} rows parsed`);
     populateFilters();
     render();
+    updateSeoMeta(trips);
     return;
   } catch (e) { console.warn('[tier2]', e); }
 
@@ -584,6 +627,7 @@ async function loadTrips() {
   setStatus('fallback');
   populateFilters();
   render();
+  updateSeoMeta(trips);
 }
 
 let dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
