@@ -8,111 +8,35 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch PM India registry via Jina mirror
-        id: fetch
-        run: |
-          curl -fsSL \
-            "https://r.jina.ai/http://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/" \
-            -o /tmp/registry.txt \
-            --max-time 30 || echo "FETCH_FAILED=true" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      - name: Parse and update visits.json
-        if: env.FETCH_FAILED != 'true'
-        run: |
-          python3 - <<'PYEOF'
-          import re, json, pathlib, datetime
-
-          text = pathlib.Path("/tmp/registry.txt").read_text(errors="replace")
-
-          MONTHS = {
-            "Jan":"01","Feb":"02","Mar":"03","Apr":"04","May":"05","Jun":"06",
-            "Jul":"07","Aug":"08","Sep":"09","Oct":"10","Nov":"11","Dec":"12",
-            "January":"01","February":"02","March":"03","April":"04","June":"06",
-            "July":"07","August":"08","September":"09","October":"10",
-            "November":"11","December":"12",
-          }
-
-          def pm(mon): return MONTHS.get(mon, "01")
-
-          trips = []
-          for line in text.splitlines():
-            line = line.strip()
-            m = re.match(r'^\|(\d+)\|(.+?)\|(.*?)\|$', line)
-            if not m:
-              continue
-            label = m.group(2).strip()
-            raw = m.group(3).strip().replace("–", "-").replace("—", "-")
-
-            # Pattern: 25-26 February, 2026
-            d = re.match(r'(\d{1,2})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s*,?\s*(\d{4})', raw)
-            if d:
-              y, mo = d.group(4), pm(d.group(3))
-              trips.append({"label": label,
-                            "start": f"{y}-{mo}-{d.group(1).zfill(2)}",
-                            "end":   f"{y}-{mo}-{d.group(2).zfill(2)}",
-                            "pm": "Narendra Modi"})
-              continue
-
-            # Pattern: 7-8 February 2026  (no comma)
-            d = re.match(r'(\d{1,2})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})', raw)
-            if d:
-              y, mo = d.group(4), pm(d.group(3))
-              trips.append({"label": label,
-                            "start": f"{y}-{mo}-{d.group(1).zfill(2)}",
-                            "end":   f"{y}-{mo}-{d.group(2).zfill(2)}",
-                            "pm": "Narendra Modi"})
-              continue
-
-            # Pattern: 21 December 2024 - 22 December 2024
-            d = re.match(r'(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})', raw)
-            if d:
-              trips.append({"label": label,
-                            "start": f"{d.group(3)}-{pm(d.group(2))}-{d.group(1).zfill(2)}",
-                            "end":   f"{d.group(6)}-{pm(d.group(5))}-{d.group(4).zfill(2)}",
-                            "pm": "Narendra Modi"})
-              continue
-
-            # Pattern: 21 September - 24 September, 2024
-            d = re.match(r'(\d{1,2})\s+([A-Za-z]+)\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s*,?\s*(\d{4})', raw)
-            if d:
-              trips.append({"label": label,
-                            "start": f"{d.group(5)}-{pm(d.group(2))}-{d.group(1).zfill(2)}",
-                            "end":   f"{d.group(5)}-{pm(d.group(4))}-{d.group(3).zfill(2)}",
-                            "pm": "Narendra Modi"})
-              continue
-
-          if not trips:
-            print("No trips parsed — keeping existing data")
-            exit(0)
-
-          trips.sort(key=lambda t: t["start"], reverse=True)
-          current_path = pathlib.Path("data/visits.json")
-          current = json.loads(current_path.read_text()) if current_path.exists() else {}
-          current["meta"] = {
-            "updated": datetime.date.today().isoformat(),
-            "source": "PM India registry (auto-refreshed via GitHub Actions)",
-            "source_url": "https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/",
-            "count": len(trips),
-          }
-          current["trips"] = trips
-          current_path.write_text(json.dumps(current, indent=2, ensure_ascii=False))
-          print(f"Wrote {len(trips)} trips to data/visits.json")
-          PYEOF
+      # Parses the PM India registry (via Jina mirror) into data/visits.json and
+      # collects third-party trip coverage into data/news.json. Uses stdlib only.
+      # On a fetch/parse failure the script exits 0 without writing, so a bad day
+      # leaves the last good data in place instead of blanking the site.
+      - name: Refresh visits + news
+        run: python3 scripts/refresh.py
 
       - name: Commit if changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/visits.json
+          git add data/visits.json data/news.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: refresh visit data [$(date -u +%Y-%m-%d)]"
+            git commit -m "chore: refresh visit data + news [$(date -u +%Y-%m-%d)]"
             git push
           fi

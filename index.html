@@ -238,6 +238,54 @@
     .facts { display: flex; flex-wrap: wrap; column-gap: var(--sp-6); row-gap: var(--sp-2); padding: var(--sp-5) 0 0; font-size: .86rem; color: var(--text-2); }
     .fact strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
 
+    /* ============ Live trip band ============ */
+    .livewrap { padding-top: var(--sp-8); }
+    .live-card {
+      position: relative; overflow: hidden;
+      display: grid; grid-template-columns: 1.15fr .85fr; gap: var(--sp-6); align-items: stretch;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: var(--sp-6);
+    }
+    .live-card.is-ongoing { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+    .live-left { display: flex; flex-direction: column; justify-content: center; gap: var(--sp-3); z-index: 1; min-width: 0; }
+    .live-status-row { display: flex; align-items: center; gap: 10px; }
+    .live-pill { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+    .live-pill.ongoing  { background: var(--accent-soft); color: var(--accent); }
+    .live-pill.upcoming { background: var(--gold-soft); color: var(--gold-text); }
+    .live-pill.recent   { background: var(--surface-2); color: var(--text-2); }
+    .live-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+    .live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent); animation: livePulse 1.9s ease-out infinite; }
+    @keyframes livePulse { from { transform: scale(1); opacity: .65; } to { transform: scale(3.4); opacity: 0; } }
+    .live-headline { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.35rem, 2.6vw, 2rem); line-height: 1.12; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
+    .live-headline .accent { color: var(--accent); }
+    .live-meta { display: flex; flex-wrap: wrap; gap: 4px var(--sp-4); font-size: .86rem; color: var(--text-2); }
+    .live-meta strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .live-countries { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+    .live-visual { position: relative; display: flex; align-items: center; justify-content: center; min-height: 150px; }
+    .live-visual svg { display: block; width: 100%; max-width: 360px; height: auto; aspect-ratio: 320 / 150; overflow: hidden; }
+    .flight-label { font: 600 9px/1 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; fill: var(--text-3); }
+    .plane-glyph { fill: var(--accent); }
+
+    /* ============ News strip ============ */
+    .news-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); margin: var(--sp-6) 0 var(--sp-4); }
+    .news-head h3 { font: 600 .95rem/1.3 var(--font-ui); margin: 0; }
+    .news-head .disc { font-size: .74rem; color: var(--text-3); }
+    .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+    .news-card {
+      display: flex; flex-direction: column; gap: var(--sp-2);
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: var(--sp-4); text-decoration: none; color: inherit;
+      transition: border-color .16s ease, transform .16s ease;
+    }
+    .news-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+    .news-src { display: flex; align-items: center; gap: 8px; font-size: .74rem; color: var(--text-3); }
+    .news-src .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-3); }
+    .news-src .pub { font-weight: 600; color: var(--text-2); }
+    .news-title { font-size: .92rem; font-weight: 500; line-height: 1.4; color: var(--text);
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .news-card .go { margin-top: auto; font-size: .76rem; font-weight: 600; color: var(--accent); }
+    .news-empty { font-size: .86rem; color: var(--text-3); padding: var(--sp-4) 0; }
+
     /* ============ Sections ============ */
     .section { padding: var(--sp-12) 0 0; }
     .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4); margin-bottom: var(--sp-5); }
@@ -349,6 +397,9 @@
       .stats { grid-template-columns: repeat(3, 1fr); }
       .stat:nth-child(3n+1) { border-left: 0; padding-left: 0; }
       .method { grid-template-columns: 1fr; }
+      .live-card { grid-template-columns: 1fr; }
+      .live-visual { order: -1; min-height: 130px; }
+      .news-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 640px) {
       .wrap { padding: 0 var(--sp-4); }
@@ -361,6 +412,7 @@
       .field { flex: 1 1 42%; }
       .field select, .field input[type="search"] { width: 100%; }
       .filter-spacer { display: none; }
+      .news-grid { grid-template-columns: 1fr; }
       #drawer { padding: var(--sp-6); }
     }
 
@@ -411,6 +463,20 @@
         </div>
         <div class="stats" id="kpis" aria-label="Headline statistics"></div>
         <div class="facts" id="facts" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ============ Live trip status + coverage ============ -->
+    <section class="livewrap" id="live" aria-label="Current trip status">
+      <div class="wrap">
+        <div id="liveCard" class="live-card" aria-live="polite"></div>
+        <div id="newsBlock" hidden>
+          <div class="news-head">
+            <h3 id="newsTitle">Latest coverage</h3>
+            <span class="disc">Auto-collected third-party reporting · headlines, not endorsements</span>
+          </div>
+          <div class="news-grid" id="newsGrid"></div>
+        </div>
       </div>
     </section>
 
@@ -535,6 +601,7 @@
 
 <script>
 const FALLBACK_TRIPS = [
+  {label:'Seychelles',start:'2026-06-27',end:'2026-06-29',pm:'Narendra Modi'},
   {label:'France & Slovakia',start:'2026-06-13',end:'2026-06-18',pm:'Narendra Modi'},
   {label:'UAE, Netherlands, Sweden, Norway & Italy',start:'2026-05-15',end:'2026-05-20',pm:'Narendra Modi'},
   {label:'Israel',start:'2026-02-25',end:'2026-02-26',pm:'Narendra Modi'},
@@ -620,20 +687,36 @@ function parseMonth(mon) {
   return map[mon] || '01';
 }
 
+// Mirror of scripts/refresh.py: the Jina mirror returns plain-text rows like
+// "1 Seychelles 27-29 June , 2026", so split label from the trailing date run.
+const MONTH_NAMES = 'January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
+const DATE_ANCHOR = new RegExp('\\d{1,2}\\s*[\\u2013\\u2014-]\\s*\\d{1,2}\\s+(?:' + MONTH_NAMES + ')|\\d{1,2}\\s+(?:' + MONTH_NAMES + ')');
+
+function parseDateRange(ds) {
+  ds = ds.replace(/[–—]/g, '-');
+  let m;
+  m = ds.match(/^\s*(\d{1,2})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s*,?\s*(\d{4})/);
+  if (m) return [`${m[4]}-${parseMonth(m[3])}-${m[1].padStart(2,'0')}`, `${m[4]}-${parseMonth(m[3])}-${m[2].padStart(2,'0')}`];
+  m = ds.match(/^\s*(\d{1,2})\s+([A-Za-z]+)\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s*,?\s*(\d{4})/);
+  if (m) return [`${m[5]}-${parseMonth(m[2])}-${m[1].padStart(2,'0')}`, `${m[5]}-${parseMonth(m[4])}-${m[3].padStart(2,'0')}`];
+  m = ds.match(/^\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (m) return [`${m[3]}-${parseMonth(m[2])}-${m[1].padStart(2,'0')}`, `${m[6]}-${parseMonth(m[5])}-${m[4].padStart(2,'0')}`];
+  return null;
+}
+
 function parseRegistryText(text) {
   const out = [];
   for (const line of text.split('\n').map(l => l.trim()).filter(Boolean)) {
-    const m = line.match(/^\|(\d+)\|(.+?)\|(.*?)\|$/);
+    const m = line.match(/^(\d+)\s+(.+)$/);
     if (!m) continue;
-    const label  = m[2].trim();
-    const raw    = m[3].trim().replace(/[–—]/g, '-');
-    let dm;
-    dm = raw.match(/(\d{1,2})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s*,?\s*(\d{4})/);
-    if (dm) { out.push({label, start:`${dm[4]}-${parseMonth(dm[3])}-${dm[1].padStart(2,'0')}`, end:`${dm[4]}-${parseMonth(dm[3])}-${dm[2].padStart(2,'0')}`, pm:'Narendra Modi'}); continue; }
-    dm = raw.match(/(\d{1,2})\s+([A-Za-z]+)\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s*,?\s*(\d{4})/);
-    if (dm) { out.push({label, start:`${dm[5]}-${parseMonth(dm[2])}-${dm[1].padStart(2,'0')}`, end:`${dm[5]}-${parseMonth(dm[4])}-${dm[3].padStart(2,'0')}`, pm:'Narendra Modi'}); continue; }
-    dm = raw.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s*-\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
-    if (dm) { out.push({label, start:`${dm[3]}-${parseMonth(dm[2])}-${dm[1].padStart(2,'0')}`, end:`${dm[6]}-${parseMonth(dm[5])}-${dm[4].padStart(2,'0')}`, pm:'Narendra Modi'}); continue; }
+    const rest = m[2];
+    const a = rest.match(DATE_ANCHOR);
+    if (!a) continue;
+    const label = rest.slice(0, a.index).trim();
+    if (!label) continue;
+    const range = parseDateRange(rest.slice(a.index));
+    if (!range) continue;
+    out.push({label, start: range[0], end: range[1], pm: 'Narendra Modi'});
   }
   return out;
 }
@@ -952,6 +1035,126 @@ function closeDrawer() {
   if (lastFocusedRow && document.contains(lastFocusedRow)) lastFocusedRow.focus();
 }
 
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function daysDiff(aISO, bISO) { return Math.round((new Date(bISO + 'T00:00:00') - new Date(aISO + 'T00:00:00')) / 86400000); }
+
+// Which trip is "now": in progress → next upcoming → most recent completed
+function computeFocus(list) {
+  const today = todayISO();
+  const ongoing = list.filter(t => t.start <= today && today <= t.end);
+  if (ongoing.length) return {trip: ongoing[0], status: 'ongoing'};
+  const upcoming = list.filter(t => t.start > today).sort((a, b) => a.start.localeCompare(b.start));
+  if (upcoming.length) return {trip: upcoming[0], status: 'upcoming'};
+  const past = list.filter(t => t.end < today); // list is sorted desc, so [0] is most recent
+  if (past.length) return {trip: past[0], status: 'recent'};
+  return {trip: list[0] || null, status: 'recent'};
+}
+
+// Flight visual: a plane on a dashed arc from a tricolour "India" marker to the destination.
+function flightSVG(status, dest) {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const P0 = [42, 120], P1 = [172, 14], P2 = [286, 86];
+  const d = `M${P0[0]},${P0[1]} Q${P1[0]},${P1[1]} ${P2[0]},${P2[1]}`;
+  const at = t => {
+    const mt = 1 - t;
+    return {
+      x: mt*mt*P0[0] + 2*mt*t*P1[0] + t*t*P2[0],
+      y: mt*mt*P0[1] + 2*mt*t*P1[1] + t*t*P2[1],
+      a: Math.atan2(2*mt*(P1[1]-P0[1]) + 2*t*(P2[1]-P1[1]), 2*mt*(P1[0]-P0[0]) + 2*t*(P2[0]-P1[0])) * 180/Math.PI,
+    };
+  };
+  const animate = status === 'ongoing' && !reduce;
+  const p = at(status === 'upcoming' ? 0.05 : status === 'recent' ? 0.95 : 0.5);
+  const destReached = status !== 'upcoming';
+  const plane = `<g transform="scale(.72) rotate(90) translate(-12,-12)"><path class="plane-glyph" d="M22 16v-2l-8.5-5V3.5C13.5 2.67 12.83 2 12 2s-1.5.67-1.5 1.5V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z"/></g>`;
+  const planeGroup = animate
+    ? `<g>${plane}<animateMotion dur="8s" repeatCount="indefinite" rotate="auto" calcMode="linear"><mpath href="#flightArc"/></animateMotion></g>`
+    : `<g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${p.a.toFixed(1)})">${plane}</g>`;
+  const short = dest && dest.length > 15 ? dest.slice(0, 14) + '…' : dest;
+  return `
+    <svg viewBox="0 0 320 150" role="img" aria-label="Flight from India to ${esc(dest || 'destination')}">
+      <path id="flightArc" d="${d}" fill="none" stroke="var(--border-strong)" stroke-width="1.4" stroke-dasharray="2 6" stroke-linecap="round" opacity=".85"/>
+      <g transform="translate(${P0[0]},${P0[1]})">
+        <circle r="7.5" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1"/>
+        <clipPath id="rdIndia"><circle r="5.5"/></clipPath>
+        <g clip-path="url(#rdIndia)">
+          <rect x="-6" y="-5.5" width="12" height="3.7" fill="#FF9933"/>
+          <rect x="-6" y="-1.8" width="12" height="3.6" fill="#ffffff"/>
+          <rect x="-6" y="1.8" width="12" height="3.7" fill="#138808"/>
+          <circle r="1.3" fill="none" stroke="#0a3d91" stroke-width=".6"/>
+        </g>
+        <text class="flight-label" y="21" text-anchor="middle">India</text>
+      </g>
+      <g transform="translate(${P2[0]},${P2[1]})">
+        <circle r="5" fill="${destReached ? 'var(--accent)' : 'var(--surface)'}" stroke="var(--accent)" stroke-width="1.5"/>
+        <text class="flight-label" y="19" text-anchor="middle">${esc(short || '')}</text>
+      </g>
+      ${planeGroup}
+    </svg>`;
+}
+
+function renderLiveTrip(list) {
+  const card = document.getElementById('liveCard');
+  if (!card) return;
+  if (!list || !list.length) { card.innerHTML = ''; return; }
+  const {trip, status} = computeFocus(list);
+  if (!trip) { card.innerHTML = ''; return; }
+  const today = todayISO();
+  const primary = trip.primaryCountry || trip.countries[0] || trip.label;
+  let pill, headline, meta;
+  if (status === 'ongoing') {
+    const dayN = daysDiff(trip.start, today) + 1;
+    pill = `<span class="live-dot"></span><span class="live-pill ongoing">In transit</span>`;
+    headline = `The Prime Minister is currently in <span class="accent">${esc(trip.countries.join(', '))}</span>`;
+    meta = [`<strong>Day ${dayN}</strong> of ${trip.days}`, esc(fmtRange(trip.start, trip.end))];
+  } else if (status === 'upcoming') {
+    const inN = daysDiff(today, trip.start);
+    pill = `<span class="live-pill upcoming">Next trip</span>`;
+    headline = `Next scheduled trip — <span class="accent">${esc(trip.label)}</span>`;
+    meta = [`In <strong>${inN}</strong> day${inN !== 1 ? 's' : ''}`, esc(fmtRange(trip.start, trip.end))];
+  } else {
+    const agoN = daysDiff(trip.end, today);
+    pill = `<span class="live-pill recent">Most recent</span>`;
+    headline = `No trip in progress. Latest — <span class="accent">${esc(trip.label)}</span>`;
+    meta = [`Ended <strong>${agoN}</strong> day${agoN !== 1 ? 's' : ''} ago`, esc(fmtRange(trip.start, trip.end))];
+  }
+  card.classList.toggle('is-ongoing', status === 'ongoing');
+  card.innerHTML = `
+    <div class="live-left">
+      <div class="live-status-row">${pill}</div>
+      <h2 class="live-headline">${headline}</h2>
+      <div class="live-meta">${meta.map(b => `<span>${b}</span>`).join('')}</div>
+      <div class="live-countries">${trip.countries.map(c => `<span class="tag">${esc(c)}</span>`).join('')}</div>
+    </div>
+    <div class="live-visual">${flightSVG(status, primary)}</div>`;
+}
+
+async function loadNews() {
+  try {
+    const res = await fetch('data/news.json', {cache: 'no-store'});
+    if (!res.ok) throw new Error('news fetch ' + res.status);
+    renderNews(await res.json());
+  } catch (e) { console.warn('[news]', e); document.getElementById('newsBlock').hidden = true; }
+}
+
+function renderNews(data) {
+  const block = document.getElementById('newsBlock');
+  const arts = (data && data.articles) || [];
+  if (!arts.length) { block.hidden = true; return; }
+  const label = data.trip && data.trip.label ? ` · ${esc(data.trip.label)}` : '';
+  document.getElementById('newsTitle').innerHTML = `Latest coverage${label}`;
+  document.getElementById('newsGrid').innerHTML = arts.map(a => `
+    <a class="news-card" href="${esc(a.url)}" target="_blank" rel="noopener">
+      <div class="news-src"><span class="pub">${esc(a.source || 'News')}</span>${a.date ? `<span class="dot"></span><span>${esc(fmtDate(a.date))}</span>` : ''}</div>
+      <div class="news-title">${esc(a.title)}</div>
+      <span class="go">Read ↗</span>
+    </a>`).join('');
+  block.hidden = false;
+}
+
 function render() {
   const rows = filtered();
   renderFacts(rows);
@@ -982,6 +1185,7 @@ function updateSeoMeta(allTrips, updated) {
 async function loadTrips() {
   readUrlState(); // pre-populate state from URL params on initial load
   setStatus('loading');
+  loadNews(); // independent of trip data; fire and forget
 
   // Tier 1: data/visits.json committed by GitHub Actions
   try {
@@ -993,6 +1197,7 @@ async function loadTrips() {
     setStatus('json', `${trips.length} trips · updated ${data.meta?.updated || ''}`);
     populateFilters();
     render();
+    renderLiveTrip(trips);
     updateSeoMeta(trips, data.meta?.updated);
     return;
   } catch (e) { console.warn('[tier1]', e); }
@@ -1007,6 +1212,7 @@ async function loadTrips() {
     setStatus('live', `${trips.length} rows parsed`);
     populateFilters();
     render();
+    renderLiveTrip(trips);
     updateSeoMeta(trips);
     return;
   } catch (e) { console.warn('[tier2]', e); }
@@ -1016,6 +1222,7 @@ async function loadTrips() {
   setStatus('fallback');
   populateFilters();
   render();
+  renderLiveTrip(trips);
   updateSeoMeta(trips);
 }
 
