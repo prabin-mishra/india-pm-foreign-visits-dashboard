@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-11T02:47:54Z",
+  "generated": "2026-07-11T02:50:42Z",
   "status": "reported",
   "reported": {
     "countries": [
@@ -9,7 +9,7 @@
     ],
     "primary": "New Zealand",
     "asOf": "2026-07-11",
-    "sourceCount": 116
+    "sourceCount": 117
   },
   "trip": {
     "label": "Indonesia, Australia & New Zealand",
