@@ -1,50 +1,62 @@
 {
-  "generated": "2026-07-10T06:50:31Z",
-  "status": "recent",
-  "trip": {
-    "label": "Seychelles",
-    "start": "2026-06-27",
-    "end": "2026-06-29",
+  "generated": "2026-07-11T02:47:54Z",
+  "status": "reported",
+  "reported": {
     "countries": [
-      "Seychelles"
+      "Indonesia",
+      "Australia",
+      "New Zealand"
+    ],
+    "primary": "New Zealand",
+    "asOf": "2026-07-11",
+    "sourceCount": 116
+  },
+  "trip": {
+    "label": "Indonesia, Australia & New Zealand",
+    "start": null,
+    "end": null,
+    "countries": [
+      "Indonesia",
+      "Australia",
+      "New Zealand"
     ]
   },
   "articles": [
     {
-      "title": "‘Double cross, first class’: Why India’s Modi wins so many foreign awards",
-      "source": "Al Jazeera",
-      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQZjBUemt1dVk1MUZGQ0l5dEhRZ1cwMWNzMTNPc3ExOFVoUk5BWG5sS040V3NKYS1PVkI5MjRzUXZaMGtkbzlGV3BtNFJ2Ym9EcFdTZGltT2xUdnBGcTBqdE55TVE3Z1NPb2ZDT3RodzRpa0w4djRublZQQkFIX3pDZHZ2RC1LRjRSV0xsVkRPaWRUdnRvQ3g1bFh1bzBseFRDTFhSaTVPeS1LVl8w0gGyAUFVX3lxTFA3RWU2X19ZWmxXWGNHU1ZwRnBlbU15X3VOd1k3aVhQTEd2R3ZjTWN1MWdmSDNfbFhxblJkN2lUTTlmNWhmYkl1OGJGRGxVZXFSN09LTXNQTEh3NXNDSmNYbjU4MzYwUEgxNWFMbnl1VUF1QXdvZjZsUjJGQ21WMmtOTEpialVRd1FuMXRnYnJobTM2UUhCRFREb2tCYm02TVlOVzl2QUlxMlliNHR3d01hMVE?oc=5",
-      "date": "2026-07-09"
+      "title": "'The Australian' front page highlights PM Modi's trade, defence agenda during Australia visit",
+      "source": "The Economic Times",
+      "url": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxNRzI3Q0NRVDN5N29NTGplamNsN0EyMHdTZ05qVW41OW56b1dCTHFiUTVhVXBIcGxkSXJqTkZzQ25kUWwzSWFqTHRTNmhjRThYM0V3WW1tdDg0UEtzelo0Q3dlejJFelZZaG5RRjBSZWlpbDAxcWFNX21nd2cxakcyalFaQWdfczZKMlRjZ1RpOWtyZ1ctRUY5Z0lILU4tMHpEZzdfZjQtbW9nQ1lGV015QzVZUkN5OHFvTkM3VkhkMTNFdVFwdTVkY3FDMXgwbnhiV0p5VjFTZElaX3J3aWw3S1NPbTY0TEVHSVN1ejROaUt5amZTVFBMSE9lS3jSAfYBQVVfeXFMT3ZRZGNZQ1NQdkNvNjZhVmN1QWhieVR2NGJrX2N4S080Wm1XYjlyX2hDT3g3MU1mZ0hKcHlDR2l1bGlwS0pyMWhEeHNCWjRibWg5SHplRm5HSGxBQlNkTldKNC1zUlhBS2Qxd1hhYnZ4b0RxSDZYcnJOQ3BLSE1KOUMzODhJUzIzUndOOFJTUWIyME9pMERoZHRUQTZhNjd6dy0zUFhXVVk0cnF6enBWNXJQQVU5T1ZnS3Q0R1dsc0FZTjROLUlsOFRKZVRpaUkwT1N1emtIdFJ5dzIyS1ZieDBQTE9rQmFqV3dKejZDbGlmSWJxSk53?oc=5",
+      "date": "2026-07-11"
     },
     {
-      "title": "PM Modi arrives in Seychelles; strengthens bilateral maritime partnership",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOMl8zU3htWkFyUUJ6TS1WY3JhUmpkV0xlZ2U5a0k3Z1h2NXlGbFRFSnVuQW5DQkcwMG10bS05U1BYbUtOUktiVEhXOUNzajVmbjFpMzIzR1pxUWFhY3g0eFlGU3NKeEd4SWlPUXg4djYtWndzcXljcUI4SnZWZ1pUMkljNGwxbDJ3dmc?oc=5",
-      "date": "2026-06-27"
+      "title": "New Zealand, India upgrade ties as PM Modi visits Auckland",
+      "source": "Reuters",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQbklhVFpGaURNbU5DaGVubVF0NW42aUp0dHFrbVJxU0hYM3RSVDg1NlBqeVBGMTR3LUF4eV9LdVdSRzNLUlVuc01CWXVzM3U3XzVTb3pKM1ZOUEFCbkNVZEFNdGx1VW5YaDQ2bXFKTEZVU1pJM3V5VFpPY2FSb2gySUNQZ2dScFpkQ2RxeHpkY0RLQkQwRkxIMk9IN0F5SG13alNGNFJhSmo2bkhaTkE?oc=5",
+      "date": "2026-07-11"
     },
     {
-      "title": "PM Modi Meets World's Oldest Living Land Animal During Seychelles Visit",
+      "title": "Video | PM Modi Receives Ceremonial Welcome At Government House In New Zealand",
       "source": "NDTV",
-      "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOeURORFVzMmVBdGFPQWpsdTBGdzdDajVVRFVWUEF4RTVmenpmYzFFdllvbm1vSEJ6RnFEMEdHWVBGN0hZQkFnYVF5bG1SX1U0eU9ybEhyNjlpS2lOSU84cTkxRUN6dnJUTGR0WjVUSW0zbEpJdWtjYkowSnpWVW40dTZCRVVpSmE5bF9rYlk0M1VHV25ObFBTVkQxN2MwNG5JOGVqMXVSU1VKV1VwREJ3SVlsbFpOSnNPQ21OZDY5c3BpWXBCblRjSXNUelJzSUnSAdcBQVVfeXFMTWhIYktvY2w1elJrd3JlOFFfZWpmekxQbFpHV1Qza1pObUVPLW4tN0taVVlmLXd6bmR4R2RHRGVkN0phckJvM1d5WWduVFBpdWVCNUZ4R05ybms3dHIwUUxDOWVBTGFXMjBpTWt1N3NuS2hVcUQ3eGlvdUZnUktQVEtpcl9NVzBfVzNkOGV4TjhZcVljY1hYSzI3MnNYMWI4Nl9Sa1Z6RHpEZGQyS0U3b2Jyd1k4NmltUHY2SGExN2liSVRDU3F6b2g4TlFiTExfTndTQ3FfMTQ?oc=5",
-      "date": "2026-06-27"
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOdU82VWg5MVg4T3gtb040eXBVMmhkQndLOXpMMkM3OGFaRkJDbjlHYXJFRHVmTlJzVW82dEhUMmxBcG4tOFhqT05FaFh1cmY3ZU5KQzAtdG9wbV85R0R0ZTdNaTAzcVFvVk12bUltOGRyaDRlZHlYV2pxR2JaLWZoaTFUbHVvYUM4bTljRWdaenYxMFpfOEZkQU81Qy1tU05mZWpaS2wxM3k?oc=5",
+      "date": "2026-07-11"
     },
     {
-      "title": "Why Modi is visiting Seychelles for only the second time in 50 years of diplomatic ties",
-      "source": "ThePrint",
-      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNZmMwaTJST3ZFU2xtakdfcTJtQnlNUVBXZU5IVjhNLTBCTjRmdnNHWWRPelBhWnVsbllyTVg2MnNjNzNoN2lLcjR3aVN2aEs2dDkwRjFUeUFnajgxNnZYYWZsQUdiSXl1dHF2YU1WYXVjSnhQUW8wYVFueF95M1dmSjRvSEdlWWlPOXlyaFlaMENhLUt4ZVVZU9IBngFBVV95cUxPOFZLS2pXODVFVE1wOVdWeFc2bW5JTnl2cTVxMjczcDhpZFlyd0hvS0E0T2F2ZkFCcFUydmhGNlFSdmdCQVVTdFBRTUNZYUh6ZU9zZE9HZTNGNkp1SlBtdnVmZklETDBVcEVEbEhXSHNhamNZa1RqNC0wWlRPSWtwVl9FLXNKT2Q5cE1CbHdidGNHSzRfNFVIdkR6bldTdw?oc=5",
-      "date": "2026-06-27"
+      "title": "Luxon says PM Modi’s visit marks new chapter in India-New Zealand ties",
+      "source": "DD India",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQSXppaElpT092NWtzTHZGUmRrZVhRU1BHMWluRDdBQ1JVRGVxYk14SFdKdE5DX3cxWHlVbVFMbzBfZ05HTmlNLWpUajcyTVhSWVdFaTNoZHpTMFpfb1B0QmRpdkJubU5XS2g4b0tGdll4WFhua01qd0NQUVRLc3p0eUFvejRiVGZGTWQ1ZTRKMkg3TEY3MzRHREpZWloyUW1nQ1E?oc=5",
+      "date": "2026-07-11"
     },
     {
-      "title": "India’s vision is to make Indian Ocean an Ocean of Opportunity: PM Modi in Seychelles",
-      "source": "The Hindu",
-      "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxNRDV3X0JocUhKZU1jMm45dXZlUkRldFMtb3huVUlPaWZJbGZFcTI2T1AyYjBZWnI0YW1mUkdMNUVLS2pqUG1UcEdxbmo0TGV2THJ3N3BEMVg4S295cGw3S2ZzQnk5ZlNLM2hJcEhnNzR4Mi1TNHY2UVY4RUg1V0VFdURnVFdrVkdxMkN4RHBheHRQM0otSENIQUlHUGYzNzk1eENFMlJfemdVazMtQWZOd1EzME5DZFc1b21jeWRDaXZpMjVoOHVZQ1FWVllXSE9Gc21zNmswVC1vYVgxbElBTVBFLU1faXVCSW1XOVB30gH0AUFVX3lxTE1hanBnSTh3TlpJRkJDTnVSU3Bjb3ZNMDJLRVhKWkxTVDczQnlEZVl6YzRqSHlIaWJ5b2o5MnJobnZIY0FTcWR2MDE5Q3JnZ0hhVndQYl9uTkUxWWQybXQza3FEdVI3aXZFT2c3UUhab0g3dF94MU9OMldsbEVybTRxbFdINko5clg2NjNmbndzSndobnctMDhlTVdjZGozbktMQXE2RWkxdnhZUFpFUU5OVTF4R25ZazVfX3g4cERTMGdSLWNxNjJ6eTRpQnU5VFZxc3hHQnVIUm1Ob21oV1hDTE1jbjJheGI3OVpSNVhoVWpOcFU?oc=5",
-      "date": "2026-06-28"
+      "title": "India, New Zealand enter new era of ties with FTA and strategic partnership: PM Modi",
+      "source": "DD News",
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNWDJ6aGU3TG1EcDFlRC1pbll1WHpXelEzeWpnendZR252c2JiZFl4SlpGaDJmRE5neVF1NzJ6ZEthVEhCMElMRk1JVWRPU3FUUGg5MlBUQ0JPeG5lLWdvejdjM1JpbGhOWHVkaHNEQmdISTF1LWltcDVDRVZtMFFkSzNZSmRmT2RtMUl5RUlyQ01zbHVNVjZXeWplVkZGMlhyb3A1a0YtUXVmSThI?oc=5",
+      "date": "2026-07-11"
     },
     {
-      "title": "‘Give him any award, and he’ll come running’: Narendra Modi racks up honours on overseas trips",
-      "source": "The Guardian",
-      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQNXg2QkJmRmR1blBteEFZM0FGanNYb2t3Ukl1SV83cGdMZFU5ckNqVUZiWWhVMUZQdFFzUldVaDdMY3pnYUZ5MkVyenotRFJmNzBsaUhNcnVDX3YyeFlTQXJ3WkMwNDFiWnBlRENjd3M0b3dTUGJka3NseU1MemNJdVNVVkx5LUZVanp2eTFJM1M2Zms?oc=5",
-      "date": "2026-07-03"
+      "title": "'Historic milestone': PM Modi hails India-New Zealand ties, pushes for strengthening strategic partnership",
+      "source": "Firstpost",
+      "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxOTElPQ3g1WUNXZmhmMDVJTE9VZUxEbE1aX216M0pKNkU4OGZxNDg1M1lDWkR4TFFpeFFkRloxRGJubkQwd19iYTI2OWdkOFlLQ0tkZTNNeDRval9ZanptdEk3Z0VnSkh4bDBNRUFHU3hYQzBRX281Q3NCT0FEQmtaTVRlOWp3NkIyVmExem9XN1dIM1Z0eW5Fam1iVzk2YU1sVFR3azBuMTRQTTJIR1V4S3l3RnEtTkdEdHFiakVxaGFpd3BjZ0hCU1F1cjkwR2puWVA4eko1ckJ3dnhqc3FYX2FR?oc=5",
+      "date": "2026-07-11"
     }
   ]
 }

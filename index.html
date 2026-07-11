@@ -249,18 +249,24 @@
     .live-card.is-ongoing { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
     .live-left { display: flex; flex-direction: column; justify-content: center; gap: var(--sp-3); z-index: 1; min-width: 0; }
     .live-status-row { display: flex; align-items: center; gap: 10px; }
+    .live-card.is-reported { border-color: color-mix(in srgb, var(--gold) 42%, var(--border)); }
     .live-pill { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
     .live-pill.ongoing  { background: var(--accent-soft); color: var(--accent); }
+    .live-pill.reported { background: var(--gold-soft); color: var(--gold-text); }
     .live-pill.upcoming { background: var(--gold-soft); color: var(--gold-text); }
     .live-pill.recent   { background: var(--surface-2); color: var(--text-2); }
     .live-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
-    .live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent); animation: livePulse 1.9s ease-out infinite; }
+    .live-dot.amber { background: var(--gold); }
+    .live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: livePulse 1.9s ease-out infinite; }
     @keyframes livePulse { from { transform: scale(1); opacity: .65; } to { transform: scale(3.4); opacity: 0; } }
     .live-headline { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.35rem, 2.6vw, 2rem); line-height: 1.12; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
     .live-headline .accent { color: var(--accent); }
+    .live-headline .accent.gold { color: var(--gold-text); }
     .live-meta { display: flex; flex-wrap: wrap; gap: 4px var(--sp-4); font-size: .86rem; color: var(--text-2); }
     .live-meta strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
     .live-countries { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+    .live-note { font-size: .78rem; color: var(--text-3); margin-top: 2px; }
+    .live-note a { color: var(--text-2); }
     .live-visual { position: relative; display: flex; align-items: center; justify-content: center; min-height: 150px; }
     .live-visual svg { display: block; width: 100%; max-width: 360px; height: auto; aspect-ratio: 320 / 150; overflow: hidden; }
     .flight-label { font: 600 9px/1 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; fill: var(--text-3); }
@@ -652,6 +658,7 @@ const REGISTRY_URL   = 'https://www.pmindia.gov.in/en/details-of-foreigndomestic
 const ARCHIVE_URL    = 'https://www.pmindia.gov.in/en/pm-visits/';
 
 let trips = [];
+let liveNews = null; // parsed data/news.json, incl. any news-reported trip
 const state = {pm:'All', year:'All', country:'All', visitType:'All', q:''};
 
 function normalizeTrips(rows, sourceMode='fallback') {
@@ -1054,7 +1061,7 @@ function computeFocus(list) {
 }
 
 // Flight visual: a plane on a dashed arc from a tricolour "India" marker to the destination.
-function flightSVG(status, dest) {
+function flightSVG(status, dest, accent = 'var(--accent)') {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const P0 = [42, 120], P1 = [172, 14], P2 = [286, 86];
   const d = `M${P0[0]},${P0[1]} Q${P1[0]},${P1[1]} ${P2[0]},${P2[1]}`;
@@ -1069,7 +1076,7 @@ function flightSVG(status, dest) {
   const animate = status === 'ongoing' && !reduce;
   const p = at(status === 'upcoming' ? 0.05 : status === 'recent' ? 0.95 : 0.5);
   const destReached = status !== 'upcoming';
-  const plane = `<g transform="scale(.72) rotate(90) translate(-12,-12)"><path class="plane-glyph" d="M22 16v-2l-8.5-5V3.5C13.5 2.67 12.83 2 12 2s-1.5.67-1.5 1.5V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z"/></g>`;
+  const plane = `<g transform="scale(.72) rotate(90) translate(-12,-12)"><path fill="${accent}" d="M22 16v-2l-8.5-5V3.5C13.5 2.67 12.83 2 12 2s-1.5.67-1.5 1.5V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z"/></g>`;
   const planeGroup = animate
     ? `<g>${plane}<animateMotion dur="8s" repeatCount="indefinite" rotate="auto" calcMode="linear"><mpath href="#flightArc"/></animateMotion></g>`
     : `<g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${p.a.toFixed(1)})">${plane}</g>`;
@@ -1089,7 +1096,7 @@ function flightSVG(status, dest) {
         <text class="flight-label" y="21" text-anchor="middle">India</text>
       </g>
       <g transform="translate(${P2[0]},${P2[1]})">
-        <circle r="5" fill="${destReached ? 'var(--accent)' : 'var(--surface)'}" stroke="var(--accent)" stroke-width="1.5"/>
+        <circle r="5" fill="${destReached ? accent : 'var(--surface)'}" stroke="${accent}" stroke-width="1.5"/>
         <text class="flight-label" y="19" text-anchor="middle">${esc(short || '')}</text>
       </g>
       ${planeGroup}
@@ -1101,7 +1108,17 @@ function renderLiveTrip(list) {
   if (!card) return;
   if (!list || !list.length) { card.innerHTML = ''; return; }
   const {trip, status} = computeFocus(list);
-  if (!trip) { card.innerHTML = ''; return; }
+  // 1. Registry says a trip is in progress → verified live status (highest authority)
+  if (trip && status === 'ongoing') return renderLiveVerified(card, trip, 'ongoing');
+  // 2. No verified ongoing trip, but credible news corroborates one the registry hasn't published
+  const rep = liveNews && liveNews.reported;
+  if (rep && rep.countries && rep.countries.length) return renderLiveReported(card, rep);
+  // 3. Otherwise show the registry's next upcoming / most-recent trip
+  if (trip) return renderLiveVerified(card, trip, status);
+  card.innerHTML = '';
+}
+
+function renderLiveVerified(card, trip, status) {
   const today = todayISO();
   const primary = trip.primaryCountry || trip.countries[0] || trip.label;
   let pill, headline, meta;
@@ -1122,6 +1139,7 @@ function renderLiveTrip(list) {
     meta = [`Ended <strong>${agoN}</strong> day${agoN !== 1 ? 's' : ''} ago`, esc(fmtRange(trip.start, trip.end))];
   }
   card.classList.toggle('is-ongoing', status === 'ongoing');
+  card.classList.remove('is-reported');
   card.innerHTML = `
     <div class="live-left">
       <div class="live-status-row">${pill}</div>
@@ -1132,11 +1150,37 @@ function renderLiveTrip(list) {
     <div class="live-visual">${flightSVG(status, primary)}</div>`;
 }
 
+// News-reported trip: shown only when the registry has none in progress. Clearly
+// marked as unofficial and pending confirmation; never counted in the dataset.
+function renderLiveReported(card, rep) {
+  const countries = rep.countries;
+  const primary = rep.primary || countries[countries.length - 1] || countries[0];
+  const label = countries.length > 1
+    ? countries.slice(0, -1).join(', ') + ' & ' + countries[countries.length - 1]
+    : countries[0];
+  card.classList.remove('is-ongoing');
+  card.classList.add('is-reported');
+  card.innerHTML = `
+    <div class="live-left">
+      <div class="live-status-row"><span class="live-dot amber"></span><span class="live-pill reported">Reported</span></div>
+      <h2 class="live-headline">Reportedly abroad now — <span class="accent gold">${esc(label)}</span></h2>
+      <div class="live-meta">
+        <span>Press-reported${rep.asOf ? `, as of <strong>${esc(fmtDate(rep.asOf))}</strong>` : ''}</span>
+        <span><strong>${rep.sourceCount || 0}</strong> sources</span>
+      </div>
+      <div class="live-countries">${countries.map(c => `<span class="tag">${esc(c)}</span>`).join('')}</div>
+      <p class="live-note">Pending official confirmation — not yet in the <a href="${REGISTRY_URL}" target="_blank" rel="noopener">PM India registry</a>. Coverage below.</p>
+    </div>
+    <div class="live-visual">${flightSVG('ongoing', primary, 'var(--gold)')}</div>`;
+}
+
 async function loadNews() {
   try {
     const res = await fetch('data/news.json', {cache: 'no-store'});
     if (!res.ok) throw new Error('news fetch ' + res.status);
-    renderNews(await res.json());
+    liveNews = await res.json();
+    renderNews(liveNews);
+    if (trips.length) renderLiveTrip(trips); // re-render in case a reported trip applies
   } catch (e) { console.warn('[news]', e); document.getElementById('newsBlock').hidden = true; }
 }
 
