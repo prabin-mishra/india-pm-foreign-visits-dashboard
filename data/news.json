@@ -1,61 +1,61 @@
 {
-  "generated": "2026-07-11T05:45:33Z",
+  "generated": "2026-07-12T06:08:28Z",
   "status": "reported",
   "reported": {
     "countries": [
-      "Indonesia",
       "Australia",
+      "Indonesia",
       "New Zealand"
     ],
     "primary": "New Zealand",
-    "asOf": "2026-07-11",
+    "asOf": "2026-07-12",
     "sourceCount": 121
   },
   "trip": {
-    "label": "Indonesia, Australia & New Zealand",
+    "label": "Australia, Indonesia & New Zealand",
     "start": null,
     "end": null,
     "countries": [
-      "Indonesia",
       "Australia",
+      "Indonesia",
       "New Zealand"
     ]
   },
   "articles": [
     {
-      "title": "Nap times, no stairs, extra snipers: Inside PM Modi’s “Special” Security Arrangements Ahead of New Zealand Visit",
-      "source": "NewsGram",
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQczA0Rk9VemN3SXNabGw5TFN0YnpoNWtRc0twcjVZNHdfdk9EcEhIeWd3c1dHa3JWWXpvaW8zSC13R0loTGNIaWJzendfZHZHeGxZRVJQdG1sdGRxWW1yT0ZmM2ozS2JrUXBDVVRSbmNzZF9GbU9ESm5pWkNlWmhFWlNCcDZjWHRVaElMamVuamNmRWJkSFZud3VEWdIBqAFBVV95cUxPbmFpR3E3NDR5OWwzN1AtcEM2ZjNPa0Z4bW4xSWc5NFFFci1KQ0Z4S1F5ckg1RDhxdVA3WFF0eFA5MjdSeFRiTjdvLVYzbmI0aGNWcWgxLXVHS1dfbkIzQ0d4QmZxWFd0dHU3RVp3T0RMSThfc2o0dVR6bjQ3S1RDMHdmRmZKbUxfRDFxMnp5bWlWZkVwUTJyaUs5V1dLaDVIcklUMGdfVmI?oc=5",
+      "title": "New Zealand elevates ties with India to strategic partnership",
+      "source": "eciks.org",
+      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFByNjFLc093U2VfY0VobjRCYm9EcGZSU2hfM2syYlJldFhCN28zZll3VUFKTG1td0RsbjBkNzlhQ1dYSTFTTFhZY092OVNBaGdKVDV4c2owVHlob01QSjNKSkt0eTd0ZlprVXNXcjZQcERGb0NZMDNCMQ?oc=5",
+      "date": "2026-07-12"
+    },
+    {
+      "title": "Road map to 2030 on Modi visit: India, New Zealand seal strategic partnership pact",
+      "source": "Telegraph India",
+      "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPQmRUVVh4Y1V3WEoxZ1FiVG1RdUF6Um1jUURYS1ZLaHVZbUhFM1JSV3o3cURZdTRjT19LUmdXdGpheHVXMG9TanBSeV82VHRtUXRsTmozQ1NWYjRKdlVoVUg2aUVXRTRHSzV1cC1iSGRrbWFlb0MxTmtDNEJLMmtfczA4dGRoajJrYXQ2dFoyWmFRYklFMThDeU94ZlNQTmY0UXJ6MVNpNG0xVzhuOG5fdUpBOUVRSjN2VWZwcXl3aVNScW9fbGdlejZmc2F5YkXSAdQBQVVfeXFMTklmeC04YU1va19WSmlZOXpPdWtaWHNzdk54TlpwMjN0eTZYVUdieXQxZUpDdzcyTk96VU51eklnT3p2QkhLU0tKNlVJTGpKQnU0QXNPbnlJSDBTQzhWWFVVajhMLWtabUphcmZxamVCTW0zUE4xMlRUdTBrWV9BcnRsVXJ1ZllzQjhaODdBMXJ0djIyVmo0YVoyVXNPQjB1YnVXbUVXMjFEOWh2Qy0tVHQ4NmlCbHdDb1h4My1oRk41UWhhR19OV2VWRmNOQlBfWGp3djQ?oc=5",
+      "date": "2026-07-12"
+    },
+    {
+      "title": "PM Modi arrives at Government House in Victoria for 3rd India-Australia Leaders’ Summit",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQdDd5WlR6QXRXQUdBT1NRM3BzUVRQQ2tYMGktUGpXRE1iaWtMUDE1d1I0MWlVbGREZzVyeG9vQzNycVdBTUhwRTJJakdEc2lQZEVqNG5zMldUVWtHeTNzU2EzdDAyc1R2eG0zdnJZTnl0T01aUEpqMVVzRTBocElhcXVzNEpzcFNyWHpjVE0zeVJXbXdIbnloRmc3T1FDeXBvbUhtRk1wcmNrVE9PTjJZdUF3?oc=5",
       "date": "2026-07-11"
     },
     {
-      "title": "India-New Zealand ties elevated to Strategic Partnership post PM Modi visit",
-      "source": "Asianet Newsable",
-      "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPTG5VX1VfbkN3RHNmd0NnSTYzUGN1WDhfbC1ZQ2JON3dqRWVUa3NkU3loODdMLXFtT29vT2JkZXpKTW9mOVU4MU8zaVR4S000R0RzcURlM0N1RHp1V3BEMHBhNHN0cmtpdG1IUDZSM0RxMVV3dFJXX01ES3BiemxLdTBOaXdLVHExLUkwTnBMakR0UUgzWjBZME1OUkJyRVFISk8wc0ZLS2F6YUNRLWFyb2xKRXFaQlF1dndpZWtOcmduS01WNzVQUkM5dXRScEnSAdQBQVVfeXFMTlJLdnBjSTRSUDhvdEdCQlZPVnFlTEp4Rnh0ejRCblBEZG4zVmxjZlZBRTdlRk9GREw0cl9FN2pSVVg1RXNwTERhNmVwT1hYMW1RZEF3djR4djIyMEk0cm81MkdxQWxNRGJOXzN0NV92d0djWDc4R2htRDZISGhwZW13bjNJZkVLbjYtSF80bi1sOE9VTERLNEdwSWhxaVBwakttQllSdUV5dkx3UW4td2hwdm81OFlseWhyYURydHVRWWw3MGRzTkhTWWlrWmhLX0pMNG0?oc=5",
+      "title": "Ross Taylor praises PM Modi’s historic visit to New Zealand",
+      "source": "The News Mill",
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNeEtRUTdtUURfMGV5UlNGNTZwSVRpUFRoNnd3WksyZWtjSlJvUl9BZ2FpTFo2Ulk0dWpNdHJfZ0VQYkJxYkxjRVFCQlpha1pKVTkxSG9ERjludDQ0OGV5SjFuWmsyMkx0YUc1cTJkdXBudW9nczM5N1Z3ODV1cnJxZUlhWGx0Z0RUcFZMdzdkTjFSakNVM1E?oc=5",
       "date": "2026-07-11"
     },
     {
-      "title": "India, New Zealand to double bilateral trade to ₹35,000 crore by 2030: Key agreements from PM Modi's visit",
-      "source": "livemint.com",
-      "url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxOSHRIN2wwTU5xMlp3U1h2UGpNUTd4N0c5bHE0eTVnRHFob3BxcExhYjdDbDB1c0lwZ2ZiSjNuYmk2MG5mRTZNeF9JTWVZM3EycWFqejB0Z3JhamhZbjdwM2NqcExHU2J5Sm9NWV9yaERTTW5ER3A5U2lZajNuOWRFZWh4R0dfRTVqVERBWUtsVUpGdlVxelFFUl9XU085RzliVHl4U1lWNG1ZVldtUjJPdzI5NG1KOFZSbThUcEVIVGhhSU1YRXZOQ3cxcnNTVWxubFA2S1hrOHFka3NpM3BGTlhLeDFDMWF2SlpuTFBVWGR6ZEXSAfgBQVVfeXFMUDNucEVPcUFuaVd0Z3hMWC0ySzdzNjBUMHY0cWY2Ujh3ajJyRkV3VjAtbWR6aTNoZ2dScW8zWmF0eFBvSHd0bm9EX0g5OWRHa0JSaDRyMndWSnJudDBHbW1ROFRqcVdlNkhQbGNvbzBqekZGMnlObDBSX093MUl0aE5QNzhRUEFQZElTSVdjMnhTOXdyLXNBUERtOEdYcWh3U0lPRDRFR0NiV3oxWDk0SHM2NnJ0NWxRY0ptM2VYRGFUVmVJQ1BIcjR3Z05fZVJaSFJjY005WlVYd2s4M3phc3FBVmthVW4tdGJEMzZZaC1mclZ6MkJjTng?oc=5",
+      "title": "Prime Minister Narendra Modi on Saturday concluded his three-nation tour of Indonesia, Australia and New Zealand, departing for India after holding extensive talks with New Zealand Prime Minister Christopher Luxon",
+      "source": "News Arena India",
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQYTFDLXlBRnNaMkVUZ2pma0lZa1FucEMzNi1xc1YtOHZOZlpvYVphTnpUVDRDRUxlTmIyTk9WaTkzS2JfMmtsNmF3ME1yN01fblJmdjRqZ3pGUjVjMnp4NFM0Zklqd0UwWnZBVlVwTUhFMlVwOUEwVUlYclJrMGl4MTRaeTI5NWRmOEZNdTFsYW8wRHE0Z0U1TmZ5LTM2NWNNNkhnV2d1aFo3SndW?oc=5",
       "date": "2026-07-11"
     },
     {
-      "title": "Video | PM Modi's Historic New Zealand Visit | Top Headlines Of July 11, 2026",
+      "title": "Video | PM Modi Wraps Up New Zealand Visit, Strengthens India–Maori Partnership",
       "source": "NDTV",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQTlJnX1RZWElGQ242enlDRFBZcGt2S3BuQXpqMXRmN0xqZjgyZjRhejF4bDdNeEVRUGFXMTVfWXBENXRsMGZfcERsNXdkYUNKRmFHS3pJSldwaFM3WnNoajBFLVcxdVVqUGpvcnhLTy1pSUl0b1Q2S1BWLW1Mc042WXZCR042Tm9scTNPSExoMnZ1UTNPSlhKcnBhSENyRHFLR0dJ?oc=5",
-      "date": "2026-07-11"
-    },
-    {
-      "title": "Luxon says PM Modi’s visit marks new chapter in India-New Zealand ties",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPSDJ2N3Rtb1BOMGRHb2ZCOTRaRWEyRmtxN3QxSTIyNkQ5bXNuTzJhOGZPc0I2N0I5WmkzZ3B2N3plOUdpREtPSFVsZ0V1czh0QjhrZ21qOTAwNGxpWmxtbDdiNlktcHc0SkxlaFFNTXh1Q0lNb2t6Vk1sT0t4WGhlRHlDTU9peDJaYUFoYU9mWmRRZWQ2a1NJTDVDUQ?oc=5",
-      "date": "2026-07-11"
-    },
-    {
-      "title": "India, New Zealand elevate ties to strategic partnership during Modi’s visit",
-      "source": "Anadolu Ajansı",
-      "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNdFpBc1VUdHRzb3lrZ3pOd1B1WjNuNDl1cEI1b2dMa0RmWWRKbmNTejR4c2xBanJ4T0lIMmZlV0RfRl9TaER1WVBMZ0Rlb3VDMWNDaVpva2s4OG10OVBGbWhNOWZqZkc5aHlwUzVnV25SZWZxb3dQcmd5S1FXSEFIWERpckdmZVhxbzBVdk0tV3Ftb2tLak1NNG5va0p6NUNWZEZQM0dwQlk2RGQwSHI5NTlhdHhZcVhURHE4alJR?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNYktkT2J4VzdTT1FJR1U2dmZsLXBfSHVJLXMtQnBWUjFOVG9PTDJxZlZtM3hib2RySENXNkl6REhGbFE3NWtSc3V3am5wQmYwc0hOcnRpM1NWRlZDeDZNeGVlRFYzMDdwdXpWOEFaRkhGZ2VDbmI3WlhheVpESHNFSGpjbm0tTkN3RWxvcU5rdU5seFdHdVlDdWk0bWVMWHVNRk5palJDVQ?oc=5",
       "date": "2026-07-11"
     }
   ]
