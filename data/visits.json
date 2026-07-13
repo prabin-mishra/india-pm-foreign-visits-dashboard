@@ -1,11 +1,17 @@
 {
   "meta": {
-    "updated": "2026-07-12",
+    "updated": "2026-07-13",
     "source": "PM India registry (auto-refreshed daily via GitHub Actions)",
     "source_url": "https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/",
-    "count": 43
+    "count": 44
   },
   "trips": [
+    {
+      "label": "Indonesia, Australia & New Zealand",
+      "start": "2026-07-06",
+      "end": "2026-07-11",
+      "pm": "Narendra Modi"
+    },
     {
       "label": "Seychelles",
       "start": "2026-06-27",
