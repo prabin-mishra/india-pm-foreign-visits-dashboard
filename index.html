@@ -267,11 +267,17 @@
     .live-countries { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
     .live-note { font-size: .78rem; color: var(--text-3); margin-top: 2px; }
     .live-note a { color: var(--text-2); }
-    .live-visual { position: relative; display: flex; align-items: center; justify-content: center; min-height: 150px; }
-    .live-visual svg { display: block; width: 100%; max-width: 360px; height: auto; aspect-ratio: 320 / 150; overflow: hidden; }
-    .flight-label { font: 600 9px/1 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; fill: var(--text-3); }
+    .live-visual { position: relative; display: flex; align-items: center; justify-content: center; min-height: 188px; }
+    .live-visual svg { display: block; width: 100%; max-width: 320px; height: auto; aspect-ratio: 300 / 200; overflow: hidden; }
+    .flight-label { font: 600 8px/1 var(--font-ui); letter-spacing: .04em; text-transform: uppercase; fill: var(--text-2); }
     .plane-glyph { fill: var(--accent); }
-    /* First-open flight intro: endpoint markers spring in (delay set inline) */
+    /* Globe */
+    .globe-ocean { fill: color-mix(in srgb, var(--accent) 8%, var(--surface)); stroke: none; }
+    .globe-limb { stroke: var(--border-strong); stroke-width: 1.1; }
+    .globe-grid { fill: none; stroke: var(--border-strong); stroke-width: .5; opacity: .48; }
+    .globe-in { transform-box: fill-box; transform-origin: center; animation: globeIn .6s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes globeIn { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
+    /* First-open intro: markers spring in (delay set inline) */
     .intro-pop { opacity: 0; transform-box: fill-box; transform-origin: center; animation: introPop .42s cubic-bezier(.34,1.56,.64,1) both; }
     @keyframes introPop { from { opacity: 0; transform: scale(.2); } 65% { opacity: 1; transform: scale(1.14); } to { opacity: 1; transform: scale(1); } }
 
@@ -1063,96 +1069,174 @@ function computeFocus(list) {
   return {trip: list[0] || null, status: 'recent'};
 }
 
-// Flight visual: a plane on a dashed arc from a tricolour "India" marker to the
-// destination. With `intro` (first open this session) it plays a one-time
-// departure sequence: the route draws itself, the endpoints spring in, then the
-// plane takes off leaving a fading contrail — a completed trip flies a fast
-// cinematic pass with a mid-flight scale "hop" and lands with a ripple, while an
-// in-progress trip takes off into its patrol loop. Skipped when
-// prefers-reduced-motion; everything is ambient and never blocks input.
-function flightSVG(status, dest, accent = 'var(--accent)', intro = false) {
+// --- Orthographic globe projection helpers (no libraries) ---
+const DEG = Math.PI / 180;
+const INDIA_LL = [22.3, 79];
+function toVec([lat, lon]) { const a = lat*DEG, o = lon*DEG; return [Math.cos(a)*Math.cos(o), Math.cos(a)*Math.sin(o), Math.sin(a)]; }
+function vecToLL(v) { const L = Math.hypot(v[0], v[1], v[2]) || 1; return [Math.asin(v[2]/L)/DEG, Math.atan2(v[1], v[0])/DEG]; }
+function sphMean(list) { let x=0,y=0,z=0; list.forEach(p => { const v = toVec(p); x+=v[0]; y+=v[1]; z+=v[2]; }); return vecToLL([x,y,z]); }
+function ortho([lat, lon], c0, R, cx, cy) {
+  const la = lat*DEG, lo = lon*DEG, la0 = c0[0]*DEG, lo0 = c0[1]*DEG, dl = lo - lo0;
+  const cosc = Math.sin(la0)*Math.sin(la) + Math.cos(la0)*Math.cos(la)*Math.cos(dl);
+  return {
+    x: cx + R * Math.cos(la)*Math.sin(dl),
+    y: cy - R * (Math.cos(la0)*Math.sin(la) - Math.sin(la0)*Math.cos(la)*Math.cos(dl)),
+    vis: cosc >= -0.03,
+  };
+}
+function slerp(a, b, steps) {
+  const va = toVec(a), vb = toVec(b);
+  let dot = va[0]*vb[0] + va[1]*vb[1] + va[2]*vb[2];
+  dot = Math.max(-1, Math.min(1, dot));
+  const om = Math.acos(dot), s = Math.sin(om), out = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i/steps;
+    const k1 = s < 1e-6 ? 1-t : Math.sin((1-t)*om)/s;
+    const k2 = s < 1e-6 ? t   : Math.sin(t*om)/s;
+    out.push(vecToLL([k1*va[0]+k2*vb[0], k1*va[1]+k2*vb[1], k1*va[2]+k2*vb[2]]));
+  }
+  return out;
+}
+function graticuleD(c0, R, cx, cy) {
+  const runs = [];
+  const emit = pts => { let run = []; pts.forEach(p => { if (p.vis) run.push(p); else { if (run.length > 1) runs.push(run); run = []; } }); if (run.length > 1) runs.push(run); };
+  for (let lon = -150; lon <= 180; lon += 30) { const pts = []; for (let lat = -80; lat <= 80; lat += 6) pts.push(ortho([lat, lon], c0, R, cx, cy)); emit(pts); }
+  for (let lat = -60; lat <= 60; lat += 30) { const pts = []; for (let lon = -180; lon <= 180; lon += 8) pts.push(ortho([lat, lon], c0, R, cx, cy)); emit(pts); }
+  return runs.map(r => 'M' + r.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join('L')).join(' ');
+}
+// Country centroid gazetteer (approx lat, lon) for placing trip legs on the globe.
+const COORDS = {
+  india:[22.3,79], indonesia:[-2,118], australia:[-25,133],'new zealand':[-41,174], japan:[36,138], china:[35,104],
+  russia:[56,38], france:[46,2], slovakia:[48.7,19.7], uae:[24,54], netherlands:[52.3,5.6], sweden:[62,15],
+  norway:[62,10], italy:[42.8,12.8], israel:[31.5,34.8], malaysia:[4.2,102], jordan:[31,36], ethiopia:[9,40],
+  oman:[21,57],'south africa':[-29,24], bhutan:[27.5,90.5],'united kingdom':[54,-2], maldives:[3.2,73], ghana:[7.9,-1],
+  'trinidad & tobago':[10.7,-61.2], argentina:[-38,-63], brazil:[-10,-52], namibia:[-22,17], cyprus:[35,33],
+  canada:[56,-106], croatia:[45,15.5],'saudi arabia':[24,45], thailand:[15,101],'sri lanka':[7.9,80.8],
+  mauritius:[-20.3,57.5], usa:[39.8,-98.6], kuwait:[29.3,47.5], nigeria:[9,8], guyana:[5,-58.9], laos:[19.8,102],
+  brunei:[4.5,114.7], singapore:[1.35,103.8], poland:[52,19], ukraine:[49,32], austria:[47.6,14], qatar:[25.3,51.2],
+  greece:[39,22], egypt:[26.8,30.8],'papua new guinea':[-6.3,143.9], uzbekistan:[41.4,64.6], germany:[51,10.4],
+  denmark:[56,10], nepal:[28.4,84.1], bangladesh:[23.7,90.4], seychelles:[-4.6,55.5], spain:[40,-3.7], portugal:[39.5,-8],
+  belgium:[50.6,4.5], switzerland:[46.8,8.2], turkey:[39,35], iran:[32,53],'south korea':[36.5,127.8], vietnam:[16,106],
+  philippines:[12.9,121.8], fiji:[-17.7,178], mongolia:[46.9,103.8], kazakhstan:[48,68], comoros:[-11.6,43.3],
+};
+const COORD_ALIAS = {
+  uk:'united kingdom','u.k.':'united kingdom', britain:'united kingdom','united states':'usa',
+  'united states of america':'usa','u.s.':'usa', america:'usa','united arab emirates':'uae', dubai:'uae',
+  'abu dhabi':'uae', trinidad:'trinidad & tobago', tobago:'trinidad & tobago', czechia:'', samarkand:'uzbekistan',
+};
+function coordOf(name) {
+  const k = String(name).toLowerCase().replace(/\([^)]*\)/g, '').replace(/[^a-z &]/g, '').replace(/\s+/g, ' ').trim();
+  if (COORDS[k]) return COORDS[k];
+  if (COORD_ALIAS[k] && COORDS[COORD_ALIAS[k]]) return COORDS[COORD_ALIAS[k]];
+  return null;
+}
+
+// Globe flight visual: India origin + every trip leg on an orthographic globe,
+// connected by great-circle arcs. With `intro` (first open this session) the
+// plane flies the full route once, drawing a contrail, and lands at the current
+// leg; otherwise it rests there. A live trip pulses the current leg. Skipped for
+// prefers-reduced-motion; ambient SVG only, never blocks input.
+function flightSVG(status, countries, accent = 'var(--accent)', intro = false) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   intro = intro && !reduce;
-  const P0 = [42, 120], P1 = [172, 14], P2 = [286, 86];
-  const d = `M${P0[0]},${P0[1]} Q${P1[0]},${P1[1]} ${P2[0]},${P2[1]}`;
-  const at = t => {
-    const mt = 1 - t;
-    return {
-      x: mt*mt*P0[0] + 2*mt*t*P1[0] + t*t*P2[0],
-      y: mt*mt*P0[1] + 2*mt*t*P1[1] + t*t*P2[1],
-      a: Math.atan2(2*mt*(P1[1]-P0[1]) + 2*t*(P2[1]-P1[1]), 2*mt*(P1[0]-P0[0]) + 2*t*(P2[0]-P1[0])) * 180/Math.PI,
-    };
-  };
-  const looping = status === 'ongoing' && !reduce;
-  const destReached = status !== 'upcoming';
-  const short = dest && dest.length > 15 ? dest.slice(0, 14) + '…' : dest;
-  const spline = '.45 0 .25 1'; // ease-in takeoff, ease-out landing
-  const planeInner = `<g transform="scale(.72) rotate(90) translate(-12,-12)"><path fill="${accent}" d="M22 16v-2l-8.5-5V3.5C13.5 2.67 12.83 2 12 2s-1.5.67-1.5 1.5V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z"/></g>`;
-  // Contrail drawn in sync with the flight, then dissolves after landing.
-  const contrailPath = (dur, eased) => `
-      <path d="${d}" pathLength="100" fill="none" stroke="${accent}" stroke-opacity=".38" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="100">
-        <animate attributeName="stroke-dashoffset" from="100" to="0" begin="1s" dur="${dur}s" fill="freeze"${eased ? ` calcMode="spline" keyTimes="0;1" keySplines="${spline}"` : ''}/>
-        <animate attributeName="stroke-opacity" from=".38" to="0" begin="${(1 + dur + 0.2).toFixed(1)}s" dur="1s" fill="freeze"/>
-      </path>`;
-  // Sonar-style landing ripple at the destination.
-  const rippleAt = t => `
-      <circle cx="${P2[0]}" cy="${P2[1]}" r="5" fill="none" stroke="${accent}" stroke-width="1.5" opacity="0">
-        <animate attributeName="opacity" values="0;.55;0" begin="${t}s" dur=".6s" fill="freeze"/>
-        <animate attributeName="r" values="5;16" begin="${t}s" dur=".6s" fill="freeze"/>
-      </circle>`;
+  const live = status === 'ongoing' || status === 'reported';
 
+  const names = (Array.isArray(countries) ? countries : [countries]).filter(Boolean);
+  const dests = names.map(n => ({ name: n, ll: coordOf(n) })).filter(d => d.ll);
+  const stops = [{ name: 'India', ll: INDIA_LL, home: true }, ...dests];
+
+  const R = 82, cx = 150, cy = 100;
+  const c0 = sphMean(stops.map(s => s.ll));
+  const P = ll => ortho(ll, c0, R, cx, cy);
+
+  // Great-circle route through all stops, sampled + projected to screen space.
+  let route = [];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const seg = slerp(stops[i].ll, stops[i + 1].ll, 20).map(P);
+    route = route.concat(i ? seg.slice(1) : seg);
+  }
+  const single = route.length < 2;
+  const routeD = single ? '' : 'M' + route.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L');
+  const last = route[route.length - 1] || P(INDIA_LL);
+  const prev = route[route.length - 2] || P(INDIA_LL);
+  const finalAngle = Math.atan2(last.y - prev.y, last.x - prev.x) * 180 / Math.PI;
+
+  const spline = '.45 0 .25 1';
+  const flightDur = Math.min(4.4, Math.max(1.6, (stops.length - 1) * 1.2 + 0.4));
+  const t0 = 0.95, tEnd = t0 + flightDur; // intro takeoff → landing
+  const plane = `<g transform="scale(.66) rotate(90) translate(-12,-12)"><path fill="${accent}" d="M22 16v-2l-8.5-5V3.5C13.5 2.67 12.83 2 12 2s-1.5.67-1.5 1.5V9L2 14v2l8.5-2.5V19L8 20.5V22l4-1 4 1v-1.5L13.5 19v-5.5L22 16z"/></g>`;
+
+  // Plane: flies the route on intro (freeze at end), else parks at the current leg.
   let planeGroup, contrail = '', ripple = '';
-  if (looping) {
-    const motion = `<animateMotion begin="${intro ? '1s' : '0s'}" dur="8s" repeatCount="indefinite" rotate="auto" calcMode="linear"><mpath href="#flightArc"/></animateMotion>`;
-    planeGroup = intro
-      ? `<g opacity="0"><animate attributeName="opacity" values="0;1" begin="1s" dur=".2s" fill="freeze"/>${planeInner}${motion}</g>`
-      : `<g>${planeInner}${motion}</g>`;
-    if (intro) { contrail = contrailPath(8, false); ripple = rippleAt(8.95); }
-  } else if (intro && status === 'recent') {
-    // Cinematic one-shot: take off, scale "hop" mid-flight, ease into landing.
-    planeGroup = `
-      <g opacity="0">
-        <animate attributeName="opacity" values="0;1" begin="1s" dur=".18s" fill="freeze"/>
-        <g transform="scale(.85)">
-          ${planeInner}
-          <animateTransform attributeName="transform" type="scale" values=".85;1.16;1" keyTimes="0;.55;1" begin="1s" dur="2.2s" fill="freeze"/>
-        </g>
-        <animateMotion begin="1s" dur="2.2s" fill="freeze" rotate="auto" calcMode="spline" keyPoints="0;0.96" keyTimes="0;1" keySplines="${spline}"><mpath href="#flightArc"/></animateMotion>
+  if (intro && !single) {
+    planeGroup = `<g opacity="0">
+        <animate attributeName="opacity" values="0;1" begin="${t0}s" dur=".18s" fill="freeze"/>
+        ${plane}
+        <animateMotion begin="${t0}s" dur="${flightDur}s" fill="freeze" rotate="auto" calcMode="spline" keyPoints="0;1" keyTimes="0;1" keySplines="${spline}"><mpath href="#globeRoute"/></animateMotion>
       </g>`;
-    contrail = contrailPath(2.2, true);
-    ripple = rippleAt(3.05);
+    contrail = `<path d="${routeD}" pathLength="100" fill="none" stroke="${accent}" stroke-opacity=".42" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="100" stroke-dashoffset="100">
+        <animate attributeName="stroke-dashoffset" from="100" to="0" begin="${t0}s" dur="${flightDur}s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="${spline}"/>
+        <animate attributeName="stroke-opacity" from=".42" to="0" begin="${(tEnd + 0.3).toFixed(2)}s" dur="1s" fill="freeze"/>
+      </path>`;
+    ripple = `<circle cx="${last.x.toFixed(1)}" cy="${last.y.toFixed(1)}" r="4.5" fill="none" stroke="${accent}" stroke-width="1.5" opacity="0">
+        <animate attributeName="opacity" values="0;.6;0" begin="${(tEnd - 0.05).toFixed(2)}s" dur=".7s" fill="freeze"/>
+        <animate attributeName="r" values="4.5;15" begin="${(tEnd - 0.05).toFixed(2)}s" dur=".7s" fill="freeze"/>
+      </circle>`;
   } else {
-    const p = at(status === 'upcoming' ? 0.05 : status === 'recent' ? 0.95 : 0.5);
-    const body = intro ? `<g class="intro-pop" style="animation-delay:1s">${planeInner}</g>` : planeInner;
-    planeGroup = `<g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${p.a.toFixed(1)})">${body}</g>`;
+    const body = intro ? `<g class="intro-pop" style="animation-delay:${t0}s">${plane}</g>` : plane;
+    planeGroup = `<g transform="translate(${last.x.toFixed(1)},${last.y.toFixed(1)}) rotate(${finalAngle.toFixed(1)})">${body}</g>`;
   }
 
-  const guide = `<path id="flightArc" d="${d}" fill="none" stroke="var(--border-strong)" stroke-width="1.4" stroke-dasharray="2 6" stroke-linecap="round" opacity=".85"/>`;
-  // Intro: the route reveals itself with a left-to-right sweep before takeoff.
-  const guideBlock = intro
-    ? `<clipPath id="arcReveal"><rect x="0" y="0" width="0" height="150"><animate attributeName="width" from="0" to="320" begin=".1s" dur=".85s" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines=".2 0 .2 1"/></rect></clipPath><g clip-path="url(#arcReveal)">${guide}</g>`
-    : guide;
-  const wrapPop = (inner, delay) => intro ? `<g class="intro-pop" style="animation-delay:${delay}s">${inner}</g>` : inner;
+  // "You are here" pulse on the current leg for a live trip.
+  const pulseBegin = (intro && !single ? tEnd.toFixed(2) : '0') + 's';
+  const pulse = live ? `<circle cx="${last.x.toFixed(1)}" cy="${last.y.toFixed(1)}" r="5" fill="none" stroke="${accent}" stroke-width="1.3">
+      <animate attributeName="r" values="5;13" dur="2.1s" begin="${pulseBegin}" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".5;0" dur="2.1s" begin="${pulseBegin}" repeatCount="indefinite"/>
+    </circle>` : '';
 
-  return `
-    <svg viewBox="0 0 320 150" role="img" aria-label="Flight from India to ${esc(dest || 'destination')}">
-      ${guideBlock}
-      ${contrail}
-      <g transform="translate(${P0[0]},${P0[1]})">${wrapPop(`
-        <circle r="7.5" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1"/>
-        <clipPath id="rdIndia"><circle r="5.5"/></clipPath>
+  const routeGeom = single ? '' : `<path id="globeRoute" d="${routeD}" fill="none" stroke="none"/>`;
+  const guideOpacity = intro ? '0' : '.8';
+  const guide = single ? '' : `<path d="${routeD}" fill="none" stroke="var(--border-strong)" stroke-width="1.3" stroke-dasharray="1.5 5" stroke-linecap="round" opacity="${guideOpacity}">${intro ? `<animate attributeName="opacity" from="0" to=".8" begin=".35s" dur=".5s" fill="freeze"/>` : ''}</path>`;
+
+  const wrapPop = (inner, delay) => intro ? `<g class="intro-pop" style="animation-delay:${delay}s">${inner}</g>` : inner;
+  const indiaMarker = P(INDIA_LL);
+  const markers = stops.map((s, i) => {
+    const pt = P(s.ll);
+    const label = s.name.length > 11 ? s.name.slice(0, 10) + '…' : s.name;
+    const isLast = i === stops.length - 1;
+    if (s.home) {
+      return wrapPop(`<g transform="translate(${pt.x.toFixed(1)},${pt.y.toFixed(1)})">
+        <circle r="6.5" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1"/>
+        <clipPath id="rdIndia"><circle r="4.8"/></clipPath>
         <g clip-path="url(#rdIndia)">
-          <rect x="-6" y="-5.5" width="12" height="3.7" fill="#FF9933"/>
-          <rect x="-6" y="-1.8" width="12" height="3.6" fill="#ffffff"/>
-          <rect x="-6" y="1.8" width="12" height="3.7" fill="#138808"/>
-          <circle r="1.3" fill="none" stroke="#0a3d91" stroke-width=".6"/>
+          <rect x="-5" y="-4.8" width="10" height="3.2" fill="#FF9933"/>
+          <rect x="-5" y="-1.6" width="10" height="3.2" fill="#ffffff"/>
+          <rect x="-5" y="1.6" width="10" height="3.2" fill="#138808"/>
+          <circle r="1.1" fill="none" stroke="#0a3d91" stroke-width=".5"/>
         </g>
-        <text class="flight-label" y="21" text-anchor="middle">India</text>`, .15)}
+        <text class="flight-label" y="17" text-anchor="middle">India</text>
+      </g>`, 0.5);
+    }
+    return wrapPop(`<g transform="translate(${pt.x.toFixed(1)},${pt.y.toFixed(1)})" opacity="${pt.vis ? 1 : .4}">
+      <circle r="${isLast ? 4.2 : 3}" fill="${accent}" stroke="var(--surface)" stroke-width="1"/>
+      <text class="flight-label" y="${isLast ? 16 : 15}" text-anchor="middle">${esc(label)}</text>
+    </g>`, 0.55 + i * 0.12);
+  }).join('');
+
+  const globeWrap = intro ? ' class="globe-in"' : '';
+  const aria = `India to ${esc(dests.map(d => d.name).join(', ') || 'destination')}`;
+  return `
+    <svg viewBox="0 0 300 200" role="img" aria-label="Globe showing flight from ${aria}">
+      <g${globeWrap}>
+        <circle cx="${cx}" cy="${cy}" r="${R}" class="globe-ocean"/>
+        <path d="${graticuleD(c0, R, cx, cy)}" class="globe-grid"/>
+        <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" class="globe-limb"/>
       </g>
-      <g transform="translate(${P2[0]},${P2[1]})">${wrapPop(`
-        <circle r="5" fill="${destReached ? accent : 'var(--surface)'}" stroke="${accent}" stroke-width="1.5"/>
-        <text class="flight-label" y="19" text-anchor="middle">${esc(short || '')}</text>`, .75)}
-      </g>
+      ${routeGeom}
+      ${guide}
+      ${contrail}
+      ${pulse}
+      ${markers}
       ${ripple}
       ${planeGroup}
     </svg>`;
@@ -1216,7 +1300,7 @@ function renderLiveVerified(card, trip, status) {
       <div class="live-meta">${meta.map(b => `<span>${b}</span>`).join('')}</div>
       <div class="live-countries">${trip.countries.map(c => `<span class="tag">${esc(c)}</span>`).join('')}</div>
     </div>
-    <div class="live-visual">${flightSVG(status, primary, 'var(--accent)', PLAY_INTRO)}</div>`;
+    <div class="live-visual">${flightSVG(status, trip.countries, 'var(--accent)', PLAY_INTRO)}</div>`;
 }
 
 // News-reported trip: shown only when the registry has none in progress. Clearly
@@ -1244,7 +1328,7 @@ function renderLiveReported(card, rep) {
       <div class="live-countries">${countries.map(c => `<span class="tag">${esc(c)}</span>`).join('')}</div>
       <p class="live-note">Pending official confirmation — not yet in the <a href="${REGISTRY_URL}" target="_blank" rel="noopener">PM India registry</a>. Coverage below.</p>
     </div>
-    <div class="live-visual">${flightSVG('ongoing', primary, 'var(--gold)', PLAY_INTRO)}</div>`;
+    <div class="live-visual">${flightSVG('reported', rep.countries, 'var(--gold)', PLAY_INTRO)}</div>`;
 }
 
 async function loadNews() {
