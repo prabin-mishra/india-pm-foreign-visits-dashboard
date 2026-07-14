@@ -1,64 +1,64 @@
 {
-  "generated": "2026-07-13T06:24:54Z",
+  "generated": "2026-07-14T05:36:25Z",
   "status": "reported",
   "reported": {
     "countries": [
-      "Australia",
       "Indonesia",
+      "Australia",
       "New Zealand",
       "Sweden"
     ],
     "primary": "Sweden",
-    "asOf": "2026-07-13",
-    "sourceCount": 104
+    "asOf": "2026-07-14",
+    "sourceCount": 95
   },
   "trip": {
-    "label": "Australia, Indonesia, New Zealand & Sweden",
+    "label": "Indonesia, Australia, New Zealand & Sweden",
     "start": null,
     "end": null,
     "countries": [
-      "Australia",
       "Indonesia",
+      "Australia",
       "New Zealand",
       "Sweden"
     ]
   },
   "articles": [
     {
-      "title": "A highlight after PM Modi's visit: Indonesia’s model of inclusion is a lesson for all | Hindustan Times",
-      "source": "Hindustan Times",
-      "url": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxOLVhPTWh5R3NWNlFfaHg5dEdEUmpGajY5elBVT0dSRlZnOExOMEhWcVZrVklZV2dIXzhacTBBUDZ4UWljeDFpM3dXanpMQWxCeDJzalRGcldXeUsxUWxydHdLZGlHMjFWMFltZmtSNF92Mjk5bmx5RVREaFd4VGZ3dTRpYUxyWWtQZWIzSmIweTdkd3dDUUM1RkE2WlJoSFpkalR6b2d5dU5vZEEwaVdvY2VDOVd6TERzNGdiNTYxdjBMSmFmWjlJTXN0SDgxZzJvbVFncTdCYTVnOEwzdTJzS2x1NjVEV202ZFdaTUxweUpuN3ZEdTdTZmVGWVB3Q0t4bllQV1JUb1TSAY4CQVVfeXFMUHU1RGFUVlctN2JMaDFkS0ZkS0xwZUcyM1l5b1EwT1JySXdYejB3QzJoTlJPdXE1cEFXT0gtcmhURWZ5N2N2R2h6SVllblNnczVkNTVrbUlyVTBCUFdLdUt6RzBXSzRMU2tJcDlvNXFSbFU0VnRxRVZLWGNWSW9HeHZic3BUNmpJRF9wUUN2VjVMN0lpSUFfeGdCVUhBQmpBM3l2ZUJhTzY2M0M5Tld2WFRxQlZxaGdzNFd3cWU4ekFFWFpSYm5wd3JHSGg0TGdGcFlQNm5lXzhWSF8yRGliTUl5aVpXa3ZRMmxGa0tZUFI2Umt0V0k5ZndTYnVxc0tseTJiZ2ZacENYRkNQSnV3?oc=5",
-      "date": "2026-07-13"
+      "title": "From distance to strategic convergence: PM Modi’s New Zealand visit opens a new chapter",
+      "source": "The Times of India",
+      "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxObFF2NDBubTcxeWtEYmpuOTkxRlRrU0pUdjloVzJxRDlKbmp2VjdvMDVwU0hoWTNDa05WUjlsaGR5bkRMa29LUGtPYTVWYjJXLVRfMW1TTzNlVXNJWldTcVRyTlBVSWxlWEVPWmFfYWUtaWNVUGZxanRmQkxtVnQ0UGZKdUUtbzZ5anZFN2p6bmNPVzBsVFBoc2ZDR3RORFJlTkJNOWRMUWVxYmduUURPZ1M0UGRpdnJycDhOanVFUGduV0RPbVdOY0VYN19zcUdkYXowOS1oOEE4bTZ5Z3o00gHfAUFVX3lxTE5sUXY0MG5tNzF5a0Riam45OTFGVGtTSlR2OWhXMnFEOUpuanZWN28wNXBTSGhZM0NrTlZSOWxoZHluRExrb0tQa09hNVZiMlctVF8xbVNPM2VVc0laV1NxVHJOUFVJbGVYRU9aYV9hZS1pY1VQZnFqdGZCTG1WdDRQZkp1RS1vNnlqdkU3anpuY09XMGxUUGhzZkNHdE5EUmVOQk05ZExRZXFiZ25RRE9nUzRQZGl2cnJwOE5qdUVQZ25XRE9tV05jRVg3X3NxR2RhejA5LWg4QThtNnlnejQ?oc=5",
+      "date": "2026-07-14"
     },
     {
-      "title": "India’s PM Modi Visits Indonesia To Boost Existing Strategic Ties – OpEd",
-      "source": "Eurasia Review",
-      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNd1dnNzEzYmRCOUZKVnhaUGF1d3pyRndmLVJJN1dEdXU2ajVCUGRmNTVDTUxoYk9lbzNmR3BJdHlfSV80NzdxRkRYcWtpaGNTeEMwOU9fNzdza1BRbV9CcTlER0NFRDJNS3dWdFNaVzdPOGlrMGZqNDRKZWRSU2VmUHhXSHB5RDVBY1RjVkI3UEdpQl9DTlJ1bnVtV0ZPWGEwNVVod3EzcVlya3VmalE?oc=5",
-      "date": "2026-07-12"
+      "title": "PM Narendra Modi to reach Gothenburg today on two-day visit to Sweden",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOOG9VektEV0RjMUJZdnV6cXEzYnA1eEZ1S2pOc1Z5WW5nNTRnZ1ZoMUUwMUJSTWNGWVk0dUI5blZLLUJxOW95YlFQdDMxUDRnQ1Z1cHFvTGc0WWdjai01eGt0ZjZ2OGNuZWthYjZhN0hUbzJQemxISVhleHctM3V6LWEyUFRLbmxYOFZvT2lQUko2RXJCemZwWkMxVQ?oc=5",
+      "date": "2026-07-13"
     },
     {
       "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
-      "date": "2026-07-12"
+      "date": "2026-07-13"
     },
     {
-      "title": "Agreements signed during PM Modi’s visit showcase India, Australia as long-term strategic partners: Report",
-      "source": "tennews.in",
-      "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPaFVnekg2MXJyanlRTVMwOHBneVdlcXFSVTV2ZV9Pa09ha2RSczRfZ2syLVpRczZiTE5Jd05JdWF0bmhhY256Z1NhdVJ1Y1BpclZ4TkRMTVdIWmJrVHhGb054NTgzMDBuZHdvZm9OeWUta19tY2tXcjZPeTFDTno1ODFldk40TFVlWnM0d3E0bURqWUJjRDlIVkx5RkwwWHlXTWJ2QW1PRmp5VENxSDFIYTk3TERfQTZ5N0h3TkdWb0E?oc=5",
-      "date": "2026-07-12"
-    },
-    {
-      "title": "“Agreed upon new deal that builds on FTA”: New Zealand PM hails PM Modi’s visit",
-      "source": "The Indian EYE",
-      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQUDZKSURRZ2d0ajBGd3JRWkx1SnpyVFRQYU44N001UW1DTE03WlA3M3ZUOVZWckhsYU1ZUUVWZVpmbzdmUjh4NWU0aE1ZWldwUkEtOWpTYVBweTB6S2dXSW9NVUFlaHlDSGNTRWlGSEw1R2lGYUJsb2VVZHpwMHl1SE1nNVo4VkpjVlBXX29rLUtHa2ROTm51OHNOMXVCeFBWY2hxNnlnWkxoMHp0ZDBXbXh3?oc=5",
-      "date": "2026-07-12"
-    },
-    {
-      "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
+      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
       "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-07-12"
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
+      "date": "2026-07-13"
+    },
+    {
+      "title": "PM Modi’s Historic New Zealand Visit Resets India-NZ Ties After Four Decades",
+      "source": "Daily Pioneer",
+      "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5Ob2tOeDhveENIeFdZNmRBZm5GdnE2bFpUMEk5TjBuNjYzVDZwRmhTY2FzWkNNb3NsMDEwYmM5cWllOHJLam11SE1HaHBRWU9YRW9nenhHemItY2JBb0I0SDY0VkRKUWs4X3E5alczc3l1NHZpNjIxenlhemU?oc=5",
+      "date": "2026-07-13"
+    },
+    {
+      "title": "PM Modi’s Indonesia Visit: Threads from the past, transformation for future",
+      "source": "organiser.org",
+      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxQWkd5clpMcmlhdzVkYmhpNDVTcnozMVVCLXA1RE16aTNnaEFVZDJ6YjJxSjJvaHlOeGNnbGpqMlFlT0ZEb1NhSHh4QVR3dkFXdEoxXzFZNzBuWDRVVGEzV0RXV3phSEVESGQ4STFZalg2cHVjNG5PbnJaeEpySW5OSnpUSGxvZnBXMXQzOE8tNWd6NDlaLXNzdnFRQTRWbXZsRFBtdzRlUW9yVzJiLWZLajIyMDI1alhhUXhrMdIBwgFBVV95cUxNeElKUzNxTVpWNFk3cTREUXBVOW5RR0I4ZWlMZUhxaFpjUTdhUl9aOFpnS1pOZXpYVk03b3ZPa2dYQUV5TU1IYnBra1lCVDl5MFRLQ3BPRDV0WGF6QzBtOGNJZnppNlFhNEozSk90QUY5Y1RVSEMzRUQ1TkFZdHJGOWtjUzFoNzQ4MXdSOW11U1hQUHFTRzlRMTRuTFhRQmdqdmk4TmJ5SnRucEcxUVBxRWlGcHJMN09LdkpTV1R2c005dw?oc=5",
+      "date": "2026-07-13"
     }
   ]
 }
