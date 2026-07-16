@@ -1,64 +1,62 @@
 {
-  "generated": "2026-07-15T05:37:37Z",
+  "generated": "2026-07-16T05:45:01Z",
   "status": "reported",
   "reported": {
     "countries": [
-      "Australia",
-      "Indonesia",
       "New Zealand",
-      "Sweden"
+      "Australia",
+      "Indonesia"
     ],
-    "primary": "Sweden",
+    "primary": "Indonesia",
     "asOf": "2026-07-15",
-    "sourceCount": 57
+    "sourceCount": 35
   },
   "trip": {
-    "label": "Australia, Indonesia, New Zealand & Sweden",
+    "label": "New Zealand, Australia & Indonesia",
     "start": null,
     "end": null,
     "countries": [
-      "Australia",
-      "Indonesia",
       "New Zealand",
-      "Sweden"
+      "Australia",
+      "Indonesia"
     ]
   },
   "articles": [
     {
-      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
-      "date": "2026-07-15"
-    },
-    {
-      "title": "PM Narendra Modi to reach Gothenburg today on two-day visit to Sweden",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOOG9VektEV0RjMUJZdnV6cXEzYnA1eEZ1S2pOc1Z5WW5nNTRnZ1ZoMUUwMUJSTWNGWVk0dUI5blZLLUJxOW95YlFQdDMxUDRnQ1Z1cHFvTGc0WWdjai01eGt0ZjZ2OGNuZWthYjZhN0hUbzJQemxISVhleHctM3V6LWEyUFRLbmxYOFZvT2lQUko2RXJCemZwWkMxVQ?oc=5",
-      "date": "2026-07-14"
-    },
-    {
-      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
-      "date": "2026-07-14"
-    },
-    {
-      "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-07-14"
-    },
-    {
       "title": "PM Modi returns to New Delhi after concluding several agreements during his visit to Indonesia, Australia and New Zealand | Akashvani News",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxOTllaeHpJajZISERDa2RWSWxZMTI3OG42UDJmUDJRM1lVY2doQ18xd2pvZlZsdXFLajBnelJ0YmtXbXVsUV9kbXowVVBGXzBfZGp3eXRmbkZuVy1wVk1yWTJVcjlGQ24wTTdDbnpPeGhaV0gyRnJFNmE5ejFYZjZpRW9XTXZsRmMwMm1ZTERLYkRRNlBfN0tOZlhIUVBzcXpNYVNqOWt4SjVQVFV4VERuWDY3MlBtY0dBa2Z0MDUzczR6WG5EbFkxcTdaTXN2QnBwdTJobGtmbFFYc0VlZ0RrOQ?oc=5",
-      "date": "2026-07-14"
+      "date": "2026-07-15"
+    },
+    {
+      "title": "Video shows clash over ‘Satluj’ ban during PM Modi’s Australia visit",
+      "source": "The Indian Express",
+      "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPZE1VVFM0a0FoYkVCclZad3BtQUl3WVZBTWpmeGdZLTIwVF9wbmNrV1I5VWZCSjRzUk85V0dyMVFzcDBvWTdwYjVxNXEzNHZDSURTTHZOM3pqTDhZV1NlTGZqX3VxdTNuX1pDTE0wdmszUnpGYXAzZlpiWkJVaUtpSVJReU1pc1VodkdmWGV2RENuZnRYNXNmbHhyOGs3MUNKazVJVEVFZkRJdDZGbFU1ZFIwWENKQnYtQnJhcFF0VWlsZ29KbGhUQTVMdmx5c3fSAdYBQVVfeXFMUDBGczN2TGpzN0E3RzU1SGlfNjBTeE1BanJ3NEQzclVsVjhfdFhweDhaUmVjNDBQSXF4dFNLRDJ1Uml6UUl0Mk84M0pIZDRZTHFIWndMdTZXYmUtRWctQVIzdnRBcVBPTFdpZ09YNmt3MVY1T091TnVFZk92YmFXTk5KSjVzYmVxX0YwajBobVMxc0RtekNEbS1LWHg3cEI0TEFXd0pDeUczbHMwbm5aNzJzdExtMWVjTktqT1BuVGJ1R2FlTzNGMHhnY3RrcTU2bHI5cEFGQQ?oc=5",
+      "date": "2026-07-15"
     },
     {
       "title": "Video of PM Modi Walking With Teleprompter During Australia Visit Is Edited",
       "source": "The Quint",
       "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNZnJ5R1Y0QTBwQUFJZ0NUZXplTlFvUVBqSUR5cHAybUNkMXYwajdvMGR0dWFhUVkyaUUxMENpdkZUOFpOZWJTWmFyX1o5ZlZOUmVCb29NWmM4ZGVTeEF6QmRxUnhTNUlmUTJvdXVMa01GYTVvcDZyQ29CREdtTkR2TlRrZE1FZXo4RDRXME5XTGdWT0tROENMa19jS0lnR3PSAawBQVVfeXFMTzBmam5udEFmbTdwRkwzTFo5d3NuX2ZXOWc1S1JjMGFQQUtUWHZoM19UNEZybDBHVGhRajZNVkExV0thdzlUT1U0T240clBIQWEtWmw4VUdrU2pkVUp4TXgtbEpjT0o0RTBidzdzdm5PeWIyeGtma1ZCbF9FV2RySk9UeUxjWHRZc1JnSDBkdXQxRzg2MDJCZl9URDhjV3BlNGdKRFdKUERQeUF2aQ?oc=5",
       "date": "2026-07-14"
+    },
+    {
+      "title": "PM Modi’s Indonesia Visit: Threads from the past, transformation for future",
+      "source": "organiser.org",
+      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxQWkd5clpMcmlhdzVkYmhpNDVTcnozMVVCLXA1RE16aTNnaEFVZDJ6YjJxSjJvaHlOeGNnbGpqMlFlT0ZEb1NhSHh4QVR3dkFXdEoxXzFZNzBuWDRVVGEzV0RXV3phSEVESGQ4STFZalg2cHVjNG5PbnJaeEpySW5OSnpUSGxvZnBXMXQzOE8tNWd6NDlaLXNzdnFRQTRWbXZsRFBtdzRlUW9yVzJiLWZLajIyMDI1alhhUXhrMdIBwgFBVV95cUxNeElKUzNxTVpWNFk3cTREUXBVOW5RR0I4ZWlMZUhxaFpjUTdhUl9aOFpnS1pOZXpYVk03b3ZPa2dYQUV5TU1IYnBra1lCVDl5MFRLQ3BPRDV0WGF6QzBtOGNJZnppNlFhNEozSk90QUY5Y1RVSEMzRUQ1TkFZdHJGOWtjUzFoNzQ4MXdSOW11U1hQUHFTRzlRMTRuTFhRQmdqdmk4TmJ5SnRucEcxUVBxRWlGcHJMN09LdkpTV1R2c005dw?oc=5",
+      "date": "2026-07-13"
+    },
+    {
+      "title": "India’s PM Modi Visits Indonesia To Boost Existing Strategic Ties – OpEd",
+      "source": "Eurasia Review",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNd1dnNzEzYmRCOUZKVnhaUGF1d3pyRndmLVJJN1dEdXU2ajVCUGRmNTVDTUxoYk9lbzNmR3BJdHlfSV80NzdxRkRYcWtpaGNTeEMwOU9fNzdza1BRbV9CcTlER0NFRDJNS3dWdFNaVzdPOGlrMGZqNDRKZWRSU2VmUHhXSHB5RDVBY1RjVkI3UEdpQl9DTlJ1bnVtV0ZPWGEwNVVod3EzcVlya3VmalE?oc=5",
+      "date": "2026-07-12"
+    },
+    {
+      "title": "Luxon says PM Modi’s visit marks new chapter in India-New Zealand ties",
+      "source": "DD News",
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPSDJ2N3Rtb1BOMGRHb2ZCOTRaRWEyRmtxN3QxSTIyNkQ5bXNuTzJhOGZPc0I2N0I5WmkzZ3B2N3plOUdpREtPSFVsZ0V1czh0QjhrZ21qOTAwNGxpWmxtbDdiNlktcHc0SkxlaFFNTXh1Q0lNb2t6Vk1sT0t4WGhlRHlDTU9peDJaYUFoYU9mWmRRZWQ2a1NJTDVDUQ?oc=5",
+      "date": "2026-07-11"
     }
   ]
 }
