@@ -1,24 +1,15 @@
 {
-  "generated": "2026-07-16T05:45:01Z",
-  "status": "reported",
-  "reported": {
-    "countries": [
-      "New Zealand",
-      "Australia",
-      "Indonesia"
-    ],
-    "primary": "Indonesia",
-    "asOf": "2026-07-15",
-    "sourceCount": 35
-  },
+  "generated": "2026-07-17T05:46:22Z",
+  "status": "recent",
+  "reported": null,
   "trip": {
-    "label": "New Zealand, Australia & Indonesia",
-    "start": null,
-    "end": null,
+    "label": "Indonesia, Australia & New Zealand",
+    "start": "2026-07-06",
+    "end": "2026-07-11",
     "countries": [
-      "New Zealand",
+      "Indonesia",
       "Australia",
-      "Indonesia"
+      "New Zealand"
     ]
   },
   "articles": [
@@ -29,16 +20,10 @@
       "date": "2026-07-15"
     },
     {
-      "title": "Video shows clash over ‘Satluj’ ban during PM Modi’s Australia visit",
-      "source": "The Indian Express",
-      "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPZE1VVFM0a0FoYkVCclZad3BtQUl3WVZBTWpmeGdZLTIwVF9wbmNrV1I5VWZCSjRzUk85V0dyMVFzcDBvWTdwYjVxNXEzNHZDSURTTHZOM3pqTDhZV1NlTGZqX3VxdTNuX1pDTE0wdmszUnpGYXAzZlpiWkJVaUtpSVJReU1pc1VodkdmWGV2RENuZnRYNXNmbHhyOGs3MUNKazVJVEVFZkRJdDZGbFU1ZFIwWENKQnYtQnJhcFF0VWlsZ29KbGhUQTVMdmx5c3fSAdYBQVVfeXFMUDBGczN2TGpzN0E3RzU1SGlfNjBTeE1BanJ3NEQzclVsVjhfdFhweDhaUmVjNDBQSXF4dFNLRDJ1Uml6UUl0Mk84M0pIZDRZTHFIWndMdTZXYmUtRWctQVIzdnRBcVBPTFdpZ09YNmt3MVY1T091TnVFZk92YmFXTk5KSjVzYmVxX0YwajBobVMxc0RtekNEbS1LWHg3cEI0TEFXd0pDeUczbHMwbm5aNzJzdExtMWVjTktqT1BuVGJ1R2FlTzNGMHhnY3RrcTU2bHI5cEFGQQ?oc=5",
-      "date": "2026-07-15"
-    },
-    {
-      "title": "Video of PM Modi Walking With Teleprompter During Australia Visit Is Edited",
-      "source": "The Quint",
-      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNZnJ5R1Y0QTBwQUFJZ0NUZXplTlFvUVBqSUR5cHAybUNkMXYwajdvMGR0dWFhUVkyaUUxMENpdkZUOFpOZWJTWmFyX1o5ZlZOUmVCb29NWmM4ZGVTeEF6QmRxUnhTNUlmUTJvdXVMa01GYTVvcDZyQ29CREdtTkR2TlRrZE1FZXo4RDRXME5XTGdWT0tROENMa19jS0lnR3PSAawBQVVfeXFMTzBmam5udEFmbTdwRkwzTFo5d3NuX2ZXOWc1S1JjMGFQQUtUWHZoM19UNEZybDBHVGhRajZNVkExV0thdzlUT1U0T240clBIQWEtWmw4VUdrU2pkVUp4TXgtbEpjT0o0RTBidzdzdm5PeWIyeGtma1ZCbF9FV2RySk9UeUxjWHRZc1JnSDBkdXQxRzg2MDJCZl9URDhjV3BlNGdKRFdKUERQeUF2aQ?oc=5",
-      "date": "2026-07-14"
+      "title": "🇮🇳🇮🇩 India and Indonesia elevate strategic ties: A new era of defense and economic cooperation",
+      "source": "The Southeast Asia Desk",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQVi1KeUVVWWdMZnA1TEMtVUl0M0U3azNGUF9UVG13aXNHZHFVOWtsaF91aWhTSm9zZzBwbVFQMUpZZnBFU0g2aXhFbzlrSy1lRDVIWG85bWc5aGlTaVNMZVRFUklBMW5QUExsODNKQVZ6TWJhazVQYmlnRnk2TnBhdlNkTHpfZFYzWXFSVWxNdlRsV1VMdWNvZmZSaU1JdG9IOGZj?oc=5",
+      "date": "2026-07-16"
     },
     {
       "title": "PM Modi’s Indonesia Visit: Threads from the past, transformation for future",
@@ -47,16 +32,22 @@
       "date": "2026-07-13"
     },
     {
-      "title": "India’s PM Modi Visits Indonesia To Boost Existing Strategic Ties – OpEd",
-      "source": "Eurasia Review",
-      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNd1dnNzEzYmRCOUZKVnhaUGF1d3pyRndmLVJJN1dEdXU2ajVCUGRmNTVDTUxoYk9lbzNmR3BJdHlfSV80NzdxRkRYcWtpaGNTeEMwOU9fNzdza1BRbV9CcTlER0NFRDJNS3dWdFNaVzdPOGlrMGZqNDRKZWRSU2VmUHhXSHB5RDVBY1RjVkI3UEdpQl9DTlJ1bnVtV0ZPWGEwNVVod3EzcVlya3VmalE?oc=5",
-      "date": "2026-07-12"
+      "title": "Modi begins three-nation trip, starts with Indonesia to boost strategic ties",
+      "source": "The Hindu",
+      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNS19jNFNLaVpNZm12alpxOC1td3NJWDVVdXloM2FsdWlMMW00amlaaGRJNlRLcEZ3UU9qLXlSdW95Y1VSTnVLQ2s3N3pMWmRFU3Q5bnN1OFZsU093VXp6a2VoYklGbFVYcFAxZU5xb2otc1BmSE8tOXlkeTRxQjN6TmxOalN5THRaajZjbTJ5N0tEeVltMngySjA4cW1hQXlIejEyNTNGNNIBrgFBVV95cUxPc2poSkc1bUhFVG5jczYwX2NJUmhCZ1YtRmNqRWFjdTBDWTM0RTQ3QmEzbkRFUVVqTHRpYllDWGtUU3MzTUx0OFVURmsxZktTYXBIQ0llM25WVG9KQU9YSXlFd1RLWUtxN3R6VUw1TnhYcVNQZ1pJODVtQXdWVDZ0Nlg5SlN6dFZoYmxoSjZvN1V3ZHRuTUx4bzlFb2p1STdydHJxSGNQaTRfSVhwS3c?oc=5",
+      "date": "2026-07-06"
     },
     {
-      "title": "Luxon says PM Modi’s visit marks new chapter in India-New Zealand ties",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPSDJ2N3Rtb1BOMGRHb2ZCOTRaRWEyRmtxN3QxSTIyNkQ5bXNuTzJhOGZPc0I2N0I5WmkzZ3B2N3plOUdpREtPSFVsZ0V1czh0QjhrZ21qOTAwNGxpWmxtbDdiNlktcHc0SkxlaFFNTXh1Q0lNb2t6Vk1sT0t4WGhlRHlDTU9peDJaYUFoYU9mWmRRZWQ2a1NJTDVDUQ?oc=5",
-      "date": "2026-07-11"
+      "title": "'Deepened bonds, strengthened partnerships': PM Modi concludes three-nation tour, departs from New Zealand for India",
+      "source": "DD India",
+      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQMWRKOEpyWl9rUUgwWkxXNTB5NVJ1d3lWWGd0MTR5VG5PSFBRLWRuN0JjWW9OaWpHd0ZFMS1QVkpGVW05UGQtQmxlWUpWOGRHcmNLUmNXME54QXpYeWRfV2ZBcHFvdmRxZE1HZzk5T2VXeG51T2EwM3dyTXNPbkdiWkhxZ0NSUE1DR0lRM3VpMDhwMzZqcmtlSFoyLW9rZkZZRm5KWFBScGQyUWxkMVRhMG9HaTFvNkxTT3dPaXRGOExLOUl5ZWwtdE1XWml2dEdDdEJaamh4TDJqdw?oc=5",
+      "date": "2026-07-16"
+    },
+    {
+      "title": "India’s PM Winds Up Visit to Indonesia, Hails ‘New Avenues’ For Cooperation",
+      "source": "The Diplomat – Asia-Pacific",
+      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNbElsZ0RpMkhTdzI3VU1rdFQ3VVJQS19JUS1vM0dJa1djUll2V0w2aWdBb1Nib0loUGxwczlNbjk1MGpDUjdzVHhPbUZOUmx2cTZYdS1VNWk1ekctRktNYXVPX0Vpa2VpRTBNWUNuTDYyTTlTMVhMU0pWNFFEaVdUZTVfLUEzY1NaN080anluY3NEdnBlYlVEdVhXeHB1N1BaVGJnNndYYw?oc=5",
+      "date": "2026-07-09"
     }
   ]
 }
