@@ -1,53 +1,40 @@
 {
-  "generated": "2026-07-17T05:46:22Z",
-  "status": "recent",
-  "reported": null,
-  "trip": {
-    "label": "Indonesia, Australia & New Zealand",
-    "start": "2026-07-06",
-    "end": "2026-07-11",
+  "generated": "2026-07-18T05:32:29Z",
+  "status": "reported",
+  "reported": {
     "countries": [
-      "Indonesia",
-      "Australia",
-      "New Zealand"
+      "Sweden"
+    ],
+    "primary": "Sweden",
+    "asOf": "2026-07-17",
+    "sourceCount": 3
+  },
+  "trip": {
+    "label": "Sweden",
+    "start": null,
+    "end": null,
+    "countries": [
+      "Sweden"
     ]
   },
   "articles": [
     {
-      "title": "PM Modi returns to New Delhi after concluding several agreements during his visit to Indonesia, Australia and New Zealand | Akashvani News",
+      "title": "PM Narendra Modi to reach Gothenburg today on two-day visit to Sweden",
       "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxOTllaeHpJajZISERDa2RWSWxZMTI3OG42UDJmUDJRM1lVY2doQ18xd2pvZlZsdXFLajBnelJ0YmtXbXVsUV9kbXowVVBGXzBfZGp3eXRmbkZuVy1wVk1yWTJVcjlGQ24wTTdDbnpPeGhaV0gyRnJFNmE5ejFYZjZpRW9XTXZsRmMwMm1ZTERLYkRRNlBfN0tOZlhIUVBzcXpNYVNqOWt4SjVQVFV4VERuWDY3MlBtY0dBa2Z0MDUzczR6WG5EbFkxcTdaTXN2QnBwdTJobGtmbFFYc0VlZ0RrOQ?oc=5",
-      "date": "2026-07-15"
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOOG9VektEV0RjMUJZdnV6cXEzYnA1eEZ1S2pOc1Z5WW5nNTRnZ1ZoMUUwMUJSTWNGWVk0dUI5blZLLUJxOW95YlFQdDMxUDRnQ1Z1cHFvTGc0WWdjai01eGt0ZjZ2OGNuZWthYjZhN0hUbzJQemxISVhleHctM3V6LWEyUFRLbmxYOFZvT2lQUko2RXJCemZwWkMxVQ?oc=5",
+      "date": "2026-07-17"
     },
     {
-      "title": "🇮🇳🇮🇩 India and Indonesia elevate strategic ties: A new era of defense and economic cooperation",
-      "source": "The Southeast Asia Desk",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQVi1KeUVVWWdMZnA1TEMtVUl0M0U3azNGUF9UVG13aXNHZHFVOWtsaF91aWhTSm9zZzBwbVFQMUpZZnBFU0g2aXhFbzlrSy1lRDVIWG85bWc5aGlTaVNMZVRFUklBMW5QUExsODNKQVZ6TWJhazVQYmlnRnk2TnBhdlNkTHpfZFYzWXFSVWxNdlRsV1VMdWNvZmZSaU1JdG9IOGZj?oc=5",
-      "date": "2026-07-16"
+      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
+      "date": "2026-07-17"
     },
     {
-      "title": "PM Modi’s Indonesia Visit: Threads from the past, transformation for future",
-      "source": "organiser.org",
-      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxQWkd5clpMcmlhdzVkYmhpNDVTcnozMVVCLXA1RE16aTNnaEFVZDJ6YjJxSjJvaHlOeGNnbGpqMlFlT0ZEb1NhSHh4QVR3dkFXdEoxXzFZNzBuWDRVVGEzV0RXV3phSEVESGQ4STFZalg2cHVjNG5PbnJaeEpySW5OSnpUSGxvZnBXMXQzOE8tNWd6NDlaLXNzdnFRQTRWbXZsRFBtdzRlUW9yVzJiLWZLajIyMDI1alhhUXhrMdIBwgFBVV95cUxNeElKUzNxTVpWNFk3cTREUXBVOW5RR0I4ZWlMZUhxaFpjUTdhUl9aOFpnS1pOZXpYVk03b3ZPa2dYQUV5TU1IYnBra1lCVDl5MFRLQ3BPRDV0WGF6QzBtOGNJZnppNlFhNEozSk90QUY5Y1RVSEMzRUQ1TkFZdHJGOWtjUzFoNzQ4MXdSOW11U1hQUHFTRzlRMTRuTFhRQmdqdmk4TmJ5SnRucEcxUVBxRWlGcHJMN09LdkpTV1R2c005dw?oc=5",
-      "date": "2026-07-13"
-    },
-    {
-      "title": "Modi begins three-nation trip, starts with Indonesia to boost strategic ties",
-      "source": "The Hindu",
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNS19jNFNLaVpNZm12alpxOC1td3NJWDVVdXloM2FsdWlMMW00amlaaGRJNlRLcEZ3UU9qLXlSdW95Y1VSTnVLQ2s3N3pMWmRFU3Q5bnN1OFZsU093VXp6a2VoYklGbFVYcFAxZU5xb2otc1BmSE8tOXlkeTRxQjN6TmxOalN5THRaajZjbTJ5N0tEeVltMngySjA4cW1hQXlIejEyNTNGNNIBrgFBVV95cUxPc2poSkc1bUhFVG5jczYwX2NJUmhCZ1YtRmNqRWFjdTBDWTM0RTQ3QmEzbkRFUVVqTHRpYllDWGtUU3MzTUx0OFVURmsxZktTYXBIQ0llM25WVG9KQU9YSXlFd1RLWUtxN3R6VUw1TnhYcVNQZ1pJODVtQXdWVDZ0Nlg5SlN6dFZoYmxoSjZvN1V3ZHRuTUx4bzlFb2p1STdydHJxSGNQaTRfSVhwS3c?oc=5",
-      "date": "2026-07-06"
-    },
-    {
-      "title": "'Deepened bonds, strengthened partnerships': PM Modi concludes three-nation tour, departs from New Zealand for India",
-      "source": "DD India",
-      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQMWRKOEpyWl9rUUgwWkxXNTB5NVJ1d3lWWGd0MTR5VG5PSFBRLWRuN0JjWW9OaWpHd0ZFMS1QVkpGVW05UGQtQmxlWUpWOGRHcmNLUmNXME54QXpYeWRfV2ZBcHFvdmRxZE1HZzk5T2VXeG51T2EwM3dyTXNPbkdiWkhxZ0NSUE1DR0lRM3VpMDhwMzZqcmtlSFoyLW9rZkZZRm5KWFBScGQyUWxkMVRhMG9HaTFvNkxTT3dPaXRGOExLOUl5ZWwtdE1XWml2dEdDdEJaamh4TDJqdw?oc=5",
-      "date": "2026-07-16"
-    },
-    {
-      "title": "India’s PM Winds Up Visit to Indonesia, Hails ‘New Avenues’ For Cooperation",
-      "source": "The Diplomat – Asia-Pacific",
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNbElsZ0RpMkhTdzI3VU1rdFQ3VVJQS19JUS1vM0dJa1djUll2V0w2aWdBb1Nib0loUGxwczlNbjk1MGpDUjdzVHhPbUZOUmx2cTZYdS1VNWk1ekctRktNYXVPX0Vpa2VpRTBNWUNuTDYyTTlTMVhMU0pWNFFEaVdUZTVfLUEzY1NaN080anluY3NEdnBlYlVEdVhXeHB1N1BaVGJnNndYYw?oc=5",
-      "date": "2026-07-09"
+      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
+      "date": "2026-07-17"
     }
   ]
 }
