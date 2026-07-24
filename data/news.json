@@ -1,46 +1,64 @@
 {
-  "generated": "2026-07-23T06:05:48Z",
+  "generated": "2026-07-24T05:54:08Z",
   "status": "reported",
   "reported": {
     "countries": [
-      "Sweden"
+      "Sweden",
+      "UAE",
+      "Norway",
+      "Bangladesh"
     ],
-    "primary": "Sweden",
-    "asOf": "2026-07-22",
-    "sourceCount": 4
+    "primary": "Bangladesh",
+    "asOf": "2026-07-24",
+    "sourceCount": 14
   },
   "trip": {
-    "label": "Sweden",
+    "label": "Sweden, UAE, Norway & Bangladesh",
     "start": null,
     "end": null,
     "countries": [
-      "Sweden"
+      "Sweden",
+      "UAE",
+      "Norway",
+      "Bangladesh"
     ]
   },
   "articles": [
     {
-      "title": "PM Narendra Modi to reach Gothenburg today on two-day visit to Sweden",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOOG9VektEV0RjMUJZdnV6cXEzYnA1eEZ1S2pOc1Z5WW5nNTRnZ1ZoMUUwMUJSTWNGWVk0dUI5blZLLUJxOW95YlFQdDMxUDRnQ1Z1cHFvTGc0WWdjai01eGt0ZjZ2OGNuZWthYjZhN0hUbzJQemxISVhleHctM3V6LWEyUFRLbmxYOFZvT2lQUko2RXJCemZwWkMxVQ?oc=5",
-      "date": "2026-07-22"
-    },
-    {
-      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
-      "date": "2026-07-22"
+      "title": "PM Modi invites Bangladesh PM to BRICS summit",
+      "source": "The New Indian Express",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOU2ZEMnpOOG8tQkZVSU40TG1zS1JrVk1QMDZfR3pmMHJUZGE5Zmgxc3JlRW1OQlJaOEVpZktyN1VFejN3NVRLMW5zSFhSUEpzVEJOTlFQWjVQRUc4b2dWUXEyUlVCaFNIMGJBQzBqVTdzX1dCd0tfLVVWMENQSlk0N19vQXJUUm5SNkVvMGpzQmxkNGhuc2ZrbzdFM1LSAaoBQVVfeXFMTkJENElsLVVTNkNOUy1PRk9WQUhlQ0x6LVdFYjd3RzZ2T0RvMWVodEpGX3dncmRVMng5NGVPTmZBWDVZSVlJYXE3QUFKOVR2QVBrd2U5MVdFWEs4RkNUR29hS05oelQydUppTHZJWTFIYm5KUGY1c05JQTkyWW9UeE9YNDMyUUpqd1FxWTQtaVdsRWExcEhfNXJVSHFFNlFuVEpmZEpJelRFekE?oc=5",
+      "date": "2026-07-24"
     },
     {
       "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-07-22"
+      "date": "2026-07-23"
     },
     {
-      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
+      "title": "PM Modi to visit UAE and four European countries; likely to sign MoUs on energy security with UAE",
       "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
-      "date": "2026-07-21"
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOUm9ob0Q4ck5GSHVUM2FsdTF3TF91cVQtMzJ1SFI5MFJCRUIwcXhOdTJLVWdXdlQwT3BfRkwzdFE5UG5JUWlHWktzQjRKWThCRVlGN3N4RUs1T2dQZ1QtaEhlX2x2TVpMSlJYYmY5bmRrNVhhZklGQWs4eUZFWi1zWmt0V2VDWGpkVm5tZ1FYTTlRdzFPWXRKLWpMTVdPX2Z3ajBtNW1XQUJBTVBLUHpSa2EyU2pRcVVJYU5DdWpveXItNXV6NXdr?oc=5",
+      "date": "2026-07-23"
+    },
+    {
+      "title": "PM Modi to visit UAE, Netherlands, Sweden, Norway and Italy from May 15-20",
+      "source": "DD News",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQU09YdC1WWmRoSW12TWcxTF9fUzV0VFF1bG0zSnlKWlNYWlVYd1o2bUNUY1FaTUtRTGxpMnJrNVhCOU0wcXRscWdyN0ZiZmxOZVhQbGpyaUFBbHhMQ19WNzByaEdmUlJIeGx3RmJPcFQzbnloMk00azRxR0YzbnVlY2xvWnp3YWZxa3RYbFFfQURzLUxNRVYtVnBuQUFNZw?oc=5",
+      "date": "2026-07-23"
+    },
+    {
+      "title": "PM Modi arrives in Norway for historic visit, India-Nordic Summit in focus",
+      "source": "DD News",
+      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQZ2Y2SzJXOVhVd0FDMU1CWEg4cnZuYnF6NmlOTFZqci1Za3ZYTEZTMDdwdWNLUnRKWm05ZEpmMGVhTm1zUEhzV09hbXhLLUdVMks5M0cxdEJrQ3BrTFg2UmV1WkpDcmVld0FQMGZ3Q3E1Y2hHN0paSVJndFppMlFYUEVpZ045Q21hY1VFMHNocklqUzBaaWx3?oc=5",
+      "date": "2026-07-23"
+    },
+    {
+      "title": "PM Modi Attends India-Norway Business and Research Summit in Oslo",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQNzRsWVN4cGZSajRkYllHWTB2bEhTM2p6aTJkaXVEdVpmSnBCbmI1TlNhMno4bXdfU3hJVWxRZkQweUhWeWpRcFgwcG5UclFlemhoNTVRbU9SS2wxUktqUnhENTI4X0trMFRlVHY4dWwyY1pNV3phQUJ1eUJaMUdNNmZnR3gyc0hWOGFnUzg5QXFzS2tRb0E?oc=5",
+      "date": "2026-07-23"
     }
   ]
 }
