@@ -525,8 +525,8 @@
             <div id="map" style="height:400px" role="img" aria-label="Choropleth map of PM visit frequency by country"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h3>Trips over time</h3><span class="sub">Per month</span></div>
-            <div id="timeline" style="height:400px" role="img" aria-label="Line chart of trips per month"></div>
+            <div class="panel-head"><h3>Trips over time</h3><span class="sub">Trips &amp; countries, per month</span></div>
+            <div id="timeline" style="height:400px" role="img" aria-label="Line chart of trips and unique countries visited per month"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Most visited countries</h3><span class="sub">Top 15 in view</span></div>
@@ -751,12 +751,6 @@ function fmtRange(start, end) {
   if (ys === ye) return `${Number(ds)} ${MONTHS_SHORT[Number(ms) - 1]} – ${Number(de)} ${MONTHS_SHORT[Number(me) - 1]} ${ys}`;
   return `${fmtDate(start)} – ${fmtDate(end)}`;
 }
-function byMonth(rows) {
-  const m = {};
-  rows.forEach(r => { m[r.month] = (m[r.month] || 0) + 1; });
-  return Object.entries(m).sort((a, b) => a[0].localeCompare(b[0]));
-}
-
 function filtered() {
   return trips.filter(t =>
     (state.pm      === 'All' || t.pm === state.pm) &&
@@ -902,18 +896,39 @@ function renderCharts(rows) {
     },
   }), cfg);
 
-  const months = byMonth(rows);
-  Plotly.react('timeline', [{
-    type: 'scatter', mode: 'lines+markers',
-    x: months.map(d => d[0] + '-01'), y: months.map(d => d[1]),
-    line: {color: c.primary, width: 2.5, shape: 'spline', smoothing: .6},
-    marker: {size: 6, color: c.primary},
-    fill: 'tozeroy', fillcolor: c.primary + '14',
-    hovertemplate: '%{x|%b %Y}: %{y} trip(s)<extra></extra>',
-  }], baseLayout(c, {
-    margin: {t: 10, l: 34, r: 10, b: 35},
+  // Trips and unique countries per month
+  const mTrips = {}, mCountries = {};
+  rows.forEach(r => {
+    mTrips[r.month] = (mTrips[r.month] || 0) + 1;
+    (mCountries[r.month] = mCountries[r.month] || new Set());
+    r.countries.forEach(cn => mCountries[r.month].add(cn));
+  });
+  const months = Object.keys(mTrips).sort();
+  const mx = months.map(m => m + '-01');
+  const tripsY = months.map(m => mTrips[m]);
+  const ctryY = months.map(m => mCountries[m].size);
+  Plotly.react('timeline', [
+    {
+      type: 'scatter', mode: 'lines+markers', name: 'Trips',
+      x: mx, y: tripsY,
+      line: {color: c.primary, width: 2.5, shape: 'spline', smoothing: .6},
+      marker: {size: 6, color: c.primary},
+      fill: 'tozeroy', fillcolor: c.primary + '14',
+      hovertemplate: '%{x|%b %Y}: %{y} trip(s)<extra></extra>',
+    },
+    {
+      type: 'scatter', mode: 'lines+markers', name: 'Countries',
+      x: mx, y: ctryY,
+      line: {color: c.secondary, width: 2, shape: 'spline', smoothing: .6, dash: 'dot'},
+      marker: {size: 5.5, color: c.secondary, symbol: 'diamond'},
+      hovertemplate: '%{x|%b %Y}: %{y} countr%{customdata}<extra></extra>',
+      customdata: ctryY.map(v => v === 1 ? 'y' : 'ies'),
+    },
+  ], baseLayout(c, {
+    margin: {t: 26, l: 34, r: 10, b: 35},
+    legend: {orientation: 'h', y: 1.18, x: 0, font: {size: 12}},
     xaxis: {gridcolor: 'rgba(0,0,0,0)', linecolor: c.grid, tickcolor: 'rgba(0,0,0,0)'},
-    yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...months.map(d => d[1])))},
+    yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...tripsY, ...ctryY))},
   }), cfg);
 
   const ranking = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).slice(0, 15);
