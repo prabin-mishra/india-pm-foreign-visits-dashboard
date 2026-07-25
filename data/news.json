@@ -1,63 +1,39 @@
 {
-  "generated": "2026-07-24T05:54:08Z",
+  "generated": "2026-07-25T05:47:07Z",
   "status": "reported",
   "reported": {
     "countries": [
-      "Sweden",
-      "UAE",
-      "Norway",
-      "Bangladesh"
+      "UAE"
     ],
-    "primary": "Bangladesh",
+    "primary": "UAE",
     "asOf": "2026-07-24",
-    "sourceCount": 14
+    "sourceCount": 3
   },
   "trip": {
-    "label": "Sweden, UAE, Norway & Bangladesh",
+    "label": "UAE",
     "start": null,
     "end": null,
     "countries": [
-      "Sweden",
-      "UAE",
-      "Norway",
-      "Bangladesh"
+      "UAE"
     ]
   },
   "articles": [
     {
-      "title": "PM Modi invites Bangladesh PM to BRICS summit",
-      "source": "The New Indian Express",
-      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOU2ZEMnpOOG8tQkZVSU40TG1zS1JrVk1QMDZfR3pmMHJUZGE5Zmgxc3JlRW1OQlJaOEVpZktyN1VFejN3NVRLMW5zSFhSUEpzVEJOTlFQWjVQRUc4b2dWUXEyUlVCaFNIMGJBQzBqVTdzX1dCd0tfLVVWMENQSlk0N19vQXJUUm5SNkVvMGpzQmxkNGhuc2ZrbzdFM1LSAaoBQVVfeXFMTkJENElsLVVTNkNOUy1PRk9WQUhlQ0x6LVdFYjd3RzZ2T0RvMWVodEpGX3dncmRVMng5NGVPTmZBWDVZSVlJYXE3QUFKOVR2QVBrd2U5MVdFWEs4RkNUR29hS05oelQydUppTHZJWTFIYm5KUGY1c05JQTkyWW9UeE9YNDMyUUpqd1FxWTQtaVdsRWExcEhfNXJVSHFFNlFuVEpmZEpJelRFekE?oc=5",
-      "date": "2026-07-24"
-    },
-    {
-      "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-07-23"
-    },
-    {
       "title": "PM Modi to visit UAE and four European countries; likely to sign MoUs on energy security with UAE",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOUm9ob0Q4ck5GSHVUM2FsdTF3TF91cVQtMzJ1SFI5MFJCRUIwcXhOdTJLVWdXdlQwT3BfRkwzdFE5UG5JUWlHWktzQjRKWThCRVlGN3N4RUs1T2dQZ1QtaEhlX2x2TVpMSlJYYmY5bmRrNVhhZklGQWs4eUZFWi1zWmt0V2VDWGpkVm5tZ1FYTTlRdzFPWXRKLWpMTVdPX2Z3ajBtNW1XQUJBTVBLUHpSa2EyU2pRcVVJYU5DdWpveXItNXV6NXdr?oc=5",
-      "date": "2026-07-23"
+      "date": "2026-07-24"
     },
     {
-      "title": "PM Modi to visit UAE, Netherlands, Sweden, Norway and Italy from May 15-20",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQU09YdC1WWmRoSW12TWcxTF9fUzV0VFF1bG0zSnlKWlNYWlVYd1o2bUNUY1FaTUtRTGxpMnJrNVhCOU0wcXRscWdyN0ZiZmxOZVhQbGpyaUFBbHhMQ19WNzByaEdmUlJIeGx3RmJPcFQzbnloMk00azRxR0YzbnVlY2xvWnp3YWZxa3RYbFFfQURzLUxNRVYtVnBuQUFNZw?oc=5",
-      "date": "2026-07-23"
-    },
-    {
-      "title": "PM Modi arrives in Norway for historic visit, India-Nordic Summit in focus",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQZ2Y2SzJXOVhVd0FDMU1CWEg4cnZuYnF6NmlOTFZqci1Za3ZYTEZTMDdwdWNLUnRKWm05ZEpmMGVhTm1zUEhzV09hbXhLLUdVMks5M0cxdEJrQ3BrTFg2UmV1WkpDcmVld0FQMGZ3Q3E1Y2hHN0paSVJndFppMlFYUEVpZ045Q21hY1VFMHNocklqUzBaaWx3?oc=5",
-      "date": "2026-07-23"
-    },
-    {
-      "title": "PM Modi Attends India-Norway Business and Research Summit in Oslo",
+      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
       "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQNzRsWVN4cGZSajRkYllHWTB2bEhTM2p6aTJkaXVEdVpmSnBCbmI1TlNhMno4bXdfU3hJVWxRZkQweUhWeWpRcFgwcG5UclFlemhoNTVRbU9SS2wxUktqUnhENTI4X0trMFRlVHY4dWwyY1pNV3phQUJ1eUJaMUdNNmZnR3gyc0hWOGFnUzg5QXFzS2tRb0E?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
+      "date": "2026-07-24"
+    },
+    {
+      "title": "India-UAE relations reached new heights under PM Modi's leadership: CM Bhupendra Patel at Investopia Global",
+      "source": "ANI News",
+      "url": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxPQnljT3ZobG1SbTl0UVdoMGwxUUtDSzFoN050bk51YkpiVnRISXRicGtWbGNDZGh2T01rY3E1WXFic2N0NGU5Rlk5LU9fMllqUjVZdzV1R1RfbGJYNUVKMXJ6Z004QmNjcVQ0djhLM21ZNHFILTczTkVXdEsxSzZFdXZ4bHdiYkF0clFyaHFhUTBPU3dHTG1yVmpFUXU0a3l4a1E2ai1hVk1JRk9VWkM0b2NqdHdZeFVNOWt0UENDZWRUMUtxV3NpNXJoTVlObkFRTm9OeXFPOTA1UjIzT2tiN2tJTWdLMVpSMFF6QXZIdHEtajVYQ2l6aQ?oc=5",
       "date": "2026-07-23"
     }
   ]
