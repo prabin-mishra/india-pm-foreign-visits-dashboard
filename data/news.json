@@ -1,60 +1,54 @@
 {
-  "generated": "2026-07-27T06:35:01Z",
+  "generated": "2026-07-28T05:52:43Z",
   "status": "reported",
   "reported": {
     "countries": [
-      "Sweden",
-      "UAE"
+      "UAE",
+      "Sweden"
     ],
-    "primary": "UAE",
+    "primary": "Sweden",
     "asOf": "2026-07-27",
-    "sourceCount": 6
+    "sourceCount": 5
   },
   "trip": {
-    "label": "Sweden & UAE",
+    "label": "UAE & Sweden",
     "start": null,
     "end": null,
     "countries": [
-      "Sweden",
-      "UAE"
+      "UAE",
+      "Sweden"
     ]
   },
   "articles": [
     {
-      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
-      "date": "2026-07-27"
-    },
-    {
       "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-07-26"
-    },
-    {
-      "title": "PM Modi to visit UAE and four European countries; likely to sign MoUs on energy security with UAE",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOUm9ob0Q4ck5GSHVUM2FsdTF3TF91cVQtMzJ1SFI5MFJCRUIwcXhOdTJLVWdXdlQwT3BfRkwzdFE5UG5JUWlHWktzQjRKWThCRVlGN3N4RUs1T2dQZ1QtaEhlX2x2TVpMSlJYYmY5bmRrNVhhZklGQWs4eUZFWi1zWmt0V2VDWGpkVm5tZ1FYTTlRdzFPWXRKLWpMTVdPX2Z3ajBtNW1XQUJBTVBLUHpSa2EyU2pRcVVJYU5DdWpveXItNXV6NXdr?oc=5",
-      "date": "2026-07-26"
+      "date": "2026-07-27"
     },
     {
       "title": "PM Narendra Modi to reach Gothenburg today on two-day visit to Sweden",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOOG9VektEV0RjMUJZdnV6cXEzYnA1eEZ1S2pOc1Z5WW5nNTRnZ1ZoMUUwMUJSTWNGWVk0dUI5blZLLUJxOW95YlFQdDMxUDRnQ1Z1cHFvTGc0WWdjai01eGt0ZjZ2OGNuZWthYjZhN0hUbzJQemxISVhleHctM3V6LWEyUFRLbmxYOFZvT2lQUko2RXJCemZwWkMxVQ?oc=5",
-      "date": "2026-07-26"
+      "date": "2026-07-27"
+    },
+    {
+      "title": "PM Modi to visit UAE and four European countries; likely to sign MoUs on energy security with UAE",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOUm9ob0Q4ck5GSHVUM2FsdTF3TF91cVQtMzJ1SFI5MFJCRUIwcXhOdTJLVWdXdlQwT3BfRkwzdFE5UG5JUWlHWktzQjRKWThCRVlGN3N4RUs1T2dQZ1QtaEhlX2x2TVpMSlJYYmY5bmRrNVhhZklGQWs4eUZFWi1zWmt0V2VDWGpkVm5tZ1FYTTlRdzFPWXRKLWpMTVdPX2Z3ajBtNW1XQUJBTVBLUHpSa2EyU2pRcVVJYU5DdWpveXItNXV6NXdr?oc=5",
+      "date": "2026-07-27"
     },
     {
       "title": "India-UAE Trade ties deepen ahead of PM Modi’s visit",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPejlaaHRPWG1uamhndE95djdkR3U3VkM5ZmRDeldVUmN2WGpVTk1OZXVYaV9Udl9hVV9SWjVtVG9NZHhkd2pLQ1ltM1VCM1JVbU82VFdXQlkxZ3poUFlCaHhJQmozMWp2NS13WktLTVU1TDllZlpadEo3SHdoTVBoZENPaw?oc=5",
-      "date": "2026-07-26"
+      "date": "2026-07-27"
     },
     {
-      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
+      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
       "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
-      "date": "2026-07-26"
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
+      "date": "2026-07-27"
     }
   ]
 }
