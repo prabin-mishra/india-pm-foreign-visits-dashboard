@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-31T06:18:20Z",
+  "generated": "2026-08-01T06:03:48Z",
   "status": "reported",
   "reported": {
     "countries": [
@@ -8,7 +8,7 @@
     ],
     "primary": "Sweden",
     "asOf": "2026-07-31",
-    "sourceCount": 7
+    "sourceCount": 6
   },
   "trip": {
     "label": "UAE & Sweden",
@@ -21,9 +21,27 @@
   },
   "articles": [
     {
-      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
+      "title": "PM Narendra Modi to reach Gothenburg today on two-day visit to Sweden",
       "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOOG9VektEV0RjMUJZdnV6cXEzYnA1eEZ1S2pOc1Z5WW5nNTRnZ1ZoMUUwMUJSTWNGWVk0dUI5blZLLUJxOW95YlFQdDMxUDRnQ1Z1cHFvTGc0WWdjai01eGt0ZjZ2OGNuZWthYjZhN0hUbzJQemxISVhleHctM3V6LWEyUFRLbmxYOFZvT2lQUko2RXJCemZwWkMxVQ?oc=5",
+      "date": "2026-07-31"
+    },
+    {
+      "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
+      "date": "2026-07-31"
+    },
+    {
+      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
+      "date": "2026-07-31"
+    },
+    {
+      "title": "PM Modi begins five-nation tour, UAE leg to focus on energy and strategic ties",
+      "source": "DD News",
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPaUE1bzMxXzctcEtyc0t5aDRUY3pwTGxoWGIxZ3lyRnp3UkJYaHRjZkhYYnpENlA0SUpXTk9kRjJNZVFTVFB1dkhWTWxrRGFoRmFZSGd0Wi0tRnpsTkRxaHFKaVZaenJsUE1NVzc1aDhkZHlPTUxBeXdIRWQ0cEVfYXZKX0hhNzVaZEhCQ2wwemZvejgtdFFGeDlxVQ?oc=5",
       "date": "2026-07-31"
     },
     {
@@ -33,27 +51,9 @@
       "date": "2026-07-30"
     },
     {
-      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
-      "date": "2026-07-30"
-    },
-    {
-      "title": "PM Narendra Modi to reach Gothenburg today on two-day visit to Sweden",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOOG9VektEV0RjMUJZdnV6cXEzYnA1eEZ1S2pOc1Z5WW5nNTRnZ1ZoMUUwMUJSTWNGWVk0dUI5blZLLUJxOW95YlFQdDMxUDRnQ1Z1cHFvTGc0WWdjai01eGt0ZjZ2OGNuZWthYjZhN0hUbzJQemxISVhleHctM3V6LWEyUFRLbmxYOFZvT2lQUko2RXJCemZwWkMxVQ?oc=5",
-      "date": "2026-07-30"
-    },
-    {
-      "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-07-30"
-    },
-    {
-      "title": "PM Modi describes his UAE visit as ‘short but highly productive’",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOMUJZbTlPcmYzck0wS0ZaRVRpMTctR0U1LTFzaG5KQmhqR24xZmp2VHI4bU5HVUFFOVF1VEpRTEt3SGpEempNVzRqWkIxcFBxdlN1dWhWdmpGZzRuMURVT2dQNUpKZGJnb1Q1ZmF2TzBaTkE2dzNYX0dyNVA1Yng0R25zR3BfU3BzWC1LR2wxcjdkZw?oc=5",
+      "title": "PM Modi Holds Bilateral Talks With UK, UAE Leaders on G7 Summit Sidelines in France",
+      "source": "LawStreet Journal",
+      "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPWU12YTJ4TGs5LUhpRllJTldSR0pOVUM0aFJUWmkybFNoZzJreGh5UVF3SEJYalgzZ21LbXdsLUlXQml0RXJFdFVUeWcxSVdGS1p2WFpIbmo0dmpHTVgzbWVTcDlNc0gyN29LYzZOcl83MWdUanllQ2RfUHpiZDBCdEZ0LXNrNVd2STFyTEVtek1mTjNpZHBaazIxLUdCYTA1b0pNbjdxVG9tYUhvano4aEk0em5ZVzU0?oc=5",
       "date": "2026-07-29"
     }
   ]
