@@ -233,6 +233,11 @@
       transition: background .18s ease, color .18s ease;
     }
     .btn-reset:hover { background: var(--surface-2); color: var(--text); }
+    .registry-actions { display: flex; align-items: center; gap: var(--sp-4); }
+    .btn-download { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .btn-download svg { width: 14px; height: 14px; }
+    .btn-download[disabled] { opacity: .45; cursor: not-allowed; }
+    .btn-download[disabled]:hover { background: transparent; color: var(--text-2); }
 
     /* Highlights line */
     .facts { display: flex; flex-wrap: wrap; column-gap: var(--sp-6); row-gap: var(--sp-2); padding: var(--sp-5) 0 0; font-size: .86rem; color: var(--text-2); }
@@ -427,6 +432,8 @@
       .field { flex: 1 1 42%; }
       .field select, .field input[type="search"] { width: 100%; }
       .filter-spacer { display: none; }
+      #registry .section-head { flex-direction: column; align-items: flex-start; }
+      .registry-actions { width: 100%; justify-content: space-between; }
       .news-grid { grid-template-columns: 1fr; }
       #drawer { padding: var(--sp-6); }
     }
@@ -556,7 +563,13 @@
             <span class="section-eyebrow">02 — Registry</span>
             <h2>Trip registry</h2>
           </div>
-          <span class="sub">Select a row for trip details</span>
+          <div class="registry-actions">
+            <span class="sub">Select a row for trip details</span>
+            <button class="btn-reset btn-download" id="downloadCsv" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+              Download CSV
+            </button>
+          </div>
         </div>
         <div class="table-wrap"><table id="tripTable"></table></div>
       </div>
@@ -999,8 +1012,59 @@ function renderCharts(rows) {
   }), cfg);
 }
 
+// CSV export of the current filtered view — the same rows the table shows.
+const SOURCE_TIER_NAMES = {json: 'github-actions', live: 'live-mirror', fallback: 'embedded-snapshot'};
+const CSV_COLUMNS = [
+  ['start_date',      t => t.start],
+  ['end_date',        t => t.end],
+  ['itinerary',       t => t.label],
+  ['countries',       t => t.countries.join('; ')],
+  ['country_count',   t => t.countries.length],
+  ['visit_type',      t => t.visitType],
+  ['days',            t => t.days],
+  ['prime_minister',  t => t.pm],
+  ['source_tier',     t => SOURCE_TIER_NAMES[t.sourceMode] || t.sourceMode],
+];
+
+function csvCell(value) {
+  const s = String(value ?? '');
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function toCsv(rows) {
+  const header = CSV_COLUMNS.map(([name]) => name).join(',');
+  const body   = rows.map(t => CSV_COLUMNS.map(([, get]) => csvCell(get(t))).join(','));
+  return [header, ...body].join('\r\n') + '\r\n';
+}
+
+function filtersActive() {
+  return state.pm !== 'All' || state.year !== 'All' || state.country !== 'All' ||
+         state.visitType !== 'All' || Boolean(state.q);
+}
+
+function downloadCsv() {
+  const rows = filtered();
+  if (!rows.length) return;
+  // Excel needs a BOM to read UTF-8 country names (Côte d'Ivoire, Türkiye) correctly.
+  const blob = new Blob(['﻿' + toCsv(rows)], {type: 'text/csv;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `india-pm-foreign-visits_${todayISO()}${filtersActive() ? '_filtered' : ''}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  // Deferred — revoking in the same tick cancels the download in some browsers.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function renderTable(rows) {
   document.getElementById('tableSubtitle').textContent = `${rows.length} trip${rows.length === 1 ? '' : 's'}`;
+  const dl = document.getElementById('downloadCsv');
+  dl.disabled = !rows.length;
+  dl.setAttribute('aria-label', rows.length
+    ? `Download the ${rows.length} trip${rows.length === 1 ? '' : 's'} in the current view as CSV`
+    : 'Download CSV — no trips in the current view');
   const table = document.getElementById('tripTable');
   if (!rows.length) {
     table.innerHTML = `<tbody><tr><td><div class="empty-state">
@@ -1464,6 +1528,7 @@ document.getElementById('themeToggle').onclick = () => {
 };
 
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
+document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
 
 // Drawer event delegation on static table element
 document.getElementById('tripTable').addEventListener('click', e => {
