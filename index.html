@@ -1116,6 +1116,8 @@ function openDrawer(trip) {
   overlay.classList.add('open');
   drawer.setAttribute('aria-hidden', 'false');
   overlay.setAttribute('aria-hidden', 'false');
+  setBackgroundInert(true);
+  lockBodyScroll(true);
   document.getElementById('drawerClose').focus();
 }
 
@@ -1127,7 +1129,47 @@ function closeDrawer() {
   overlay.classList.remove('open');
   drawer.setAttribute('aria-hidden', 'true');
   overlay.setAttribute('aria-hidden', 'true');
+  // Un-inert before restoring focus — a focus() call inside an inert subtree is ignored.
+  setBackgroundInert(false);
+  lockBodyScroll(false);
   if (lastFocusedRow && document.contains(lastFocusedRow)) lastFocusedRow.focus();
+}
+
+// The drawer declares aria-modal, so the rest of the page must actually be
+// unreachable — by pointer, by Tab, and in the accessibility tree.
+function setBackgroundInert(on) {
+  const drawer  = document.getElementById('drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  for (const el of document.body.children) {
+    if (el === drawer || el === overlay || el.tagName === 'SCRIPT') continue;
+    if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
+  }
+}
+
+function lockBodyScroll(on) {
+  if (on) {
+    // Pad by the scrollbar width so hiding overflow doesn't shift the layout.
+    const gutter = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    if (gutter > 0) document.body.style.paddingRight = gutter + 'px';
+  } else {
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+}
+
+// Keep Tab inside the drawer while it is open.
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), select, input, textarea, [tabindex]:not([tabindex="-1"])';
+
+function trapDrawerTab(e) {
+  if (e.key !== 'Tab') return;
+  const drawer = document.getElementById('drawer');
+  if (!drawer.classList.contains('open')) return;
+  const items = [...drawer.querySelectorAll(FOCUSABLE_SELECTOR)].filter(el => el.offsetParent !== null);
+  if (!items.length) return;
+  const first = items[0], last = items[items.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
 }
 
 function esc(s) {
@@ -1544,6 +1586,7 @@ document.getElementById('tripTable').addEventListener('keydown', e => {
   const trip = trips.find(t => t.id === Number(row.dataset.id));
   if (trip) { lastFocusedRow = row; openDrawer(trip); }
 });
+document.getElementById('drawer').addEventListener('keydown', trapDrawerTab);
 document.getElementById('drawerClose').addEventListener('click', closeDrawer);
 document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
