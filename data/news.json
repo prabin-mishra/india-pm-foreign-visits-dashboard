@@ -1,62 +1,46 @@
 {
-  "generated": "2026-08-04T05:53:32Z",
+  "generated": "2026-08-05T05:50:19Z",
   "status": "reported",
   "reported": {
     "countries": [
-      "France",
-      "UAE",
-      "Sweden"
+      "Uzbekistan"
     ],
-    "primary": "Sweden",
-    "asOf": "2026-08-03",
-    "sourceCount": 8
+    "primary": "Uzbekistan",
+    "asOf": "2026-08-04",
+    "sourceCount": 4
   },
   "trip": {
-    "label": "France, UAE & Sweden",
+    "label": "Uzbekistan",
     "start": null,
     "end": null,
     "countries": [
-      "France",
-      "UAE",
-      "Sweden"
+      "Uzbekistan"
     ]
   },
   "articles": [
     {
-      "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
-      "date": "2026-08-03"
+      "title": "PM To Visit Kyrgyzstan, Uzbekistan As India Eyes Bigger Role In Central Asia",
+      "source": "NDTV",
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNUWl3V2taSEpQeWJkSVI3cXluQVRFb185bVdDcXZ0QnlvQ2ZLQlcyQzk3YW1wNWJHNFFkeFJnWi1MdkFrQnA5RDE3WHE0VXdUZmE2ajlnaENwWk53U0ZZTXNKc19SMHpSWXR5MWg2a1FUa0VTT0IzRHdvVXZYYUJUMnNxWWlMR1EwS1RtNWVwOEVUOWxxQW1wOWg5aEJyMjdkekhiNENzQjlMZXJrZVhMX2szNFlRMFHSAb8BQVVfeXFMTU8wM1NJNDNpS1VCb29iSU1HdnpJMlV5Z1UtejJzdmFiQVJqbmZnVGVGc3c0M3Q3OEVzdFRWeEhYamJkV0xPeW9BVGxFUFRQRl9DNHZnMG1jRzVPbUI0WlBzQ2N3bmxvQUhWaEFleW5jdzVGVU5rMUcwTm1UMVVoNUVZY2NtWHl4eDBTSWlQUkFBYnR2d3dPR2FIQmpzaGU4b3h5YUc2M1RLakZPUEdoRWJtYmd3MmVpZjZDeTREWk0?oc=5",
+      "date": "2026-08-04"
     },
     {
-      "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-08-03"
+      "title": "Uzbek FM says India talks part of preparations for PM Modi’s Uzbekistan visit",
+      "source": "DD India",
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPejB3V3hHYlh0X0hOanpZc3QwVWRQb1BZaUh4eEdtc1htY3pHNGF1UDJUUXZQWnZwNm9mTXl6dFMtMExnVUVUcnZmekFFTEltY0tWRUtURnlFSy03UXB6UHlXenU2elRnTElLWl9XRjRrNW5Kdmtvb1FIVVNEcjd4MXVKVmJLSm03OHhibFpiXzVhM2I3X2lBY1ptR0lzVVJRZmd1TW10bVEtUkE?oc=5",
+      "date": "2026-08-04"
     },
     {
-      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
-      "date": "2026-08-03"
+      "title": "Uzbek FM says his visit India \"to prepare for upcoming visit of PM Modi to Uzbekistan\"",
+      "source": "indiagazette.com",
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQQ19vNXg2UHlBaUZIcGRxU0VVLUFxRnZGNzJIdTZEWklHcHlEQ2UwSDA0b0lGZU1zU1dHQkx3X1I3eTVhQjBrUktfcTBESld4SmxfU1llTllYV0V6d28wTzE5enpkMkxYODVMYTBYdm9EQWhoRUlHTi16YkhZVEFOVGZHd05RSGp3NTdwdGRIMHRTNUgtYkk4SlItcUtpa0RKOXFldjZoQm1PX0tULUxkczZBOXRNcWQ5NmR3V0FZMDYtNmJlT3o0?oc=5",
+      "date": "2026-08-04"
     },
     {
-      "title": "‘Feeling fortunate’: Indian diaspora in France excited ahead of PM Modi’s visit",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOSTRPT2tYdjF5WC1rUFdLVFR6Qk1IYWVNVmxsWmxpb2QyME8yT2VzWGxtdDVxazVXODdwMUxMdS1hRm1fMmlUY2tic1JfMWM1aDhTMGZldEpUeDQ4MTNHNGVYLVZGTGNZU29pS25vRmY1enZpSXF1VHM0Nkx3cVRpc2xjcTlKd2VvekFPRXJaTWNodUdFSnFiN0RUQkc2ak5pUUFV?oc=5",
-      "date": "2026-08-02"
-    },
-    {
-      "title": "PM Modi describes his UAE visit as ‘short but highly productive’",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOMUJZbTlPcmYzck0wS0ZaRVRpMTctR0U1LTFzaG5KQmhqR24xZmp2VHI4bU5HVUFFOVF1VEpRTEt3SGpEempNVzRqWkIxcFBxdlN1dWhWdmpGZzRuMURVT2dQNUpKZGJnb1Q1ZmF2TzBaTkE2dzNYX0dyNVA1Yng0R25zR3BfU3BzWC1LR2wxcjdkZw?oc=5",
-      "date": "2026-08-02"
-    },
-    {
-      "title": "PM Modi arrives in Paris for final leg of France visit",
-      "source": "DD News",
-      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxQZXN0eEMxZWFwbE1mWFdHV3BRR1pQc1JvTFR3WGdYUGtIajZHZHcza1JPT0Y5TS1QblI2WV9pZDJfS3NEeXJjTzEydDJMWElCdzVSVUFOTTF5MkFRaHZRZkRvc2VidmJ3a2N4MkxyR1FqbmRpMHJKaG5jUUhkc2lTbnFvdW5tX0E?oc=5",
-      "date": "2026-08-02"
+      "title": "PM Modi expected to visit Kyrgyzstan and Uzbekistan as India firms up Central Asia ties",
+      "source": "WION",
+      "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPZS1neVZyMk5DWWprWjVMUDJnSXVhMzBTVUtSU2tRWFNNWDNkOThuVW04d0FZVmxkSTdJcVluVTdDQm9wTXBidDh0TGJzRHlONVlubUtqVE8tN3BZRm80MVdMcFdidnpuQllwWC1NdmQyUUFpcXBqWkJjaHZ5NUFuTGowSnVjWWw1UEpyeTNvV0diLWpiaDNqQlpQZFBUTHIwVGhMUXZDcEp2V0xoZEJQUHpCdkgyNXJqNUZYUWxJVk9tSmd2QmJrbm1vREtwYVFsNWfSAdcBQVVfeXFMTkMxU3BZYUdUNmhxUkZtR3pNZFZBMHBmekdWMlREckNVaTd6RUhLeFFWN0tvVWdrSE40c0RhZDNnUGNOVFpXYmlJZ1RrZzJwTUhwMEFGdzB1T2pQNHR4RzZOajhpQW9DOFZGMTRyT1czWW53T2ZsSE9rVzFzRENFSFlkaFg4eWZwcERZdVJLeHplNEExbE1JVGtQcVczcGpPOFY3VF9JWWozeGhCRHpZLUF0bS04dmhLclFNZFlWQ1dObkcxNlc0MlpqTnJjN1lKdkFYY2dodHc?oc=5",
+      "date": "2026-08-04"
     }
   ]
 }
