@@ -71,3 +71,52 @@ cycles leave no residual `inert` or scroll lock; CSV export, filters, and all si
 unaffected; no horizontal scroll at 375px; console clean. Three fallback tiers untouched.
 
 **Files touched:** `index.html`
+
+## 2026-08-07 — Per-trip permalink (`?trip=<slug>` deep-links the drawer) + copy-link button
+
+**Shipped.** Opening a trip's drawer now pushes `?trip=<slug>` to the address bar; loading that
+URL directly (or via back/forward) opens the same drawer, honouring the focus trap and
+background-inert behaviour shipped on 08-04. A "Copy link to this trip" button was added next
+to the existing registry link so journalists citing a specific trip don't have to rely on
+spotting the address bar on mobile — it copies via the Clipboard API with a `document.execCommand`
+fallback, and confirms via both a visible label change and an `aria-live` region.
+
+The identifier is a content-derived slug (`start-date--slugified-label`), not the existing
+positional `id` (`array-index + 1`). Checked: `id` is assigned during `normalizeTrips` from each
+trip's position in `data/visits.json`, which is already newest-first — so a new trip landing at
+the top of tomorrow's pipeline refresh would shift every other trip's `id` down by one, silently
+retargeting any `id`-based permalink shared today. The slug is immune to that: it's derived from
+the trip's own immutable `start`/`label` fields, so it survives any reordering or insertion
+elsewhere in the array. `id` itself is untouched for any other future use.
+
+Why this one: called "the strongest feature idea in the list" in both prior logs, and
+deliberately sequenced after the 08-04 focus-trap fix so a deep link wouldn't open into a
+dialog that leaked focus. It's pure read-side logic over data already in memory — no new
+dependency, no data-provenance touch — and directly serves the site's stated audience
+(journalists citing a specific trip).
+
+**Runners-up**
+- *Defer the blocking Plotly CDN load* — still the biggest perf win (~3.5 MB in `<head>`);
+  chart-init ordering makes it risky enough to want its own cycle, not a rider on today's idea.
+- *Screen-reader data tables behind each chart* — charts expose `role="img"` labels but no
+  underlying numbers. High a11y value, bigger than one day.
+- *Sortable registry table columns* — real, but the six charts already answer most of the
+  analytical questions a sort would serve.
+- *robots.txt + sitemap.xml + canonical link* — quick, but marginal payoff for a single-page
+  site with one real URL.
+- *"Days since last foreign trip" / longest-gap stat* — a genuinely new way to read the data,
+  but a fresh analytical claim needs more care before shipping than a one-day slot affords.
+
+**Verification:** row click → drawer opens, URL gains `?trip=<slug>`; copy-link button places
+the exact permalink on the clipboard and announces it via the live region; Escape/overlay-click
+closes and strips the param, restoring focus to the triggering row; loading the captured
+permalink cold opens the correct drawer with the background properly inert and focus on the
+close button; browser back/forward correctly open and close the drawer in step with the URL;
+an unknown `?trip=` slug loads the page normally with no error and no drawer. All six charts
+render, CSV export and filters unaffected, no horizontal scroll at 375px, console clean (bar an
+unrelated Plotly world-topojson CDN fetch this sandbox's network policy blocks — pre-existing,
+untouched by this change, will resolve on the real network). Three fallback tiers untouched;
+tested against tier 1 (`data/visits.json`) since tiers 2/3 weren't reachable in this sandbox,
+but the deep-link/copy-link logic runs identically after any tier populates `trips`.
+
+**Files touched:** `index.html`

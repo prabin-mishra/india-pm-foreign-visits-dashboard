@@ -402,14 +402,18 @@
     .drawer-grid .v { font-size: .92rem; font-weight: 600; font-variant-numeric: tabular-nums; }
     .drawer-sec { font: 600 .8rem/1 var(--font-ui); letter-spacing: .07em; text-transform: uppercase; color: var(--text-2); margin: var(--sp-5) 0 var(--sp-3); }
     .drawer-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .drawer-actions { display: flex; flex-direction: column; gap: var(--sp-3); margin-top: var(--sp-6); }
     .drawer-link {
-      display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-6);
+      display: inline-flex; align-items: center; gap: 8px;
       font-size: .88rem; font-weight: 600; color: var(--accent); text-decoration: none;
       border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;
-      transition: background .18s ease;
+      background: transparent; cursor: pointer; font-family: inherit; text-align: left;
+      transition: background .18s ease, color .18s ease, border-color .18s ease;
     }
     .drawer-link:hover { background: var(--surface-2); }
-    .drawer-link svg { width: 13px; height: 13px; }
+    .drawer-link svg { width: 13px; height: 13px; flex: none; }
+    .copy-link.is-copied { color: var(--ok); border-color: var(--ok); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
     /* ============ Responsive ============ */
     @media (max-width: 1023px) {
@@ -681,7 +685,13 @@ const ARCHIVE_URL    = 'https://www.pmindia.gov.in/en/pm-visits/';
 
 let trips = [];
 let liveNews = null; // parsed data/news.json, incl. any news-reported trip
-const state = {pm:'All', year:'All', country:'All', visitType:'All', q:''};
+const state = {pm:'All', year:'All', country:'All', visitType:'All', q:'', trip:null};
+
+// Content-derived, not positional — stable across daily data refreshes even as new
+// trips are added, unlike an array-index id (which every trip after an insertion would shift).
+function slugify(s) {
+  return s.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 function normalizeTrips(rows, sourceMode='fallback') {
   return rows.map((t, i) => {
@@ -699,6 +709,7 @@ function normalizeTrips(rows, sourceMode='fallback') {
       ...t,
       pm: t.pm || 'Unknown',
       countries,
+      slug: `${t.start}--${slugify(t.label)}`,
       primaryCountry: countries[0],
       days,
       year: Number(t.start.slice(0, 4)),
@@ -796,6 +807,7 @@ function readUrlState() {
   if (p.has('country')) state.country   = p.get('country');
   if (p.has('type'))    state.visitType = p.get('type');
   if (p.has('q'))       state.q         = p.get('q');
+  state.trip = p.get('trip') || null;
 }
 
 function writeUrlState() {
@@ -805,6 +817,7 @@ function writeUrlState() {
   if (state.country   !== 'All') p.set('country', state.country);
   if (state.visitType !== 'All') p.set('type',    state.visitType);
   if (state.q)                   p.set('q',       state.q);
+  if (state.trip)                p.set('trip',    state.trip);
   const qs = p.toString();
   history.pushState(null, '', qs ? '?' + qs : location.pathname);
 }
@@ -1077,7 +1090,7 @@ function renderTable(rows) {
   table.innerHTML =
     `<caption>India PM foreign trips — ${rows.length} result(s) in current filtered view</caption>` +
     `<thead><tr><th>Dates</th><th>Itinerary</th><th>Countries</th><th>Type</th><th>Days</th><th>PM</th><th>Source</th></tr></thead>` +
-    `<tbody>${rows.map(t => `<tr class="trip-row" data-id="${t.id}" tabindex="0" aria-label="View details for ${t.label}">
+    `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="View details for ${t.label}">
       <td><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
       <td class="itin">${t.label}</td>
       <td><span class="tags">${t.countries.map(x => `<span class="tag">${x}</span>`).join('')}</span></td>
@@ -1091,7 +1104,38 @@ function renderTable(rows) {
 // Trip detail drawer
 let lastFocusedRow = null;
 
-function openDrawer(trip) {
+function tripPermalink(slug) {
+  return `${location.origin}${location.pathname}?trip=${encodeURIComponent(slug)}`;
+}
+
+async function copyTripLink(slug, btn) {
+  const url = tripPermalink(slug);
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch (e) {
+    // Clipboard API unavailable (older browser / insecure context) — fall back to a hidden textarea.
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e2) { console.warn('[copy]', e2); }
+    ta.remove();
+  }
+  const label = btn.querySelector('.copy-label');
+  btn.classList.add('is-copied');
+  if (label) label.textContent = 'Link copied';
+  const status = document.getElementById('drawerCopyStatus');
+  if (status) status.textContent = 'Link copied to clipboard';
+  clearTimeout(copyTripLink._t);
+  copyTripLink._t = setTimeout(() => {
+    btn.classList.remove('is-copied');
+    if (label) label.textContent = 'Copy link to this trip';
+  }, 1800);
+}
+
+function openDrawer(trip, {push = true} = {}) {
   document.getElementById('drawerContent').innerHTML = `
     <p class="drawer-eyebrow">${trip.visitType} · ${trip.year}</p>
     <h2 class="drawer-title">${trip.label}</h2>
@@ -1105,10 +1149,17 @@ function openDrawer(trip) {
     ${trip.outcomes ? `<h3 class="drawer-sec">Outcomes</h3><p>${trip.outcomes}</p>` : ''}
     <h3 class="drawer-sec">Countries visited</h3>
     <div class="drawer-tags">${trip.countries.map(x => `<span class="tag">${x}</span>`).join('')}</div>
-    <a href="${REGISTRY_URL}" target="_blank" rel="noopener" class="drawer-link">
-      View on the PM India registry
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
-    </a>
+    <div class="drawer-actions">
+      <button type="button" class="drawer-link copy-link" id="drawerCopyLink" data-slug="${trip.slug}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span class="copy-label">Copy link to this trip</span>
+      </button>
+      <a href="${REGISTRY_URL}" target="_blank" rel="noopener" class="drawer-link">
+        View on the PM India registry
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
+      </a>
+    </div>
+    <span class="sr-only" id="drawerCopyStatus" aria-live="polite"></span>
   `;
   const drawer  = document.getElementById('drawer');
   const overlay = document.getElementById('drawer-overlay');
@@ -1119,9 +1170,10 @@ function openDrawer(trip) {
   setBackgroundInert(true);
   lockBodyScroll(true);
   document.getElementById('drawerClose').focus();
+  if (push) { state.trip = trip.slug; writeUrlState(); }
 }
 
-function closeDrawer() {
+function closeDrawer({push = true} = {}) {
   const drawer  = document.getElementById('drawer');
   const overlay = document.getElementById('drawer-overlay');
   if (!drawer.classList.contains('open')) return;
@@ -1133,6 +1185,7 @@ function closeDrawer() {
   setBackgroundInert(false);
   lockBodyScroll(false);
   if (lastFocusedRow && document.contains(lastFocusedRow)) lastFocusedRow.focus();
+  if (push && state.trip) { state.trip = null; writeUrlState(); }
 }
 
 // The drawer declares aria-modal, so the rest of the page must actually be
@@ -1521,6 +1574,7 @@ async function loadTrips() {
     render();
     renderLiveTrip(trips);
     updateSeoMeta(trips, data.meta?.updated);
+    openTripFromUrl();
     return;
   } catch (e) { console.warn('[tier1]', e); }
 
@@ -1536,6 +1590,7 @@ async function loadTrips() {
     render();
     renderLiveTrip(trips);
     updateSeoMeta(trips);
+    openTripFromUrl();
     return;
   } catch (e) { console.warn('[tier2]', e); }
 
@@ -1546,6 +1601,7 @@ async function loadTrips() {
   render();
   renderLiveTrip(trips);
   updateSeoMeta(trips);
+  openTripFromUrl();
 }
 
 // Theme: saved preference, else system
@@ -1574,24 +1630,35 @@ document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
 
 // Drawer event delegation on static table element
 document.getElementById('tripTable').addEventListener('click', e => {
-  const row = e.target.closest('tr[data-id]');
+  const row = e.target.closest('tr[data-trip]');
   if (!row) return;
-  const trip = trips.find(t => t.id === Number(row.dataset.id));
+  const trip = trips.find(t => t.slug === row.dataset.trip);
   if (trip) { lastFocusedRow = row; openDrawer(trip); }
 });
 document.getElementById('tripTable').addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
-  const row = e.target.closest('tr[data-id]');
+  const row = e.target.closest('tr[data-trip]');
   if (!row) return;
-  const trip = trips.find(t => t.id === Number(row.dataset.id));
+  const trip = trips.find(t => t.slug === row.dataset.trip);
   if (trip) { lastFocusedRow = row; openDrawer(trip); }
 });
 document.getElementById('drawer').addEventListener('keydown', trapDrawerTab);
 document.getElementById('drawerClose').addEventListener('click', closeDrawer);
 document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+document.getElementById('drawer').addEventListener('click', e => {
+  const btn = e.target.closest('#drawerCopyLink');
+  if (btn) copyTripLink(btn.dataset.slug, btn);
+});
 
-// Restore filter state on browser back/forward
+// If the URL names a trip (a shared permalink), open its drawer once data is loaded.
+function openTripFromUrl() {
+  if (!state.trip) return;
+  const trip = trips.find(t => t.slug === state.trip);
+  if (trip) { lastFocusedRow = null; openDrawer(trip, {push: false}); }
+}
+
+// Restore filter + drawer state on browser back/forward
 window.addEventListener('popstate', () => {
   readUrlState();
   ['pm', 'year', 'country', 'visitType'].forEach(id => {
@@ -1601,6 +1668,12 @@ window.addEventListener('popstate', () => {
   const qEl = document.getElementById('q');
   if (qEl) qEl.value = state.q;
   render();
+  if (state.trip) {
+    const trip = trips.find(t => t.slug === state.trip);
+    if (trip) openDrawer(trip, {push: false}); else closeDrawer({push: false});
+  } else {
+    closeDrawer({push: false});
+  }
 });
 
 loadTrips();
