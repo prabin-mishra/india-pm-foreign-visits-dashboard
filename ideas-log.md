@@ -120,3 +120,53 @@ tested against tier 1 (`data/visits.json`) since tiers 2/3 weren't reachable in 
 but the deep-link/copy-link logic runs identically after any tier populates `trips`.
 
 **Files touched:** `index.html`
+
+## 2026-08-08 — Accessible data tables behind each chart
+
+**Shipped.** All six analysis charts get a collapsed `<details>` disclosure — "View data table
+(N rows)" — holding the exact numbers Plotly is plotting: country + visit count for the map,
+month/trips/countries for the timeline, the top-15 list for the ranking bar, PM/trips/countries
+for the comparison, year/single/multi/total for the year-over-year bars, and a full year×month
+grid for the calendar heatmap. The charts kept `role="img"` with a one-line `aria-label`, but
+that label was the entire experience for a screen-reader user or anyone whose browser doesn't
+run the ~3.5 MB Plotly bundle — no route to the underlying numbers existed at all. Each table
+reuses the same array already computed for its chart, so there's no new data derivation, just a
+second render target for numbers already in memory. Tables regenerate on every filter change
+like the charts do, and an open table stays open across a filter change instead of silently
+re-collapsing.
+
+This was flagged as high-value and passed over as "bigger than one day" in the 08-02, 08-04, and
+08-07 logs. Re-scoped down to exactly this — no chart redesign, no new toggle-button UI system,
+just a native `<details>` + a plain `<table>` per panel using data the charts already have — it
+fit in a day.
+
+**Bug caught in verification, fixed in the same commit:** the calendar-heatmap table has 13
+columns (year + 12 months) and, once opened at 375px, pushed the *whole page* into horizontal
+scroll even though its own wrapper had `overflow-x: auto`. Cause: CSS Grid items default to
+`min-width: auto`, so a wide child can force its grid track wider than the viewport before the
+child's own overflow rule ever gets a chance to contain it. Added `min-width: 0` to `.panel`;
+confirmed the page-level scroll disappears while the table's own internal scroll still works.
+
+**Runners-up**
+- *Defer the blocking Plotly CDN load* — still the biggest perf win (~3.5 MB in `<head>`);
+  chart-init ordering makes it its own cycle, not a rider on today's idea.
+- *Sortable registry table columns* — real, but the six charts (now with number tables) already
+  answer most of the analytical questions a sort would serve.
+- *robots.txt + sitemap.xml + canonical link* — quick, marginal payoff for a single-page site.
+- *Registry column visibility toggle for narrow screens* — mobile polish, but the table already
+  scrolls horizontally inside its own container; lower urgency than the a11y gap.
+
+**Verification:** this sandbox's network policy blocks `cdn.plot.ly` outright (confirmed via
+the proxy status endpoint — same class of restriction noted for `r.jina.ai` in the 08-07 log),
+so Plotly itself can't load here. Verified the new code by stubbing `Plotly.react`/`newPlot`
+locally and driving the real page through Playwright: all six wrap containers get a populated
+`<details>`/`<table>` with correct headers, row counts, and captions; toggling one table open
+and then changing a filter leaves it open (state-preservation works); no page-level horizontal
+scroll at 375px before or after opening the widest (13-column) table; dark mode renders the
+disclosure and table with the same tokens as the rest of the page; `node --check` on the
+extracted inline script confirms no syntax errors; console clean of anything but the
+pre-existing, sandbox-only CDN blocks. Both other fallback tiers (live mirror, embedded
+snapshot) are untouched — this change only reads from `rows`, the already-normalized in-memory
+trip list, regardless of which tier populated it.
+
+**Files touched:** `index.html`

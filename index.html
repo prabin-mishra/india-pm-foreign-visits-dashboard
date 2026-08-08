@@ -322,11 +322,33 @@
     .panel {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
       padding: var(--sp-5) var(--sp-5) var(--sp-3);
+      min-width: 0; /* grid items don't shrink below content size by default; without this a wide
+                       chart-data table pushes the whole page into horizontal scroll */
     }
     .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-2); }
     .panel-head h3 { font: 600 .95rem/1.3 var(--font-ui); margin: 0; }
     .panel-head .sub { font-size: .78rem; color: var(--text-3); text-align: right; }
     .wide { grid-column: 1 / -1; }
+
+    /* ============ Chart data tables (screen-reader / low-vision access) ============ */
+    .chart-data { margin-top: var(--sp-2); }
+    .chart-data summary {
+      cursor: pointer; font-size: .78rem; font-weight: 600; color: var(--accent);
+      list-style: none; display: inline-flex; align-items: center; gap: 5px; padding: 4px 2px;
+      border-radius: var(--radius-sm);
+    }
+    .chart-data summary::-webkit-details-marker { display: none; }
+    .chart-data summary::before { content: '▸'; font-size: .65em; transition: transform .15s ease; }
+    .chart-data[open] summary::before { transform: rotate(90deg); }
+    .chart-data summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .chart-data summary:hover { color: var(--accent-strong); }
+    .chart-data-scroll {
+      overflow-x: auto; margin-top: var(--sp-2); border: 1px solid var(--border);
+      border-radius: var(--radius-md); max-height: 260px; overflow-y: auto;
+    }
+    .chart-data table { font-size: .78rem; }
+    .chart-data th, .chart-data td { padding: 7px 12px; }
+    .chart-data caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
     /* ============ Table ============ */
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
@@ -534,26 +556,32 @@
           <div class="panel">
             <div class="panel-head"><h3>Trip frequency map</h3><span class="sub">Country touches in view</span></div>
             <div id="map" style="height:400px" role="img" aria-label="Choropleth map of PM visit frequency by country"></div>
+            <div id="mapTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>Trips over time</h3><span class="sub">Trips &amp; countries, per month</span></div>
             <div id="timeline" style="height:400px" role="img" aria-label="Line chart of trips and unique countries visited per month"></div>
+            <div id="timelineTableWrap"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Most visited countries</h3><span class="sub">Top 15 in view</span></div>
             <div id="ranking" style="height:360px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
+            <div id="rankingTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>PM comparison</h3><span class="sub">Trips vs unique countries</span></div>
             <div id="pmCompare" style="height:320px" role="img" aria-label="Grouped bar chart comparing trips and unique countries per PM"></div>
+            <div id="pmCompareTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>Single vs multi-country tours</h3><span class="sub">By year</span></div>
             <div id="yoyChart" style="height:320px" role="img" aria-label="Stacked bar chart of trips by year and visit type"></div>
+            <div id="yoyTableWrap"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Travel calendar</h3><span class="sub">Trip density by year and month</span></div>
             <div id="calHeatmap" style="height:280px" role="img" aria-label="Heatmap of trip density by year and month"></div>
+            <div id="calHeatmapTableWrap"></div>
           </div>
         </div>
       </div>
@@ -900,6 +928,31 @@ function baseLayout(c, extra = {}) {
 // Integer tick step so count axes never show duplicate labels
 function intDtick(max) { return max <= 6 ? 1 : Math.ceil(max / 6); }
 
+// Accessible data table behind a chart, for screen readers and anyone who'd rather read
+// numbers than a plot. Collapsed by default; open/closed state survives re-renders on
+// filter change so toggling a table open doesn't get undone by the next keystroke.
+function renderChartTable(wrapId, caption, headers, bodyRows) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  if (!bodyRows.length) { wrap.innerHTML = ''; return; }
+  const wasOpen = !!wrap.querySelector('details[open]');
+  const thead = `<tr>${headers.map(h => `<th scope="col">${esc(h)}</th>`).join('')}</tr>`;
+  const tbody = bodyRows.map(r =>
+    `<tr><th scope="row">${esc(String(r[0]))}</th>${r.slice(1).map(v => `<td class="num">${esc(String(v))}</td>`).join('')}</tr>`
+  ).join('');
+  wrap.innerHTML = `
+    <details class="chart-data"${wasOpen ? ' open' : ''}>
+      <summary>View data table (${bodyRows.length} row${bodyRows.length === 1 ? '' : 's'})</summary>
+      <div class="chart-data-scroll">
+        <table>
+          <caption>${esc(caption)}</caption>
+          <thead>${thead}</thead>
+          <tbody>${tbody}</tbody>
+        </table>
+      </div>
+    </details>`;
+}
+
 function renderCharts(rows) {
   const c = chartTheme();
   const cfg = {displayModeBar: false, responsive: true};
@@ -921,6 +974,9 @@ function renderCharts(rows) {
       showcountries: true, countrycolor: c.grid,
     },
   }), cfg);
+  renderChartTable('mapTableWrap', 'Visits by country, current filters',
+    ['Country', 'Visits'],
+    Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).map(([country, n]) => [country, fmt(n)]));
 
   // Trips and unique countries per month
   const mTrips = {}, mCountries = {};
@@ -956,6 +1012,9 @@ function renderCharts(rows) {
     xaxis: {gridcolor: 'rgba(0,0,0,0)', linecolor: c.grid, tickcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...tripsY, ...ctryY))},
   }), cfg);
+  renderChartTable('timelineTableWrap', 'Trips and unique countries per month, current filters',
+    ['Month', 'Trips', 'Countries'],
+    months.map((m, i) => [`${MONTHS_SHORT[Number(m.slice(5, 7)) - 1]} ${m.slice(0, 4)}`, fmt(tripsY[i]), fmt(ctryY[i])]));
 
   const ranking = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).slice(0, 15);
   Plotly.react('ranking', [{
@@ -972,6 +1031,9 @@ function renderCharts(rows) {
     yaxis: {gridcolor: 'rgba(0,0,0,0)'},
     bargap: .35,
   }), cfg);
+  renderChartTable('rankingTableWrap', 'Top 15 most-visited countries, current filters',
+    ['Country', 'Visits'],
+    ranking.map(([country, n]) => [country, fmt(n)]));
 
   // PM comparison — grouped bar: trips and unique countries per PM
   const pmNames     = [...new Set(rows.map(t => t.pm))].sort();
@@ -987,6 +1049,9 @@ function renderCharts(rows) {
     xaxis: {gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...pmTrips, ...pmCountries))},
   }), cfg);
+  renderChartTable('pmCompareTableWrap', 'Trips and unique countries by Prime Minister, current filters',
+    ['Prime Minister', 'Trips', 'Unique countries'],
+    pmNames.map((pm, i) => [pm, fmt(pmTrips[i]), fmt(pmCountries[i])]));
 
   // Year-over-year stacked bar — by visitType
   const years  = [...new Set(rows.map(t => String(t.year)))].sort();
@@ -1002,6 +1067,9 @@ function renderCharts(rows) {
     xaxis: {type: 'category', gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...years.map((_, i) => single[i] + multi[i])))},
   }), cfg);
+  renderChartTable('yoyTableWrap', 'Single- vs multi-country trips by year, current filters',
+    ['Year', 'Single-country', 'Multi-country', 'Total'],
+    years.map((yr, i) => [yr, fmt(single[i]), fmt(multi[i]), fmt(single[i] + multi[i])]));
 
   // Calendar heatmap — months on X, years on Y, trip count as Z
   const allYears = [...new Set(rows.map(t => t.year))].sort((a, b) => a - b);
@@ -1023,6 +1091,9 @@ function renderCharts(rows) {
     xaxis: {gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {type: 'category', autorange: 'reversed', gridcolor: 'rgba(0,0,0,0)'},
   }), cfg);
+  renderChartTable('calHeatmapTableWrap', 'Trip count by year and month, current filters',
+    ['Year', ...MONTHS_SHORT],
+    allYears.map((yr, i) => [String(yr), ...heatZ[i].map(fmt)]));
 }
 
 // CSV export of the current filtered view — the same rows the table shows.
