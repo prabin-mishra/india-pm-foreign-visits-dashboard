@@ -31,7 +31,19 @@
   </script>
   <link rel="dns-prefetch" href="https://cdn.plot.ly">
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" crossorigin="anonymous"></script>
+  <!-- Plotly is ~3.5MB; deferred so it can't block first paint. Anything that touches
+       window.Plotly awaits plotlyReady first (see renderCharts) instead of assuming load order. -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" crossorigin="anonymous" defer id="plotlyScript"></script>
+  <script>
+    window.plotlyReady = new Promise(resolve => {
+      if (window.Plotly) { resolve(); return; }
+      const s = document.getElementById('plotlyScript');
+      s.addEventListener('load', () => resolve());
+      // On CDN failure, resolve anyway so renderCharts fails loudly (Plotly undefined)
+      // instead of hanging on an await that never settles.
+      s.addEventListener('error', () => resolve());
+    });
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -953,7 +965,8 @@ function renderChartTable(wrapId, caption, headers, bodyRows) {
     </details>`;
 }
 
-function renderCharts(rows) {
+async function renderCharts(rows) {
+  await plotlyReady; // Plotly loads deferred; wait rather than assume it's ready by now.
   const c = chartTheme();
   const cfg = {displayModeBar: false, responsive: true};
   const countryCounts = rows.flatMap(t => t.countries).reduce((m, x) => ((m[x] = (m[x] || 0) + 1), m), {});
