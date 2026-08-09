@@ -1,28 +1,22 @@
 {
-  "generated": "2026-08-07T04:58:25Z",
+  "generated": "2026-08-09T04:21:19Z",
   "status": "reported",
   "reported": {
     "countries": [
       "Israel",
-      "Uzbekistan",
-      "Norway",
-      "Sweden",
-      "UAE"
+      "Sweden"
     ],
-    "primary": "UAE",
-    "asOf": "2026-08-06",
-    "sourceCount": 14
+    "primary": "Sweden",
+    "asOf": "2026-08-08",
+    "sourceCount": 6
   },
   "trip": {
-    "label": "Israel, Uzbekistan, Norway, Sweden & UAE",
+    "label": "Israel & Sweden",
     "start": null,
     "end": null,
     "countries": [
       "Israel",
-      "Uzbekistan",
-      "Norway",
-      "Sweden",
-      "UAE"
+      "Sweden"
     ]
   },
   "articles": [
@@ -30,37 +24,37 @@
       "title": "PM Modi’s Sweden visit marks milestone in deepening New Delhi-Stockholm ties",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNR0VKNmdXWGM5S1ItWWdZaHpJZlZTeFJFZHpSWHhHNU1RdnZtakdIcnBjTkQxRUhwSE9UenNmMmpSM0Rzc3hZZFFCdm9oZFlzVVkzYklFY0pUd2UzVk5uN1NlOW9iUmJHNENpakVCbmVHNFhfZ1hwZzk3THBPcHZGWGVXeUxWQnY0djVfX1JEdWFrMFlfY3VOQ1A0NmZtTHg2WHF3?oc=5",
-      "date": "2026-08-06"
-    },
-    {
-      "title": "PM Modi Attends India-Norway Business and Research Summit in Oslo",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQNzRsWVN4cGZSajRkYllHWTB2bEhTM2p6aTJkaXVEdVpmSnBCbmI1TlNhMno4bXdfU3hJVWxRZkQweUhWeWpRcFgwcG5UclFlemhoNTVRbU9SS2wxUktqUnhENTI4X0trMFRlVHY4dWwyY1pNV3phQUJ1eUJaMUdNNmZnR3gyc0hWOGFnUzg5QXFzS2tRb0E?oc=5",
-      "date": "2026-08-06"
-    },
-    {
-      "title": "Netanyahu dials PM Modi, India, Israel reaffirm special strategic ties",
-      "source": "Telangana Today",
-      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQeFQ5em1NbGhUaTBGZkNnNGRlTk5JcmRTWjd1aWhCa2RzWlZiMVdUNF9Zdi1USlNLMHhqMlRuMlZGT2ttR0FYdnpPdGVtcG5rekJlSjRuUnBrUy1ZZC1LZURPRy01dGZJZE9iUjhGV1lkamtsaGxKUEpuQkFCUVJGZHFPMTV6d01fQkVRVWFyeU9HQnlGQTBTZWg1QQ?oc=5",
-      "date": "2026-08-06"
-    },
-    {
-      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
-      "date": "2026-08-06"
-    },
-    {
-      "title": "PM Modi to visit UAE and four European countries; likely to sign MoUs on energy security with UAE",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOUm9ob0Q4ck5GSHVUM2FsdTF3TF91cVQtMzJ1SFI5MFJCRUIwcXhOdTJLVWdXdlQwT3BfRkwzdFE5UG5JUWlHWktzQjRKWThCRVlGN3N4RUs1T2dQZ1QtaEhlX2x2TVpMSlJYYmY5bmRrNVhhZklGQWs4eUZFWi1zWmt0V2VDWGpkVm5tZ1FYTTlRdzFPWXRKLWpMTVdPX2Z3ajBtNW1XQUJBTVBLUHpSa2EyU2pRcVVJYU5DdWpveXItNXV6NXdr?oc=5",
-      "date": "2026-08-06"
+      "date": "2026-08-08"
     },
     {
       "title": "PM Modi to be on 6-day visit to UAE, Netherlands, Sweden, Norway & Italy beginning Friday",
       "source": "News On AIR",
       "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPZXZnWWl6ak5BcnUwLWxMSzhrX2l0VXRLejE0ZnBUSG9SODJyS0VLZWpGNTRQSmpZN3dBMVJHZ2UwSEpBXzUyZGdFRmRjdVFYVGpNZDBaTmhqMnA4eTJ1S2l0YnY5cjBxVzlNeGZqWkkzXzcyRlNoVUpHandTSHRzNC1SUTdzaEQ0a2Z0OW5FQ0JYandMSkdsUF9KSk16UjFJbjBBdnR5MkJLeGVXOExn?oc=5",
-      "date": "2026-08-05"
+      "date": "2026-08-08"
+    },
+    {
+      "title": "PM Modi Receives Warm Welcome from Indian Diaspora in Sweden’s Gothenburg",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQRnNyeG4xaTNMTkVvMkRVZTI1U1I3emx6anFXcXNTazVUNFdON05ic3dBM09FZkFqVkFocjIyMEFvdVlvSzViZ0pqNGRBYVJWaHBNby1OY29aV2N3Si00X3RsSDMwdHZIMmV1ck00MllsaVZCWE10b3dWNFA4MWREVGxfOGMxcEdPM0VuOExB?oc=5",
+      "date": "2026-08-08"
+    },
+    {
+      "title": "PM Modi’s visit to Israel marks a significant milestone in relations between the two countries: External Affairs Ministry",
+      "source": "News On AIR",
+      "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQUFJ5MUU2V0RSUVpuMmsyTHhqaWdCUUtrWklhbHZTODEwbGlLWlpoaVpJc1dnV042X2hUei1vZ1VkUHpsdV9Nc2ZobFRmamMxUlFCMkRHNUxnMklkTEVpNmFLSXZmX3JJc25CS21BVWZ5djFNZDZXc0N4ZnVGc0tYY293RkJneG1oZlNfVHllS1JxT1ZUeDJxSnpFNDBKUjh0ekxMMEJUUi1yUEVOMWZNeTdFZ29Qb1ZmWWdBMl9nUWw1NUp5b1ZSWHhhd0lmZHhTTFdHN3Qxcm92clpmSUE?oc=5",
+      "date": "2026-08-07"
+    },
+    {
+      "title": "PM Modi, Netanyahu discuss West Asia situation, review progress in India-Israel ties",
+      "source": "The Statesman",
+      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxON3ZnRWJhNEV5N3J6N1ZHaVdSTXNlTXFwYWxsSGthMU5ncExSY3dYdHBlLTNRYm1jN3h4OHN3WWNDRXlUUGZfZTFCalpjTkdtZW1RN1E0OTdsbGVrOHpLaFJJMkxuUDV3Q00tTUg3bVRsRmthcDlpMjJNNGJjM2ZsNzU4UDhQbWhFWnhqSU9zMkhtMG5UNTJtTlpyemdBNnpkaXA5RmY0QmtFZDlzTTcxblhxb09TbXFHRGE5UGh2cmFjbWtsaklWSUVmTC1pQdIB0wFBVV95cUxNTWtwMEs3NVJlRjh1dURtYUV4WUNjZDlDTFdrR0g0NDl1bVQ5X0NMQy1rWjZMRGUxVmpmcktESFUyV2JsNWI0akpwcGttREVSemNUeGpoUmU5bDE1akxrdlQ0M3JMaFFjUzRUZC00UUZjSXNPaFJDQTlncmVfMjdoRWpocHBBZVlEQ3VVRzAySWVXeDBpeUk2c1pUSzZtT090WTROZ1NUNVJhaUFWb3pmM0E2MElULVdBS1hwRE1BeFNsMC1SXzhuMS01SUcwNE9oRUlv?oc=5",
+      "date": "2026-08-06"
+    },
+    {
+      "title": "Netanyahu dials PM Modi, discusses West Asia situation and progress in India-Israel ties",
+      "source": "The Shillong Times",
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNQWJRZVlNVnRFdDFQdEh2aURBQXEweDl0S2ZMWXhnaDZLOGtlcFQ3UUJWeXFOR1p6cHNMaW41Nnd6ZW9WOHhPOGVpZmwzMEFhZ2NDc1dpQTYtVUx2Uk81NUUwZjZOcnV3cGRqWHBVRmRDYVhvR0NEQmlGTHJDMEplMG5Mb3g2ZWdCejh4eG96RkxwazVWYWVSUHN4a3l5enNtbG5JQVhsRkVrbF9Ubl9OSmNENlpqeE50NHNvT2g3a1AydzlFTm13?oc=5",
+      "date": "2026-08-06"
     }
   ]
 }
