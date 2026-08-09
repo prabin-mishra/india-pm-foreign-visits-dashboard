@@ -170,3 +170,48 @@ snapshot) are untouched — this change only reads from `rows`, the already-norm
 trip list, regardless of which tier populated it.
 
 **Files touched:** `index.html`
+
+## 2026-08-09 — Defer the blocking Plotly CDN script, gate chart renders on readiness
+
+**Shipped.** The ~3.5MB Plotly bundle was loaded synchronously via a plain `<script src>` in
+`<head>`, blocking first paint on every visit. This was named the single biggest performance
+win in the 08-02, 08-04, and 08-07 logs and passed over each time because a naive fix looked
+risky: the page's main inline script runs (and calls into Plotly) during initial parsing,
+*before* a deferred external script gets a chance to execute, so simply adding `defer` without
+more would call `Plotly.react` before `Plotly` exists.
+
+Solved it at the actual dependency edge instead of guessing at load order: the script tag now
+carries `defer`, and a `plotlyReady` promise (resolved by the script's `load` or `error` event)
+gates `renderCharts()` — the single function every one of the 6 charts and their data tables
+already funnels through. Two lines at that one choke point were enough; no chart-by-chart
+changes, no new dependency.
+
+**Runners-up**
+- *Sortable registry table columns* — real, but the six charts (with number tables since 08-08)
+  already answer most of what a sort would serve.
+- *robots.txt + sitemap.xml + canonical link* — quick, marginal payoff for a single-URL site;
+  rejected on the same grounds twice already (08-04, 08-07).
+- *"Days since last foreign trip" stat* — a genuinely new way to read the data, but a fresh
+  analytical claim needs more design care than a one-day slot affords; still open.
+- *Registry column visibility toggle for narrow screens* — mobile polish, but the table already
+  scrolls horizontally in its own container; lower urgency than the perf fix.
+- *Drawer Tab focus trap* — checked the code before brainstorming further; this shipped
+  silently as part of the 08-04/08-07 modal work (`trapDrawerTab`, wired to the drawer's
+  `keydown`) and is no longer an open item.
+
+**Verification:** `node --check` on both inline scripts. Playwright against the real page
+(`cdn.plot.ly` is blocked in this sandbox, so its requests were routed to a stub) at 1280px and
+375px: page chrome (KPIs, filters, registry) renders before Plotly has loaded, proving the load
+is genuinely non-blocking; all 6 charts and their accessible data tables populate correctly once
+Plotly loads, including under a simulated 400ms slow load; a filter change after Plotly is
+already loaded still re-renders correctly; no horizontal scroll at either width. Simulated a
+total CDN failure (`route.abort`) — the page now fails loudly with one clear console error
+(`Plotly is not defined`) and the rest of the page (KPIs, registry, filters) keeps working,
+which is *more* correct than the old blocking script's failure mode: previously a CDN failure
+threw synchronously inside tier 1's `render()` call, inside its `try` block, so it would've been
+misdiagnosed as a data-fetch failure and cascaded into tier 2 needlessly. That's a side effect
+of gating on the promise, not a scope change — the fallback-tier logic itself is untouched.
+Console clean of anything but the pre-existing, sandbox-only Google Fonts network block (unrelated
+to this change, same class of restriction noted for `cdn.plot.ly`/`r.jina.ai` in prior logs).
+
+**Files touched:** `index.html`
