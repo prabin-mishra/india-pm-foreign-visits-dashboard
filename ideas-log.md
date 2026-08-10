@@ -215,3 +215,53 @@ Console clean of anything but the pre-existing, sandbox-only Google Fonts networ
 to this change, same class of restriction noted for `cdn.plot.ly`/`r.jina.ai` in prior logs).
 
 **Files touched:** `index.html`
+
+## 2026-08-10 — Fix compound country names being split into two countries
+
+**Shipped.** `normalizeTrips`'s itinerary-label splitter treated every "and"/"&" as a
+separator between destinations. Official country names that contain "and"/"&" — e.g.
+"Trinidad and Tobago" — got torn in two. Confirmed this isn't hypothetical: `data/visits.json`
+already carries "Ghana, Trinidad & Tobago, Argentina, Brazil & Namibia" (2025-07-02), and the
+site was silently counting it as 6 countries instead of 5, listing bogus "Trinidad" and
+"Tobago" entries in the country filter and registry tags, inflating the "Unique countries" KPI,
+and (since Plotly's choropleth uses `locationmode: 'country names'`, which doesn't recognize
+"Trinidad" or "Tobago" alone) almost certainly dropping that leg from the map entirely. The
+`COORD_ALIAS` table for the flight-globe visual already had a band-aid mapping `trinidad` and
+`tobago` back together — evidence this was known-broken in one view and silently wrong
+everywhere else.
+
+Fix: a small allowlist of official compound-name countries (Trinidad and Tobago, Antigua and
+Barbuda, Bosnia and Herzegovina, Saint Kitts and Nevis, Sao Tome and Principe, Turks and Caicos
+Islands, Saint Vincent and the Grenadines, Wallis and Futuna) is protected before the splitter
+runs and restored after, in the canonical "and" form Plotly's country-name matching expects.
+Updated the one `COORDS`/`COORD_ALIAS` entry that had been hand-patching around the bug. Pure
+display-layer parsing fix — reads `data/visits.json`, doesn't touch it or the refresh pipeline.
+
+Flagged in the 2026-08-02 log ("Noted, not acted on... worth its own cycle") and left alone
+since — today's brainstorm turned up nothing more urgent, and finding it live in the current
+data made the case concrete rather than theoretical.
+
+**Runners-up**
+- *Sortable registry table columns* — real, but named a lower-value analytical aid than
+  correctness in the underlying counts feeding every chart, KPI, and export; still open.
+- *robots.txt + sitemap.xml + canonical link* — rejected on the same "marginal payoff for a
+  single-page site" grounds as the 08-04/08-07 logs.
+- *Registry column visibility toggle for narrow screens* — mobile polish; the table already
+  scrolls horizontally in its own container.
+- *"Copy as citation" button on the trip drawer* — fresh idea, genuinely useful for
+  journalists, but a live correctness bug in the numbers themselves outranks a new convenience
+  feature.
+
+**Verification:** unit-tested the new splitter against every real itinerary label currently in
+`data/visits.json` plus synthetic compound-name cases — the Trinidad trip now yields exactly
+`["Ghana","Trinidad and Tobago","Argentina","Brazil","Namibia"]` (5, not 6); every other label
+(multi-country tours joined by "&", "and", and Oxford-comma "and") splits identically to before.
+Playwright against the served page: country filter dropdown now offers "Trinidad and Tobago"
+with no stray "Trinidad"/"Tobago" entries; KPI "Unique countries" and the trip's registry tags,
+drawer ("Destinations: 5"), and CSV export (`country_count` column) all agree; CSV `countries`
+field renders `Trinidad and Tobago` as one semicolon-delimited entry. `node --check` on both
+inline scripts. No horizontal scroll at 375px, dark-mode toggle unaffected, console clean bar
+the pre-existing sandbox-only `cdn.plot.ly`/Google Fonts network blocks. All three fallback
+tiers untouched — the fix sits in `normalizeTrips`, shared by every tier.
+
+**Files touched:** `index.html`

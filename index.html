@@ -733,13 +733,33 @@ function slugify(s) {
   return s.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+// Official country names that contain "and"/"&" as part of the name itself, not as a
+// list separator between two destinations — e.g. "Ghana, Trinidad & Tobago, Namibia" is
+// three countries, not four. Protected before the itinerary-label splitter runs below,
+// restored after (as the canonical "and" form, which is also what Plotly's country-name
+// choropleth and the flight-globe coordinates expect).
+const COMPOUND_COUNTRIES = [
+  'Trinidad and Tobago', 'Antigua and Barbuda', 'Bosnia and Herzegovina',
+  'Saint Kitts and Nevis', 'Sao Tome and Principe', 'Turks and Caicos Islands',
+  'Saint Vincent and the Grenadines', 'Wallis and Futuna',
+];
+const COMPOUND_RE = COMPOUND_COUNTRIES.map(name => {
+  const escaped = name.split(/\s+and\s+/i).map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return {re: new RegExp(escaped.join('\\s*(?:and|&)\\s*'), 'i'), name};
+});
+function protectCompoundCountries(label) {
+  let out = label;
+  for (const {re, name} of COMPOUND_RE) out = out.replace(re, name.replace(/ /g, '\u0001'));
+  return out;
+}
+
 function normalizeTrips(rows, sourceMode='fallback') {
   return rows.map((t, i) => {
-    const countries = t.label
+    const countries = protectCompoundCountries(t.label)
       .replace(/\s+and\s+/gi, ', ')
       .replace(/\s*&\s*/g, ', ')
       .split(',')
-      .map(s => s.trim())
+      .map(s => s.trim().replace(/\u0001/g, ' '))
       .filter(Boolean);
     const start = new Date(t.start + 'T00:00:00');
     const end   = new Date(t.end   + 'T00:00:00');
@@ -1368,7 +1388,7 @@ const COORDS = {
   russia:[56,38], france:[46,2], slovakia:[48.7,19.7], uae:[24,54], netherlands:[52.3,5.6], sweden:[62,15],
   norway:[62,10], italy:[42.8,12.8], israel:[31.5,34.8], malaysia:[4.2,102], jordan:[31,36], ethiopia:[9,40],
   oman:[21,57],'south africa':[-29,24], bhutan:[27.5,90.5],'united kingdom':[54,-2], maldives:[3.2,73], ghana:[7.9,-1],
-  'trinidad & tobago':[10.7,-61.2], argentina:[-38,-63], brazil:[-10,-52], namibia:[-22,17], cyprus:[35,33],
+  'trinidad and tobago':[10.7,-61.2], argentina:[-38,-63], brazil:[-10,-52], namibia:[-22,17], cyprus:[35,33],
   canada:[56,-106], croatia:[45,15.5],'saudi arabia':[24,45], thailand:[15,101],'sri lanka':[7.9,80.8],
   mauritius:[-20.3,57.5], usa:[39.8,-98.6], kuwait:[29.3,47.5], nigeria:[9,8], guyana:[5,-58.9], laos:[19.8,102],
   brunei:[4.5,114.7], singapore:[1.35,103.8], poland:[52,19], ukraine:[49,32], austria:[47.6,14], qatar:[25.3,51.2],
@@ -1380,7 +1400,8 @@ const COORDS = {
 const COORD_ALIAS = {
   uk:'united kingdom','u.k.':'united kingdom', britain:'united kingdom','united states':'usa',
   'united states of america':'usa','u.s.':'usa', america:'usa','united arab emirates':'uae', dubai:'uae',
-  'abu dhabi':'uae', trinidad:'trinidad & tobago', tobago:'trinidad & tobago', czechia:'', samarkand:'uzbekistan',
+  'abu dhabi':'uae', trinidad:'trinidad and tobago', tobago:'trinidad and tobago',
+  'trinidad & tobago':'trinidad and tobago', czechia:'', samarkand:'uzbekistan',
 };
 function coordOf(name) {
   const k = String(name).toLowerCase().replace(/\([^)]*\)/g, '').replace(/[^a-z &]/g, '').replace(/\s+/g, ' ').trim();
