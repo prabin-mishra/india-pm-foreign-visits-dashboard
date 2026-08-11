@@ -1,49 +1,22 @@
 {
-  "generated": "2026-08-11T04:11:22Z",
-  "status": "reported",
-  "reported": {
-    "countries": [
-      "Israel"
-    ],
-    "primary": "Israel",
-    "asOf": "2026-08-09",
-    "sourceCount": 3
-  },
+  "generated": "2026-08-11T04:24:13Z",
+  "status": "recent",
+  "reported": null,
   "trip": {
-    "label": "Israel",
-    "start": null,
-    "end": null,
+    "label": "Indonesia, Australia & New Zealand",
+    "start": "2026-07-06",
+    "end": "2026-07-11",
     "countries": [
-      "Israel"
+      "Indonesia",
+      "Australia",
+      "New Zealand"
     ]
   },
   "window": {
-    "from": "2026-08-03",
-    "to": "2026-08-13"
+    "from": "2026-07-03",
+    "to": "2026-07-15"
   },
-  "articles": [
-    {
-      "title": "Shalom Modi: PM Modi arrives in Israel for two-day visit to deepen strategic partnership",
-      "source": "ddnews.gov.in",
-      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQb0VDX2JOLUZKd1RHNEpJMDhDYmxJT25ZVDBKYUZhS1hHWWxJTzNjVlBFYlNQME1UTnc3NkkxRGJTcjNEaHlGNjM1VlFRNk9lbEZScUVuby0wcHpMUGhKTThYb0pFUDJYRnZIQU9BZWM1a0pRdzNCNS11ZHF0U2tNaHRTQTdPaHNXdGtNd3VKTGhRaFdsbjNadFFyWWc5bnhGeV9fdk1PNHFHeGtiOW93TG9zUQ?oc=5",
-      "date": "2026-08-09",
-      "dateSource": "rss"
-    },
-    {
-      "title": "PM Modi concludes landmark Israel visit, Netanyahu sees him off in another heartwarming gesture",
-      "source": "ddnews.gov.in",
-      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPS3pOWko1SlFiQm1iNXdRZlRycnU4a24tZ2RYYW1NMTVqX3pia3dvZTM3YUdULXV5eGg1X1dzMDJqSVJERTRhVzBnUkdjcC0tcFR5bW0zSVpyenRyR1htc203UW9xZ0RpWVo3bTdXTEw4WWI2M3ppVE1YUFc1NC1FZ1paYXB5N1JYOXJWckxnb2pBTF9BQVVmZmFPNlZvTXktQ0EyRkhYcWFReWFHUVZuUUNVLUJSY2MzYURoOA?oc=5",
-      "date": "2026-08-09",
-      "dateSource": "rss"
-    },
-    {
-      "title": "PM Modi’s visit to Israel marks a significant milestone in relations between the two countries: External Affairs Ministry",
-      "source": "News On AIR",
-      "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQUFJ5MUU2V0RSUVpuMmsyTHhqaWdCUUtrWklhbHZTODEwbGlLWlpoaVpJc1dnV042X2hUei1vZ1VkUHpsdV9Nc2ZobFRmamMxUlFCMkRHNUxnMklkTEVpNmFLSXZmX3JJc25CS21BVWZ5djFNZDZXc0N4ZnVGc0tYY293RkJneG1oZlNfVHllS1JxT1ZUeDJxSnpFNDBKUjh0ekxMMEJUUi1yUEVOMWZNeTdFZ29Qb1ZmWWdBMl9nUWw1NUp5b1ZSWHhhd0lmZHhTTFdHN3Qxcm92clpmSUE?oc=5",
-      "date": "2026-08-07",
-      "dateSource": "first-seen"
-    }
-  ],
+  "articles": [],
   "seen": {
     "0504451833ba": "2026-08-11",
     "99cabf5f2d5a": "2026-08-10",
