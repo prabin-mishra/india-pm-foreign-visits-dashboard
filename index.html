@@ -372,6 +372,14 @@
       font-size: .7rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-2);
       white-space: nowrap;
     }
+    .th-sort {
+      display: inline-flex; align-items: center; gap: 5px;
+      font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
+      background: none; border: none; padding: 0; margin: 0; cursor: pointer;
+    }
+    .th-sort:hover { color: var(--text); }
+    .sort-icon { font-size: .75em; opacity: .55; }
+    th[aria-sort="ascending"] .sort-icon, th[aria-sort="descending"] .sort-icon { opacity: 1; color: var(--accent); }
     tbody tr:last-child td { border-bottom: 0; }
     td.num { font-variant-numeric: tabular-nums; }
     td .date { white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -725,7 +733,7 @@ const ARCHIVE_URL    = 'https://www.pmindia.gov.in/en/pm-visits/';
 
 let trips = [];
 let liveNews = null; // parsed data/news.json, incl. any news-reported trip
-const state = {pm:'All', year:'All', country:'All', visitType:'All', q:'', trip:null};
+const state = {pm:'All', year:'All', country:'All', visitType:'All', q:'', trip:null, sortKey:'start', sortDir:'desc'};
 
 // Content-derived, not positional — stable across daily data refreshes even as new
 // trips are added, unlike an array-index id (which every trip after an insertion would shift).
@@ -1175,6 +1183,48 @@ function downloadCsv() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+// Registry column sorting. Descending is the natural first click for numeric columns
+// ("biggest first") and for dates (newest first, matching the table's existing default);
+// ascending is the natural first click for text columns (A→Z).
+const SORTABLE_COLUMNS = [
+  {key: 'start',     label: 'Dates'},
+  {key: 'label',     label: 'Itinerary'},
+  {key: 'countries', label: 'Countries'},
+  {key: 'visitType', label: 'Type'},
+  {key: 'days',      label: 'Days'},
+  {key: 'pm',        label: 'PM'},
+];
+const SORT_GETTERS = {
+  start:     t => t.start,
+  label:     t => t.label.toLowerCase(),
+  countries: t => t.countries.length,
+  visitType: t => t.visitType,
+  days:      t => t.days,
+  pm:        t => t.pm.toLowerCase(),
+};
+const SORT_DESC_FIRST = new Set(['start', 'countries', 'days']);
+
+function sortRows(rows) {
+  const get = SORT_GETTERS[state.sortKey];
+  if (!get) return rows;
+  const sorted = rows.slice().sort((a, b) => {
+    const av = get(a), bv = get(b);
+    return av < bv ? -1 : av > bv ? 1 : 0;
+  });
+  if (state.sortDir === 'desc') sorted.reverse();
+  return sorted;
+}
+
+function handleSortClick(key) {
+  if (state.sortKey === key) {
+    state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sortKey = key;
+    state.sortDir = SORT_DESC_FIRST.has(key) ? 'desc' : 'asc';
+  }
+  renderTable(sortRows(filtered()));
+}
+
 function renderTable(rows) {
   document.getElementById('tableSubtitle').textContent = `${rows.length} trip${rows.length === 1 ? '' : 's'}`;
   const dl = document.getElementById('downloadCsv');
@@ -1191,9 +1241,15 @@ function renderTable(rows) {
     return;
   }
   const maxDays = Math.max(...rows.map(t => t.days));
+  const thead = SORTABLE_COLUMNS.map(col => {
+    const active = state.sortKey === col.key;
+    const ariaSort = active ? (state.sortDir === 'asc' ? 'ascending' : 'descending') : 'none';
+    const icon = active ? (state.sortDir === 'asc' ? '▲' : '▼') : '↕';
+    return `<th aria-sort="${ariaSort}"><button type="button" class="th-sort" data-sort="${col.key}">${col.label}<span class="sort-icon" aria-hidden="true">${icon}</span></button></th>`;
+  }).join('') + '<th>Source</th>';
   table.innerHTML =
     `<caption>India PM foreign trips — ${rows.length} result(s) in current filtered view</caption>` +
-    `<thead><tr><th>Dates</th><th>Itinerary</th><th>Countries</th><th>Type</th><th>Days</th><th>PM</th><th>Source</th></tr></thead>` +
+    `<thead><tr>${thead}</tr></thead>` +
     `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="View details for ${t.label}">
       <td><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
       <td class="itin">${t.label}</td>
@@ -1640,7 +1696,7 @@ function render() {
   renderFacts(rows);
   renderKpis(rows);
   renderCharts(rows);
-  renderTable(rows);
+  renderTable(sortRows(rows));
 }
 
 // Keep SEO meta tags and JSON-LD in sync with loaded data
@@ -1735,6 +1791,8 @@ document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
 
 // Drawer event delegation on static table element
 document.getElementById('tripTable').addEventListener('click', e => {
+  const sortBtn = e.target.closest('.th-sort');
+  if (sortBtn) { handleSortClick(sortBtn.dataset.sort); return; }
   const row = e.target.closest('tr[data-trip]');
   if (!row) return;
   const trip = trips.find(t => t.slug === row.dataset.trip);

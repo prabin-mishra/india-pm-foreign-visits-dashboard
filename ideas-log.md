@@ -265,3 +265,53 @@ the pre-existing sandbox-only `cdn.plot.ly`/Google Fonts network blocks. All thr
 tiers untouched — the fix sits in `normalizeTrips`, shared by every tier.
 
 **Files touched:** `index.html`
+
+## 2026-08-11 — Sortable registry table columns
+
+**Shipped.** The six "Dates / Itinerary / Countries / Type / Days / PM" registry headers are
+now click-to-sort buttons: first click sorts descending for numeric-feeling columns (Dates,
+Countries, Days — "biggest/newest first") and ascending for text columns (Itinerary, Type, PM
+— A→Z); a second click on the same header flips direction. Each `<th>` carries a live
+`aria-sort` (`ascending`/`descending`/`none`) and a `▲`/`▼`/`↕` indicator, and because the
+control is a real `<button>`, Enter/Space activation and focus styling come for free — no new
+keydown handler needed. `Source` stays unsortable (a status tag, not a data dimension). Sort
+state persists across filter changes and survives "Reset filters" (that button resets filters,
+not table order — the two are independent controls). Default state (`start`, descending)
+reproduces the table's pre-existing order exactly, so nothing changes until a user clicks a
+header.
+
+This is the single most-repeated open item in this log — named a real, valuable idea and passed
+over as a runner-up in the 08-02, 08-04, 08-07, 08-08, and 08-09 entries, each time because
+something else (a correctness bug, an a11y defect, a perf fix) edged it out on that day's
+priority call. Nothing in today's fresh brainstorm out-ranked it, so it finally got its slot.
+
+**Runners-up**
+- *"Copy citation" button on the trip drawer* — flagged fresh in the 08-10 log; a real
+  trust/citation win for the stated journalist/researcher audience, but the sort backlog is now
+  five logs deep and outranks a new convenience feature. Still open.
+- *"Longest gap between trips" fact* — a genuinely new way to read the data, but (as noted in
+  08-07) a fresh analytical claim needs more definitional care (what counts as a "gap"?) than a
+  header-sort mechanic does. Still open.
+- *robots.txt + sitemap.xml + canonical link* — rejected a fourth time on the same "marginal
+  payoff for a single-URL site" grounds as 08-02/08-04/08-07/08-08.
+- *Registry column visibility toggle for narrow screens* — mobile polish; the table already
+  scrolls horizontally in its own container, so lower urgency than clearing the sort backlog.
+- *Data-caveats/limitations panel* (documenting known parsing edge cases like the 08-10 compound-
+  country fix) — genuine trust value, but passive documentation ranks below a working feature
+  the log has wanted for nine days.
+
+**Verification:** Playwright against the served page (Plotly stubbed; `cdn.plot.ly` is blocked
+in this sandbox) at 1280px and 375px. Clicking `Days` sorts descending first (`[8,7,7,6,6,…]`),
+a second click reverses to ascending; clicking `PM` (a fresh column) defaults to ascending, and
+that state survives a subsequent filter change (`aria-sort="ascending"` persists after switching
+Visit type to Multi-country). Focusing the `Itinerary` header via keyboard and pressing Enter
+sorts alphabetically and updates `aria-sort` — confirms the native `<button>` needs no bespoke
+keydown code. Clicking "Reset filters" clears filters but leaves the active sort untouched, as
+intended. All 6 charts still initialize via `Plotly.react`, all 5 KPI cards render, dark-mode
+toggle and re-render leave the active sort intact, and the drawer still opens correctly from a
+re-sorted row. No horizontal scroll at 375px. `node --check` on both inline scripts. Console
+clean bar the pre-existing, sandbox-only Google Fonts network block. All three fallback tiers
+untouched — sorting is a pure display-layer step applied in `render()`/`handleSortClick()` on
+`rows`, the already-normalized in-memory trip list, regardless of which tier populated it.
+
+**Files touched:** `index.html`, `ideas-log.md`
