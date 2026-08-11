@@ -315,3 +315,68 @@ untouched — sorting is a pure display-layer step applied in `render()`/`handle
 `rows`, the already-normalized in-memory trip list, regardless of which tier populated it.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-11 — Fix article dating in Latest coverage (directed fix, not a cycle pick)
+
+**Problem, and it was not the one reported.** The brief assumed dates were hardcoded and RSS
+`pubDate` parsing was missing. Neither was true — the pipeline already parsed `pubDate` and the
+page already rendered each article's own date. The real fault is upstream: **Google News search
+feeds serve a different `pubDate` for the same article URL on different days.** One URL, measured:
+
+| fetched | Google's pubDate |
+|---|---|
+| 2026-08-03 | 2026-08-02 |
+| 2026-08-10 | 2026-08-09 |
+| 2026-08-11 | 2026-08-10 **and** 2026-05-29 — both, same run, two query feeds |
+
+`pubDate` tracks cluster freshness, not publication. That is how a finished tour's coverage
+appeared as today's reporting on the next one: "PM Modi to be on 6-day visit to UAE, Netherlands,
+Sweden, Norway & Italy" was filed under an Israel/Sweden trip a week later. The two "Sweden"
+articles corroborating that trip were first seen 2026-07-12 — a month old, restamped as current.
+
+**Consequently the requested 14-day window would not have fixed it** and is not what shipped: a
+14-day window is wider than the gap between consecutive PM tours, so it re-admits exactly the
+stale coverage in question. Two mechanisms shipped instead:
+
+1. *Dates only ever revise downward.* Dedupe by URL keeping the earliest `pubDate` across feeds,
+   plus a first-seen ledger (`news.json` → `seen`, url digest → earliest date ever recorded), so a
+   date Google later inflates cannot drift up. Seeded from this file's own git history (58 URLs).
+   Cross-feed disagreement is itself proof the date is unreliable, so the conservative bound is the
+   honest one. Where a date was revised, the card shows `*` with the reason on hover/`aria-label`
+   rather than printing a confident guess.
+2. *Relevance, not just recency.* An article must name a country of the current trip as a
+   destination and must not name more non-trip destinations than trip ones — which is what stops a
+   five-nation-tour headline being filed under a two-country trip sharing one leg.
+
+`parse_pubdate` now uses the stdlib RFC 2822 parser, so `+0530` offsets convert to UTC instead of
+being dropped (it previously handled only GMT/UTC literals and truncated at 31 chars). Client-side
+re-validation is a second line of defence over a stale or hand-edited `news.json`: window re-check,
+ISO-string comparison (no `Date`, no timezone drift), dedupe, invalid dates skipped, newest first,
+`data-article-date`/`data-date-source`/`data-trip` attributes, an empty state, and a collapsed
+console group logging every INCLUDED/FILTERED decision with counts.
+
+**Effect on today's output:** 6 articles → 3, all genuine 9 Aug Israel coverage; the trip reads
+"Israel" rather than "Israel & Sweden", because Sweden's corroboration was entirely re-dated
+month-old articles. Trip detection is date-driven, so correcting dates necessarily changes it.
+The ledger keyed on full URLs would have made `news.json` 220 KB — a file the browser fetches on
+every load — so it keys on a 12-hex digest, retained 120 days and capped: 18.8 KB.
+
+**Not done, deliberately:** per-trip coverage for historical trips. The brief's "Feb trip shows
+only Feb articles" implies a news archive per trip; the site has one coverage block for the current
+focus trip and no per-trip news exists to filter. Building that means fetching news per trip across
+100+ trips — its own cycle, not a rider on a date fix.
+
+**Guardrail note:** this touched `scripts/refresh.py`, which CLAUDE.md fences off. The request
+explicitly asked for the news-fetching fix, and the change is confined to the news path — registry
+parsing, `visits.json`, the workflow, and the three fallback tiers are untouched.
+
+**Verification:** 38 assertions in `scripts/test_news_dates.py` (offsets, leap day, invalid dates,
+earliest-wins, ledger direction, future-date clamping, window boundaries inclusive, relevance
+gate, dedupe, ordering) all pass; in-browser checks of the reported scenario (Feb + stale-Aug-2
+articles under an Aug-9 trip → both dropped), a May 15–20 registry trip, malformed payloads
+(nulls, `2026-02-30`, missing URLs) with no console errors, empty state, derived window for an
+older `news.json`; 44 trip rows, 5 KPIs, 6 charts, filters, reset and CSV all unaffected; no
+horizontal scroll at 375px; dark mode verified.
+
+**Files touched:** `scripts/refresh.py`, `scripts/test_news_dates.py` (new), `index.html`,
+`data/news.json`

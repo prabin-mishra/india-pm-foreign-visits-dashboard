@@ -13,13 +13,50 @@ The reported block NEVER enters visits.json — it only powers the live status
 band, clearly labelled as unofficial, and disappears once the registry catches
 up or the news goes quiet.
 
+Article dating — why this is more careful than it looks
+------------------------------------------------------
+Google News search feeds do NOT return a stable per-article publication time.
+The same article URL is served with different <pubDate> values on different
+days, and sometimes with two dates 70+ days apart *within a single run* across
+two query feeds. Observed on one URL:
+    fetched 2026-08-03 -> 2026-08-02
+    fetched 2026-08-10 -> 2026-08-09
+    fetched 2026-08-11 -> 2026-08-10  and  2026-05-29  (same run)
+Its pubDate tracks cluster freshness, not publication. Trusting it verbatim is
+what made week-old coverage of a finished tour appear as today's reporting on
+the next one.
+
+So a published date is only ever revised *downward*:
+  1. dedupe by URL and keep the EARLIEST pubDate seen across all query feeds;
+  2. carry a first-seen ledger (news.json -> "seen": url digest -> earliest date
+     ever recorded) so a date Google later inflates cannot drift upward again.
+     An article cannot have been published after we first saw it.
+Disagreement between observations is itself proof the feed's date is unreliable,
+so the conservative bound is the honest one; articles it ages out simply drop.
+The ledger was seeded from this file's own git history (58 URLs, Jun–Aug 2026).
+
+Recency alone cannot separate consecutive tours (PM tours often fall less than
+two weeks apart), so trip membership is also gated on relevance: an article must
+name a country of the current trip as a destination, and must not name more
+non-trip destinations than trip ones — which is how a five-nation-tour headline
+stops being filed under a two-country trip that merely shares one leg.
+
 Run locally the same way the GitHub Action runs it:
     python3 scripts/refresh.py
 Optional: parse a saved registry dump instead of fetching live:
     python3 scripts/refresh.py --registry /tmp/registry.txt
 """
-import re, json, sys, html, pathlib, datetime, urllib.request, urllib.parse
+import re, json, sys, html, hashlib, pathlib, datetime, email.utils, urllib.request, urllib.parse
 from collections import defaultdict
+
+# Article-dating and trip-window tuning. The window is deliberately tight: a
+# generous window (e.g. +/- 14 days) is wider than the gap between consecutive
+# tours, so it would re-admit exactly the cross-trip coverage this guards against.
+FIRST_SEEN_KEEP_DAYS = 120  # ledger retention; keeps news.json small
+FIRST_SEEN_MAX_ENTRIES = 800  # hard cap so the browser's news.json stays small
+NEWS_LEAD_IN_DAYS = 3       # pre-departure previews ("PM leaves Friday")
+NEWS_LAG_DAYS = 4           # post-return wrap-ups and readouts
+REPORTED_SPAN_DAYS = 6      # matches detect_reported_trip's detection window
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 REGISTRY_URL = "http://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/"
@@ -146,13 +183,24 @@ def pick_focus_trip(trips, today):
 
 
 def parse_pubdate(s):
-    s = s.strip()
-    for fmt in ("%a, %d %b %Y %H:%M:%S %Z", "%a, %d %b %Y %H:%M:%S"):
-        try:
-            return datetime.datetime.strptime(s[:31].strip(), fmt).replace(tzinfo=None)
-        except Exception:
-            continue
-    return None
+    """RFC 2822 -> naive UTC datetime, or None.
+
+    Uses the stdlib RFC 2822 parser so numeric offsets (+0530) and named zones
+    both work, then normalises to UTC so every comparison and the date we
+    publish share one timezone. Previously this only handled GMT/UTC literals
+    and truncated the string at 31 chars.
+    """
+    if not s or not s.strip():
+        return None
+    try:
+        dt = email.utils.parsedate_to_datetime(s.strip())
+    except (TypeError, ValueError):
+        return None
+    if dt is None:
+        return None
+    if dt.tzinfo is not None:
+        dt = dt.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+    return dt
 
 
 def google_news(query):
@@ -174,10 +222,170 @@ def google_news(query):
         source = html.unescape(s.group(1)).strip() if s else ""
         if source and title.endswith(" - " + source):
             title = title[: -(len(source) + 3)].strip()
-        dt = parse_pubdate(d.group(1)) if d else None
+        raw = d.group(1).strip() if d else ""
+        dt = parse_pubdate(raw)
+        if raw and dt is None:
+            print(f"[news] unparseable pubDate {raw!r} — skipping {title[:60]!r}", file=sys.stderr)
+            continue
+        if dt is None:
+            print(f"[news] no pubDate — skipping {title[:60]!r}", file=sys.stderr)
+            continue
         items.append({"title": title, "source": source, "url": l.group(1).strip(),
-                      "date": dt.date().isoformat() if dt else "", "dt": dt})
+                      "date": dt.date().isoformat(), "dt": dt, "rawDate": raw})
     return items
+
+
+def collect_news(queries):
+    """Fetch every query and merge by URL, keeping the earliest pubDate seen.
+
+    Cross-feed disagreement about one URL is the feed telling on itself; the
+    earliest observation is the only defensible bound on publication time.
+    """
+    merged, conflicts = {}, 0
+    for q in queries:
+        for it in google_news(q):
+            prev = merged.get(it["url"])
+            if prev is None:
+                merged[it["url"]] = it
+                continue
+            if it["dt"] < prev["dt"]:
+                conflicts += 1
+                print(f"[news] feed disagreement on one URL: {prev['date']} vs {it['date']} "
+                      f"-> keeping {it['date']} | {it['title'][:60]!r}", file=sys.stderr)
+                merged[it["url"]] = it
+            elif it["dt"] > prev["dt"]:
+                conflicts += 1
+                print(f"[news] feed disagreement on one URL: {prev['date']} vs {it['date']} "
+                      f"-> keeping {prev['date']} | {it['title'][:60]!r}", file=sys.stderr)
+    if conflicts:
+        print(f"[news] {conflicts} cross-feed date conflict(s) resolved to the earliest date",
+              file=sys.stderr)
+    return list(merged.values())
+
+
+def url_key(url):
+    """Short digest of an article URL — the ledger's key.
+
+    Google News URLs are ~250-character blobs and the ledger holds hundreds of
+    them; storing them verbatim made news.json 220 KB, which the browser then
+    fetched on every page load. A 12-hex digest keeps it a few KB. The ledger is
+    pipeline bookkeeping only — the page never reads it.
+    """
+    return hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
+
+
+def load_ledger(news_path):
+    """First-seen ledger from the previous news.json: url digest -> earliest date."""
+    if not news_path.exists():
+        return {}
+    try:
+        prev = json.loads(news_path.read_text())
+    except (ValueError, OSError) as e:
+        print(f"[news] could not read existing news.json for the ledger: {e!r}", file=sys.stderr)
+        return {}
+    seen = prev.get("seen")
+    return dict(seen) if isinstance(seen, dict) else {}
+
+
+def apply_ledger(items, ledger, today_iso):
+    """Clamp each article's date to the earliest we have ever recorded for it.
+
+    Publication cannot post-date our first sighting, so the ledger only ever
+    lowers a date. Mutates items and returns the updated ledger.
+    """
+    for it in items:
+        k = url_key(it["url"])
+        floor = min([d for d in (ledger.get(k), it["date"], today_iso) if d])
+        if floor == it["date"]:
+            it["dateSource"] = "rss"
+        elif floor == ledger.get(k):
+            it["dateSource"] = "first-seen"
+        else:
+            it["dateSource"] = "clamped"  # feed claimed a future date
+        if floor != it["date"]:
+            print(f"[news] date revised down {it['date']} -> {floor} (first seen) | "
+                  f"{it['title'][:60]!r}", file=sys.stderr)
+            it["date"] = floor
+            it["dt"] = datetime.datetime.strptime(floor, "%Y-%m-%d")
+        ledger[k] = floor
+    return ledger
+
+
+def prune_ledger(ledger, today):
+    """Drop entries past retention, newest first, capped — bounds news.json size."""
+    cutoff = (today - datetime.timedelta(days=FIRST_SEEN_KEEP_DAYS)).isoformat()
+    fresh = [(k, d) for k, d in ledger.items() if d >= cutoff]
+    fresh.sort(key=lambda kv: kv[1], reverse=True)
+    return dict(fresh[:FIRST_SEEN_MAX_ENTRIES])
+
+
+def trip_window(start, end, as_of):
+    """Inclusive ISO date window of coverage that belongs to this trip.
+
+    Registry trips have real dates, so the window hugs the trip itself. A
+    news-reported trip has none, so it anchors on the freshest signal and spans
+    the same lookback the detector used.
+    """
+    def shift(iso, days):
+        return (datetime.date.fromisoformat(iso) + datetime.timedelta(days=days)).isoformat()
+    if start and end:
+        return shift(start, -NEWS_LEAD_IN_DAYS), shift(end, NEWS_LAG_DAYS)
+    if as_of:
+        return shift(as_of, -REPORTED_SPAN_DAYS), shift(as_of, NEWS_LAG_DAYS)
+    return None, None
+
+
+def article_matches_trip(title, trip_countries):
+    """True when the headline reads as coverage of *this* trip.
+
+    Requires a named destination on the itinerary, and rejects headlines whose
+    destinations are mostly elsewhere — that is a different tour's article that
+    happens to share a leg.
+    """
+    if not trip_countries:
+        return True, ""
+    dests = destination_countries(title)
+    if not dests:
+        return False, "no destination country named"
+    inside = [d for d in dests if d in trip_countries]
+    outside = [d for d in dests if d not in trip_countries]
+    if not inside:
+        return False, f"destinations {'/'.join(dests)} not on this trip"
+    if len(outside) > len(inside):
+        return False, f"mostly other destinations ({'/'.join(outside)})"
+    return True, ""
+
+
+def select_trip_articles(items, trip_countries, window, limit=6):
+    """Date- and relevance-filter articles for one trip, newest first, deduped.
+
+    Returns every qualifying article (the caller's articles_out applies the
+    display limit) so a corroboration count can reflect all of them.
+    """
+    lo, hi = window
+    kept, seen_titles = [], set()
+    for a in sorted(items, key=lambda x: x["dt"], reverse=True):
+        reason = ""
+        key = a["title"].lower()
+        if key in seen_titles:
+            reason = "duplicate headline"
+        elif lo and a["date"] < lo:
+            reason = f"published before window ({lo})"
+        elif hi and a["date"] > hi:
+            reason = f"published after window ({hi})"
+        else:
+            ok, why = article_matches_trip(a["title"], trip_countries)
+            if not ok:
+                reason = why
+        if reason:
+            print(f"[news] FILTERED {a['date']} | {reason} | {a['title'][:70]!r}", file=sys.stderr)
+            continue
+        seen_titles.add(key)
+        kept.append(a)
+        print(f"[news] INCLUDED {a['date']} | {a['source'][:18]} | {a['title'][:70]!r}", file=sys.stderr)
+    print(f"[news] {len(items)} candidate(s) -> {len(kept)} kept -> {min(len(kept), limit)} published",
+          file=sys.stderr)
+    return kept
 
 
 def find_countries(text):
@@ -212,34 +420,37 @@ def destination_countries(title):
 
 
 def articles_out(items, limit=6):
-    return [{"title": a["title"], "source": a["source"], "url": a["url"], "date": a["date"]}
+    return [{"title": a["title"], "source": a["source"], "url": a["url"],
+             "date": a["date"], "dateSource": a.get("dateSource", "rss")}
             for a in items[:limit]]
 
 
-def fetch_news_for(query, limit=6):
-    return articles_out(google_news(query), limit)
+REPORTED_QUERIES = ["Narendra Modi arrives", "PM Modi visit", "Narendra Modi lands",
+                    "PM Modi foreign visit", "Modi bilateral summit"]
 
 
-def detect_reported_trip(min_sources=3, recency_days=3):
+def detect_reported_trip(pool, min_sources=3, recency_days=3):
     """A trip credible news corroborates but the registry hasn't published yet.
 
     A country is only treated as a trip leg when it appears with a destination
     cue (arrives/visits/welcomes…), in >= min_sources independent recent
     articles, with its freshest mention within recency_days of the newest signal.
     These guards keep out framing noise (e.g. 'counter China') and stale recaps.
+
+    `pool` is already deduped by URL with dates clamped by the ledger, so a
+    re-dated week-old article no longer counts as corroboration for today.
     """
     now = datetime.datetime.utcnow()
-    window = now - datetime.timedelta(days=6)
-    queries = ["Narendra Modi arrives", "PM Modi visit", "Narendra Modi lands",
-               "PM Modi foreign visit", "Modi bilateral summit"]
+    since = now - datetime.timedelta(days=REPORTED_SPAN_DAYS)
     seen, items = set(), []
-    for q in queries:
-        for it in google_news(q):
-            key = it["title"].lower()
-            if key in seen or not it["dt"] or it["dt"] < window:
-                continue
-            seen.add(key)
-            items.append(it)
+    for it in sorted(pool, key=lambda x: x["dt"], reverse=True):
+        key = it["title"].lower()
+        if key in seen or it["dt"] < since:
+            continue
+        seen.add(key)
+        items.append(it)
+    print(f"[news] reported-trip detection: {len(pool)} unique article(s), "
+          f"{len(items)} within {REPORTED_SPAN_DAYS}d of {now.date()}", file=sys.stderr)
     if not items:
         return None
 
@@ -260,16 +471,70 @@ def detect_reported_trip(min_sources=3, recency_days=3):
 
     countries = sorted(cand, key=lambda c: min(x["dt"] for x in cand[c]))  # tour order
     primary = countries[-1]  # most recently begun leg = current location
-    tour_items = sorted(
-        [a for a in items if any(c in cand for c in destination_countries(a["title"]))],
-        key=lambda x: x["dt"], reverse=True)
+    as_of = freshest.date().isoformat()
+    window = trip_window(None, None, as_of)
+    articles = select_trip_articles(items, countries, window)
     return {
         "countries": countries,
         "primary": primary,
-        "asOf": freshest.date().isoformat(),
-        "sourceCount": len(tour_items),
-        "articles": articles_out(tour_items, 6),
+        "asOf": as_of,
+        "sourceCount": len(articles),
+        "window": window,
+        "articles": articles_out(articles),
     }
+
+
+def build_news(reg_trip, reg_status, today, news_path):
+    """Collect and date-validate coverage for the focus trip; write data/news.json.
+
+    Separated from main() so the news path can be exercised on its own without
+    re-writing the authoritative visits.json.
+    """
+    ledger = load_ledger(news_path)
+    print(f"[news] first-seen ledger: {len(ledger)} known URL(s)", file=sys.stderr)
+
+    # Only look for a news-reported trip when the registry has none in progress.
+    reported = None
+    if reg_status != "ongoing":
+        pool = collect_news(REPORTED_QUERIES)
+        ledger = apply_ledger(pool, ledger, today)
+        reported = detect_reported_trip(pool)
+
+    if reported:
+        status = "reported"
+        trip_block = {"label": human_join(reported["countries"]), "start": None, "end": None,
+                      "countries": reported["countries"]}
+        articles = reported["articles"]
+        window = reported["window"]
+        print(f"Reported trip (unofficial): {', '.join(reported['countries'])} · {reported['sourceCount']} sources")
+    else:
+        status = reg_status
+        countries = split_countries(reg_trip["label"]) if reg_trip else []
+        trip_block = ({"label": reg_trip["label"], "start": reg_trip["start"], "end": reg_trip["end"],
+                       "countries": countries} if reg_trip else None)
+        focus = countries[0] if countries else "Narendra Modi"
+        window = trip_window(reg_trip["start"], reg_trip["end"], None) if reg_trip else (None, None)
+        pool = collect_news([f"Narendra Modi {focus} visit"])
+        ledger = apply_ledger(pool, ledger, today)
+        articles = articles_out(select_trip_articles(pool, countries, window))
+
+    news = {
+        "generated": datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+        "status": status,
+        "reported": ({"countries": reported["countries"], "primary": reported["primary"],
+                      "asOf": reported["asOf"], "sourceCount": reported["sourceCount"]}
+                     if reported else None),
+        "trip": trip_block,
+        # The window the articles below were filtered against; the page re-checks
+        # it client-side so a stale news.json cannot render mislabelled coverage.
+        "window": {"from": window[0], "to": window[1]},
+        "articles": articles,
+        "seen": prune_ledger(ledger, datetime.date.today()),
+    }
+    news_path.write_text(json.dumps(news, indent=2, ensure_ascii=False) + "\n")
+    print(f"Wrote {len(articles)} articles to data/news.json (focus: {status}, "
+          f"window {window[0]}..{window[1]})")
+    return news
 
 
 def main():
@@ -298,34 +563,7 @@ def main():
     print(f"Wrote {len(trips)} trips to data/visits.json")
 
     reg_trip, reg_status = pick_focus_trip(trips, today)
-
-    # Only look for a news-reported trip when the registry has none in progress.
-    reported = detect_reported_trip() if reg_status != "ongoing" else None
-
-    if reported:
-        status = "reported"
-        trip_block = {"label": human_join(reported["countries"]), "start": None, "end": None,
-                      "countries": reported["countries"]}
-        articles = reported["articles"]
-        print(f"Reported trip (unofficial): {', '.join(reported['countries'])} · {reported['sourceCount']} sources")
-    else:
-        status = reg_status
-        trip_block = ({"label": reg_trip["label"], "start": reg_trip["start"], "end": reg_trip["end"],
-                       "countries": split_countries(reg_trip["label"])} if reg_trip else None)
-        focus = reg_trip["label"].split(",")[0].split(" & ")[0] if reg_trip else "Narendra Modi"
-        articles = fetch_news_for(f"Narendra Modi {focus} visit")
-
-    news = {
-        "generated": datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
-        "status": status,
-        "reported": ({"countries": reported["countries"], "primary": reported["primary"],
-                      "asOf": reported["asOf"], "sourceCount": reported["sourceCount"]}
-                     if reported else None),
-        "trip": trip_block,
-        "articles": articles,
-    }
-    (ROOT / "data" / "news.json").write_text(json.dumps(news, indent=2, ensure_ascii=False) + "\n")
-    print(f"Wrote {len(articles)} articles to data/news.json (focus: {status})")
+    build_news(reg_trip, reg_status, today, ROOT / "data" / "news.json")
 
 
 if __name__ == "__main__":

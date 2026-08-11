@@ -316,7 +316,7 @@
     .news-title { font-size: .92rem; font-weight: 500; line-height: 1.4; color: var(--text);
       display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     .news-card .go { margin-top: auto; font-size: .76rem; font-weight: 600; color: var(--accent); }
-    .news-empty { font-size: .86rem; color: var(--text-3); padding: var(--sp-4) 0; }
+    .news-empty { font-size: .86rem; color: var(--text-3); padding: var(--sp-4) 0; grid-column: 1 / -1; margin: 0; }
 
     /* ============ Sections ============ */
     .section { padding: var(--sp-12) 0 0; }
@@ -1676,18 +1676,112 @@ async function loadNews() {
   } catch (e) { console.warn('[news]', e); document.getElementById('newsBlock').hidden = true; }
 }
 
+// Coverage-window tuning, mirroring scripts/refresh.py. Kept tight on purpose:
+// a wide window is wider than the gap between consecutive tours, so it would
+// re-admit the previous trip's coverage under the current trip's heading.
+const NEWS_LEAD_IN_DAYS = 3, NEWS_LAG_DAYS = 4, REPORTED_SPAN_DAYS = 6;
+
+function isValidISODate(s) {
+  if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  // Round-trip guards against 2026-02-30 and friends.
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
+}
+
+function shiftISO(iso, days) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + days));
+  return dt.toISOString().slice(0, 10);
+}
+
+// The pipeline records the window it filtered against; re-derive only as a
+// fallback so an older news.json still renders correctly.
+function newsWindow(data) {
+  const w = data && data.window;
+  if (w && (isValidISODate(w.from || '') || isValidISODate(w.to || ''))) {
+    return [isValidISODate(w.from || '') ? w.from : null, isValidISODate(w.to || '') ? w.to : null];
+  }
+  const trip = (data && data.trip) || {};
+  if (isValidISODate(trip.start || '') && isValidISODate(trip.end || ''))
+    return [shiftISO(trip.start, -NEWS_LEAD_IN_DAYS), shiftISO(trip.end, NEWS_LAG_DAYS)];
+  const asOf = data && data.reported && data.reported.asOf;
+  if (isValidISODate(asOf || ''))
+    return [shiftISO(asOf, -REPORTED_SPAN_DAYS), shiftISO(asOf, NEWS_LAG_DAYS)];
+  return [null, null];
+}
+
+// Second line of defence over the pipeline's own filtering: a served news.json
+// can be stale or hand-edited, and a wrong date on this page is worse than a
+// missing card. ISO strings compare lexicographically, so no Date objects and
+// no timezone drift. Returns {kept, log}.
+function validateArticles(arts, win) {
+  const [lo, hi] = win;
+  const kept = [], log = [], seen = new Set();
+  arts.slice().sort((a, b) => String(b && b.date).localeCompare(String(a && a.date))).forEach(a => {
+    if (!a || !a.title || !a.url) {
+      log.push(['FILTERED', a && a.date, a && a.title, 'missing title or link']);
+      return;
+    }
+    const key = a.url + '|' + String(a.title).toLowerCase();
+    let reason = '';
+    if (!isValidISODate(a.date)) reason = `unusable date ${JSON.stringify(a.date)}`;
+    else if (seen.has(key)) reason = 'duplicate';
+    else if (lo && a.date < lo) reason = `before window (${lo})`;
+    else if (hi && a.date > hi) reason = `after window (${hi})`;
+    if (reason) { log.push(['FILTERED', a.date, a.title, reason]); return; }
+    seen.add(key);
+    kept.push(a);
+    log.push(['INCLUDED', a.date, a.title, a.dateSource || 'rss']);
+  });
+  return {kept, log};
+}
+
 function renderNews(data) {
   const block = document.getElementById('newsBlock');
   const arts = (data && data.articles) || [];
-  if (!arts.length) { block.hidden = true; return; }
-  const label = data.trip && data.trip.label ? ` · ${esc(data.trip.label)}` : '';
+  const trip = (data && data.trip) || null;
+  const label = trip && trip.label ? ` · ${esc(trip.label)}` : '';
+  const win = newsWindow(data);
+  const {kept, log} = validateArticles(arts, win);
+
+  if (console.groupCollapsed) {
+    console.groupCollapsed(`[News] ${kept.length}/${arts.length} article(s) shown · window ${win[0] || '—'} → ${win[1] || '—'}`);
+    log.forEach(([status, date, title, note]) =>
+      console.log(`[News] Article: ${JSON.stringify(String(title || '').slice(0, 80))} | Published: ${date || 'n/a'} | Status: ${status} (${note})`));
+    console.log(`[News] ${arts.length} received, ${kept.length} passed date validation, ${arts.length - kept.length} filtered · refreshed ${(data && data.generated) || 'unknown'}`);
+    console.groupEnd();
+  }
+
+  // Nothing to say at all (no trip context) → stay out of the way. With a trip
+  // but no qualifying coverage, say so rather than silently vanishing.
+  if (!trip && !kept.length) { block.hidden = true; return; }
   document.getElementById('newsTitle').innerHTML = `Latest coverage${label}`;
-  document.getElementById('newsGrid').innerHTML = arts.map(a => `
-    <a class="news-card" href="${esc(a.url)}" target="_blank" rel="noopener">
-      <div class="news-src"><span class="pub">${esc(a.source || 'News')}</span>${a.date ? `<span class="dot"></span><span>${esc(fmtDate(a.date))}</span>` : ''}</div>
-      <div class="news-title">${esc(a.title)}</div>
+
+  if (!kept.length) {
+    document.getElementById('newsGrid').innerHTML =
+      `<p class="news-empty">No recent coverage found for this trip.</p>`;
+    block.hidden = false;
+    return;
+  }
+
+  document.getElementById('newsGrid').innerHTML = kept.map(a => {
+    // Where the feed contradicted itself, we publish the earliest date we can
+    // stand behind and say so on hover rather than printing a confident guess.
+    const revised = a.dateSource && a.dateSource !== 'rss';
+    const note = 'earliest confirmed sighting; the news feed reports inconsistent dates for this article';
+    const dateAttrs = revised
+      ? ` title="${esc(note.charAt(0).toUpperCase() + note.slice(1))}." aria-label="${esc(fmtDate(a.date) + ' — ' + note + '.')}"`
+      : '';
+    return `
+    <a class="news-card" href="${esc(a.url)}" target="_blank" rel="noopener"
+       data-article-date="${esc(a.date)}" data-date-source="${esc(a.dateSource || 'rss')}"
+       data-trip="${esc((trip && trip.label) || '')}">
+      <div class="news-src"><span class="pub">${esc(a.source || 'News')}</span><span class="dot"></span><span${dateAttrs}>${esc(fmtDate(a.date))}${revised ? '*' : ''}</span></div>
+      <div class="news-title" title="${esc(a.title)}">${esc(a.title)}</div>
       <span class="go">Read ↗</span>
-    </a>`).join('');
+    </a>`;
+  }).join('');
   block.hidden = false;
 }
 
