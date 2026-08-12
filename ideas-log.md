@@ -380,3 +380,55 @@ horizontal scroll at 375px; dark mode verified.
 
 **Files touched:** `scripts/refresh.py`, `scripts/test_news_dates.py` (new), `index.html`,
 `data/news.json`
+
+## 2026-08-12 — "Copy citation" button on the trip drawer
+
+**Shipped.** The trip drawer's action list gets a second button next to "Copy link to this
+trip": "Copy citation", which copies a ready-to-paste, Chicago-style web citation to the
+clipboard — publisher, quoted trip label and date range, access date, the trip's existing
+permalink, and the underlying source (`pmindia.gov.in`). E.g.:
+
+> India PM Foreign Visits Tracker, "France & Slovakia, 13–18 Jun 2026," accessed 12 August
+> 2026, https://…?trip=2026-06-13--france-and-slovakia. Source data: PM India
+> Foreign/Domestic Visits registry (pmindia.gov.in).
+
+Plain text, not a formatted `<cite>` block — it needs to survive a paste into a footnote, a
+Slack message, or a terminal alike. Confirms via the same visible label-swap + `aria-live`
+pattern as the existing copy-link button, and reuses its clipboard-with-textarea-fallback
+logic (extracted into a shared `copyToClipboard`/`flashCopied` pair rather than duplicated).
+
+This is the most-repeated open item in the log after the sort backlog cleared 08-11: flagged
+fresh in 08-10 ("genuinely useful for journalists... a live correctness bug... outranks a new
+convenience feature") and again in 08-11 ("a real trust/citation win for the stated
+journalist/researcher audience... still open"). Nothing fresher outranked it today, and it's
+pure read-side logic over data already in memory plus the permalink infrastructure shipped
+08-07 — no new dependency, no data-provenance touch, and a citation string is inherently
+neutral (label, dates, PM name, source) so it carries no non-partisan-framing risk.
+
+**Runners-up**
+- *Data-caveats/limitations panel* (documenting parsing edge cases like the 08-10 compound-
+  country fix) — genuine trust value, flagged again in the 08-11 log, but passive
+  documentation still ranks below a working feature two logs have asked for by name.
+- *"Longest gap between trips" fact* — a genuinely new way to read the data, open since 08-07,
+  but still needs more definitional care (what counts as a "gap" — same PM only? any PM?) than
+  a one-day slot affords cleanly.
+- *Missing favicon / apple-touch-icon* — fresh find: the page has OG/Twitter images and a
+  JSON-LD dataset block but no `<link rel="icon">` at all, so every browser tab and bookmark
+  is unbranded. Real, but smaller and lower-stakes than the citation backlog.
+- *Registry column visibility toggle for narrow screens* — mobile polish; the table already
+  scrolls horizontally in its own container, unchanged priority from prior logs.
+- *robots.txt + sitemap.xml + canonical link* — rejected on the same "marginal payoff for a
+  single-URL site" grounds as every prior log (08-02/04/07/08).
+
+**Verification:** `node --check` on both inline scripts. Playwright against the served page
+(Plotly stubbed; `cdn.plot.ly` blocked in this sandbox) at 1280px, 375px, and both themes:
+opening a trip and clicking "Copy citation" places the exact expected string on the clipboard,
+flips the button label to "Citation copied" and the `aria-live` region to match, and reverts
+after 1.8s — independently of the adjacent "Copy link" button (clicking one doesn't touch the
+other's label or timer, confirming the per-button timer fix in the shared helper). All 44
+registry rows render, all 6 charts initialize, filters/sort/CSV unaffected, no horizontal
+scroll at 375px, dark mode renders both drawer buttons identically to light. Console clean bar
+the pre-existing, sandbox-only Google Fonts block. All three fallback tiers untouched — the
+citation is built entirely from the in-memory `trip` object already used by the open drawer.
+
+**Files touched:** `index.html`
