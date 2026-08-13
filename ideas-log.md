@@ -432,3 +432,49 @@ the pre-existing, sandbox-only Google Fonts block. All three fallback tiers unto
 citation is built entirely from the in-memory `trip` object already used by the open drawer.
 
 **Files touched:** `index.html`
+
+## 2026-08-13 — Data-caveats panel documenting parsing rules
+
+**Shipped.** The Methodology section gets a new "Reading the numbers correctly" subsection: five
+collapsed `<details>` disclosures explaining how the page turns registry text into the counts
+everything else is built on — how "Multi-country" vs "Single-country" is decided (itinerary
+country count > 1), how itineraries are split into countries (`&`/"and", with the compound-name
+allowlist from the 08-10 fix), how trip duration is counted (inclusive of both stated dates),
+how "Reportedly abroad now" trips are excluded from every KPI/chart/export until the official
+registry lists them, and the conservative-only-revise-earlier rule for "Latest coverage" article
+dates (from the 08-11 news-dating fix). Reuses the existing `.chart-data` disclosure-triangle CSS
+pattern for visual consistency; pure documentation of parsing logic already in `normalizeTrips`
+and the news pipeline — no new derivation, no code-path changes, no data touch.
+
+This is the single most-repeated open item in the log after the sort and citation backlogs
+cleared: flagged in 08-10 ("worth its own cycle"), 08-11 ("still open"), and 08-12 ("still ranks
+below a working feature two logs have asked for by name") — three separate days named it "genuine
+trust value" and passed it over. Nothing fresher in today's brainstorm outranked it, it directly
+serves "trust and credibility signals" (one of CLAUDE.md's named dimensions), and it carries zero
+non-partisan risk since it only documents factual parsing decisions already made in code.
+
+**Runners-up**
+- *Favicon / apple-touch-icon* — flagged fresh in 08-12 ("real, but smaller and lower-stakes than
+  the citation backlog"); still true relative to the caveats backlog. Still open.
+- *"Longest gap between trips" fact* — open since 08-07, still needs more definitional care (same
+  PM only? any PM?) than a one-day slot affords cleanly.
+- *Registry column visibility toggle for narrow screens* — mobile polish; the table already
+  scrolls horizontally in its own container, unchanged priority from prior logs.
+- *robots.txt + sitemap.xml + canonical link* — rejected on the same "marginal payoff for a
+  single-URL site" grounds as every prior log (08-02/04/07/08/10/11).
+- *Active-filter chip summary (removable pills)* — fresh idea; URL state already syncs and Reset
+  already clears everything in one click, so the added value over the existing filter bar is
+  thin.
+
+**Verification:** `node --check` on both inline scripts. Playwright against the served page
+(Plotly stubbed with the correct string-id call signature; `cdn.plot.ly` blocked in this sandbox)
+at 1280px and 375px: all 5 caveat disclosures present, open/close correctly on click, and read the
+intended copy; no horizontal scroll at either width; dark mode renders the new section with the
+same tokens as the rest of the page (screenshot-verified, all 5 open simultaneously). All 6 charts
+initialize via `Plotly.react` (fixed the stub to resolve by element id, matching how the real code
+calls it), all 5 KPI cards render, all 44 registry rows render. Console clean bar the pre-existing,
+sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log. All three fallback
+tiers untouched — this is a static content addition to the existing Methodology section, reading
+nothing from `trips`/`news.json` at all.
+
+**Files touched:** `index.html`
