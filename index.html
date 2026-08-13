@@ -415,6 +415,23 @@
     .method h3 { font: 600 .95rem/1.35 var(--font-ui); margin: 0 0 var(--sp-2); }
     .method p { font-size: .87rem; color: var(--text-2); line-height: 1.6; margin: 0; }
 
+    .caveats { margin-top: var(--sp-8); max-width: 62ch; }
+    .caveats-title { font: 600 1rem/1.35 var(--font-ui); margin: 0 0 var(--sp-2); }
+    .caveats-sub { font-size: .85rem; color: var(--text-3); line-height: 1.6; margin: 0 0 var(--sp-4); }
+    .caveat { border-top: 1px solid var(--border); padding: var(--sp-3) 0; }
+    .caveat:last-child { border-bottom: 1px solid var(--border); }
+    .caveat summary {
+      cursor: pointer; font: 600 .88rem/1.4 var(--font-ui); color: var(--text);
+      list-style: none; display: flex; align-items: baseline; gap: var(--sp-2);
+      border-radius: var(--radius-sm);
+    }
+    .caveat summary::-webkit-details-marker { display: none; }
+    .caveat summary::before { content: '▸'; font-size: .65em; color: var(--accent); flex: none; transition: transform .15s ease; position: relative; top: -1px; }
+    .caveat[open] summary::before { transform: rotate(90deg); }
+    .caveat summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .caveat summary:hover { color: var(--accent-strong); }
+    .caveat p { font-size: .87rem; color: var(--text-2); line-height: 1.65; margin: var(--sp-2) 0 0; padding-left: 1.1em; }
+
     /* ============ Footer ============ */
     .site-footer { margin-top: var(--sp-16); border-top: 1px solid var(--border); padding: var(--sp-8) 0 var(--sp-12); }
     .site-footer .wrap { display: flex; flex-wrap: wrap; gap: var(--sp-4) var(--sp-8); align-items: baseline; justify-content: space-between; }
@@ -653,6 +670,31 @@
             <h3>Embedded snapshot <span style="color:var(--text-3);font-weight:500">— tertiary</span></h3>
             <p>If both network sources fail, the page uses the official snapshot baked into the HTML — the tracker always shows verified data, even fully offline.</p>
           </div>
+        </div>
+
+        <div class="caveats">
+          <h3 class="caveats-title">Reading the numbers correctly</h3>
+          <p class="caveats-sub">Every count on this page follows a small set of parsing rules. They're documented here rather than left implicit.</p>
+          <details class="caveat">
+            <summary>How "Multi-country" is decided</summary>
+            <p>A trip is <strong>Multi-country</strong> the moment its itinerary lists more than one destination, and <strong>Single-country</strong> otherwise. A five-day trip touching two countries is one trip with two country touches — not two trips.</p>
+          </details>
+          <details class="caveat">
+            <summary>Splitting an itinerary into countries</summary>
+            <p>Itinerary labels are split on "&amp;" and "and" to build the per-country list every chart, filter, and KPI reads from. A short allowlist protects official compound names — Trinidad and Tobago, Bosnia and Herzegovina, Antigua and Barbuda, and similar — so they aren't torn into two countries by that same rule.</p>
+          </details>
+          <details class="caveat">
+            <summary>How trip duration is counted</summary>
+            <p><strong>Days</strong> is an inclusive count of the registry's stated start and end dates — a trip listed as 12–14 June is 3 days, not 2.</p>
+          </details>
+          <details class="caveat">
+            <summary>"Reportedly abroad now"</summary>
+            <p>When press coverage describes a trip the official registry hasn't listed yet, it's shown separately and marked <strong>Press-reported</strong>. It is never counted in any KPI, chart, or export until the registry itself lists it.</p>
+          </details>
+          <details class="caveat">
+            <summary>"Latest coverage" headlines</summary>
+            <p>Auto-collected third-party news, not fact-checked by this project and not an endorsement of any characterization in a headline. Article dates are cross-checked across multiple search feeds and only ever adjusted earlier, never later, to keep older coverage from being mis-filed as reporting on a new trip.</p>
+          </details>
         </div>
       </div>
     </section>
