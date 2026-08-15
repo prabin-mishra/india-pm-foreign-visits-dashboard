@@ -529,3 +529,50 @@ every prior log. All three fallback tiers untouched — icons are static assets 
 `<head>`, entirely independent of which data tier populates `trips`.
 
 **Files touched:** `index.html`, `favicon.png` (new), `apple-touch-icon.png` (new)
+
+## 2026-08-15 — "Longest gap without a trip" fact
+
+**Shipped.** The hero's existing `facts` row (which already surfaces "Most visited" and "Longest
+trip") gets a third, computed fact: the longest stretch, among the trips currently in view, between
+one trip ending and the next one starting — e.g. "Longest gap without a trip · 184 days (16 Nov 2022
+– 19 May 2023)". This is CLAUDE.md's "a new way to read the data" dimension, and no prior cycle had
+shipped one yet.
+
+This exact idea has been named open since 08-07 and repeatedly passed over "because a fresh
+analytical claim needs more definitional care... than a one-day slot affords" — specifically the
+question "same PM only? any PM?" (08-07, 08-11, 08-12). Resolved it today by not inventing new
+scoping rules at all: the fact operates on `rows`, the already-filtered array every other KPI and
+fact on the page already reads, so PM/year/country/search scope is whatever the user's existing
+filters already show — identical mechanics to "Most visited" and "Longest trip" today. No new
+filter semantics, so no new ambiguity. Pure display-layer computation over data already normalized
+in memory (sorts a copy of the filtered rows by `start`, diffs consecutive `end`→`start` pairs,
+keeps the max); no data-provenance touch, no new dependency, no new CSS (reuses the existing `.fact`
+class). The fact only counts gap length, never which PM was or wasn't traveling during it, so it
+carries no partisan-scoring risk.
+
+**Runners-up**
+- *robots.txt + sitemap.xml + canonical link* — rejected an eighth time on the same "marginal
+  payoff for a single-URL site" grounds as every prior log.
+- *Registry column visibility toggle for narrow screens* — mobile polish; the table already
+  scrolls horizontally in its own container, unchanged priority from prior logs.
+- *Per-chart "download as PNG" button* — flagged 08-14; Plotly's modebar is deliberately disabled,
+  so this needs its own UI, bigger than today's slot.
+- *Skeleton loaders for KPI/chart panels* — flagged 08-14; real perceived-performance polish, but
+  thinner value than finally closing the oldest open item in the log.
+- *Active-filter chip summary (removable pills)* — rejected 08-13 on the same "URL state already
+  syncs, Reset already clears everything" grounds; nothing changed that call today.
+
+**Verification:** `node --check` on the extracted inline script; unit-checked the gap logic in
+isolation (single-trip view → no gap fact; adjacent/overlapping trips → 0-day gap correctly
+suppressed, not shown as a negative or zero-day "fact"; tied max gaps → first occurrence wins
+deterministically). Playwright against the served page (Plotly stubbed; `cdn.plot.ly` blocked in
+this sandbox) at 1280px and 375px: fact renders correctly, all 6 charts initialize, all 5 KPIs and
+44 registry rows render, no horizontal scroll at either width. Narrowing the view to 2 trips
+(search "Bhutan") recomputes the gap correctly for that subset; narrowing further to 1 trip hides
+it (confirmed via the isolated logic test, since no live single-row filter combination existed in
+today's dataset). Dark mode renders the new fact with the same themed color as the other two.
+Console clean bar the pre-existing, sandbox-only Google Fonts network block noted in every prior
+log. All three fallback tiers untouched — the fact reads only `rows`, the already-normalized
+in-memory trip list, identically regardless of which tier populated `trips`.
+
+**Files touched:** `index.html`

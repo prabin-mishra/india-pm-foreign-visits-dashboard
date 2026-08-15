@@ -968,9 +968,22 @@ function renderFacts(rows) {
     .reduce((m, c) => ((m[c] = (m[c] || 0) + 1), m), {});
   const top = Object.entries(countryCounts).sort((a, b) => b[1] - a[1])[0];
   const longest = rows.reduce((a, b) => a.days >= b.days ? a : b);
+  // Longest stretch with no foreign trip in progress, among trips currently in view — i.e. the
+  // gap between one visible trip's end and the next visible trip's start. Scope (which PM(s),
+  // which years) is whatever the active filters already show, exactly like every other fact/KPI
+  // on this page; this adds no new filter semantics of its own.
+  let gap = null;
+  if (rows.length > 1) {
+    const sorted = [...rows].sort((a, b) => a.start.localeCompare(b.start));
+    for (let i = 1; i < sorted.length; i++) {
+      const span = daysDiff(sorted[i - 1].end, sorted[i].start);
+      if (span > (gap ? gap.days : 0)) gap = {days: span, from: sorted[i - 1].end, to: sorted[i].start};
+    }
+  }
   document.getElementById('facts').innerHTML = [
     top     ? `<span class="fact">Most visited · <strong>${top[0]}</strong> (${top[1]}×)</span>` : '',
     longest ? `<span class="fact">Longest trip · <strong>${longest.label}</strong>, ${longest.days} days</span>` : '',
+    gap     ? `<span class="fact" title="Days between the end of one trip in view and the start of the next, within the current filters">Longest gap without a trip · <strong>${fmt(gap.days)} days</strong> (${fmtDate(gap.from)} – ${fmtDate(gap.to)})</span>` : '',
   ].filter(Boolean).join('');
 }
 
