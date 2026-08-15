@@ -1,71 +1,75 @@
 {
-  "generated": "2026-08-14T04:52:47Z",
-  "status": "recent",
-  "reported": null,
-  "trip": {
-    "label": "Indonesia, Australia & New Zealand",
-    "start": "2026-07-06",
-    "end": "2026-07-11",
+  "generated": "2026-08-15T03:44:12Z",
+  "status": "reported",
+  "reported": {
     "countries": [
-      "Indonesia",
-      "Australia",
-      "New Zealand"
+      "Bangladesh"
+    ],
+    "primary": "Bangladesh",
+    "asOf": "2026-08-14",
+    "sourceCount": 3
+  },
+  "trip": {
+    "label": "Bangladesh",
+    "start": null,
+    "end": null,
+    "countries": [
+      "Bangladesh"
     ]
   },
   "window": {
-    "from": "2026-07-03",
-    "to": "2026-07-15"
+    "from": "2026-08-08",
+    "to": "2026-08-18"
   },
   "articles": [
     {
-      "title": "Beneath BrahMos: PM Modi’s Indonesia visit and the strategic deal underlining nickel",
-      "source": "organiser.org",
-      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxPblBpMS0wTE5ZR24yRTU1RGllcVZvYlp2TVAxbWRhZ2Yyck0yV0t4bE51ZmJxdjBxbGkwRFhhTjZ6el8xV2wtOTZSVFlON3hnbDVINjdqQ0NQV01kdWpXYmxCWDZtNEhzVGloQm1yN0lpQ0Y2ZFJPV1RXRTlHYVpiZmpaOHF6MGhOcDBMSUFqaFFwNjVvS1lyM0V5NTVybkhOMWEwQ0JfcGttOEJWU1hzVnNEY3F4ekNJXzN4dWtENWY2TEhxSnVHcNIBzgFBVV95cUxPbXJLMkVRS2RnWkVIQWFVT3g5VXVWSTlrQXN3c2Z3WTVnc0p4MG5hYkJaYVhIWnVnNU1NOS1pWUROU1lwZm04UjFwMWhzdkFUQkFJbHNNQldIaWNnWEJyOXprLXNkN2FoWEd6M0xiazVOLTl1Wk9WZ0N1aElDWjJpZnkyMGJCMXBnXzZBQkNjUWZfMjlhRUNWcGt5M092a2JxbFh4bW40aHFnZlZadk9nRTBkU0NLWkQwTl9PcmR6Xy1lWWZnMTlQbm1WSWw1dw?oc=5",
-      "date": "2026-07-12",
+      "title": "India-Bangladesh ties in focus as PM Tarique Rahman likely to visit Delhi ahead of Brics summit",
+      "source": "Firstpost",
+      "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxOT3pNc0drZGJMVE5NTkxreXZjaXdXcTdneEh5bmREamc2ZXhYUHRpTmtQdmM3OWJzQTRFWVo5bEcyZU5kS2V6akhrSU1XTG5ZQWM5bnAyTnJpQk5jbFF2SHFVeVFyVHJNV2J1d29iNWZHUEN3NF9CZ1VRZG1Jd3J3YjVSNkZ3T3JsQkdzaFBvTFA4eTBERXl4NWhBWDNIN0NZT2s2MzFneXUya18zVzI1djRVdDNYd050bXIwOUwyd2t5ZmlEUzRkek5kaEtRcGRlUkRPOVJ1Q3fSAd4BQVVfeXFMTVFaX3pMMkhpSXAzNTVSeE9kcER3VVJuQzhuOHVjZ1FaN2FYQTI4NFV4emNjbTNCSmRPbmQ2ZHBFWXVocnBHazlZSUs0NmZBdWtYZGZaWnkxS050OHZRbUpTeEdwN1FESWZwenZTWmZzMkNua3BEZUpJamlDV01UNkNuaDBqTl9obWFzMkFmaVlRVnI3dGR0MEhZdFVBSFkzRDNWWUV3WHZWekZOcEhubGZvREdaaFc0ekJLR215Nm1QRlFCRHk4MlNhbG1QdVZHRi1CSG9OWDJfendEeGFR?oc=5",
+      "date": "2026-08-14",
       "dateSource": "rss"
     },
     {
-      "title": "'Deepened bonds, strengthened partnerships': PM Modi concludes three-nation tour, departs from New Zealand for India",
-      "source": "DD India",
-      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQMWRKOEpyWl9rUUgwWkxXNTB5NVJ1d3lWWGd0MTR5VG5PSFBRLWRuN0JjWW9OaWpHd0ZFMS1QVkpGVW05UGQtQmxlWUpWOGRHcmNLUmNXME54QXpYeWRfV2ZBcHFvdmRxZE1HZzk5T2VXeG51T2EwM3dyTXNPbkdiWkhxZ0NSUE1DR0lRM3VpMDhwMzZqcmtlSFoyLW9rZkZZRm5KWFBScGQyUWxkMVRhMG9HaTFvNkxTT3dPaXRGOExLOUl5ZWwtdE1XWml2dEdDdEJaamh4TDJqdw?oc=5",
-      "date": "2026-07-11",
+      "title": "Modi-Rahman meet before BRICS? Bangladesh PM likely to visit New Delhi as India ties enter new phase",
+      "source": "Moneycontrol.com",
+      "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxQX0x2R2U4YzI1SDdxZjlpMlNRb0phSDhNcGZLZjJGSVA0dkNjXzRQTFVDdy1YaXJrMXZ6T2lON2xQZkNXS1ZhSXdaVXVsRG9XWVZJWGtZa2RsTzUzcFdmdzl1OTIwWVN1eXNYMmd1TVlQQWJPeTdkbXBxbFZCbFo1MVEtT3owYnZMUno3WE8teEtEUzdvU2VnRVQ0Wm1TZ1JIMVhHZjItQjBWdVQzaUtjWmRGWVAxeVVxN1JYc1MyNTIzRlRxTTZWOGh0REZPd3BzUlg4LVlFOWJnR1RYME5vb1RnZWdxRVNOcTVQX9IB8gFBVV95cUxOdDRJZXBselZqalhid0pEUW91YXFub2RCS0EyUDdsZE1ROGtnMEJWM0NMNUd6UkFSQnRja1VYUjRzQ1hBMzB4N053WXJ1ajN2LWFLVzRNd01mRVotZG9mZzJmQWoxRS0xWlRodHB3c2N3aDJmVlhkYWw5QzNRRXRFaG95bTFDNkFxVXdWVjd1TV9HaXR4dlNmQ0h0dlUxWjRnV1l3QUlxdXlJU3JxNmtweFZFWnRzZTdmSlh5UVl6TjI2dGgzYmY5REM3UTUxb01kaTlHM0xGQW5fOUp4VUo1T0hZN29ybUMyUmdVdS1xcGpTQQ?oc=5",
+      "date": "2026-08-14",
       "dateSource": "rss"
     },
     {
-      "title": "Why Modi’s visits aren’t making news in Indonesia, Australia and New Zealand",
-      "source": "ThePrint",
-      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxORVIzczdRZnBHTFh4MXRma2poQU5zZVdwTDBVY1BOeTI0Z3hPQWtISHJraTFSSF8tb2x0dnJ1Nll2Nkw5MDZsVjc0amxlbVVYX0tZZ1BVZE9NVGU2OXh5RWxGOUVKQXRCZFl5Um45Ny1wZElfdHV4VDRaaHRBQ3p1U09sOHpLc1l3amMwY0c4anUyZV81MGVIMF91S3p2cUd0MU9zd3lXWFhLS0Fad01JQVpYTHpZY2xsRmQxLdIBwgFBVV95cUxQOUVKY2ZFTXZwREl4VzR3X0lnSVhRZDBvM2xqVlFYUGRwMWZwQ3FuOXE3LW5pVmF3UVl5WDhnNFJORnp2YzZtSUN4QmcwUWYxQV8wZUZsUmVTYWJicXdMTG1zQ0FVamwyejFZWnkxRHhMZ29ORXlPLW9oNGJuUjNBcU8wLXJiYzdqU0J4b1lsTjNNRW9YOGRWUkF6VklCNFE1RkxtVDhuOTU4Vjc2MENRTUpSN1JGUWxHMFJ2ZGU0ZTV1QQ?oc=5",
-      "date": "2026-07-10",
-      "dateSource": "rss"
-    },
-    {
-      "title": "PM’s New Zealand visit will unlock new avenues of cooperation: govt.",
-      "source": "The Hindu",
-      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOR0YxTHBvbVhqckxqeURLdmNnUGZJMGNpcnpuVjhJTG5FV0k0Rmg0RE4yeEFDd2dtRTVnUDllQ0c3TmNTeVdkdmFidUpscnBEdDRQLXlsT1NpV0VQNVo0VEVLS3FPeW4yel9FdzBkMWlxQnhTQlZ1YVZhQjdrYThITU96d2M5bjB3Z2NzaEphUzF5Q1JGUzlSU0k0M0dreGdjLVM1MtIBqwFBVV95cUxQNU9YVlp1Zm15WjY5TVFSdFN5RzBYRlZ6X1JuMDVoZVV5TzBPeVJRano3c3EtTDduTWxCcGNwMldYelZVOUlEaV9meW1zYmV5c2hXTzV3SDh1YkNEQjdVTFozR04wZ3hyNmw2YzBabDBrNjBiTHZGLVRGX2FRcDJYQWk2V1FZTGMtNXpFdEdBWWUteEVRaElFTVZLM2JXY0ZhTG94QzMydUtSaEU?oc=5",
-      "date": "2026-07-10",
-      "dateSource": "rss"
-    },
-    {
-      "title": "PM Modi Arrives In New Zealand On Final Leg Of 3-Nation Tour",
+      "title": "Bangladesh PM Likely To Visit India Next Week, 1st Trip Since Assuming Power",
       "source": "NDTV",
-      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNX2xjaGpnZUVVR1F6SERsSFk1ellwYy03cUo3VDBGNW5rSVQ5Tk45bzI1VDdyVE9WYnNTWVA5a091TkNIS0luV0l0SHVrWlNYUnJnVzJITDhXZEtDTGhvMFlRMzBrbk1hN21VSDhDcW5MS0x4NGVSVWwzbUU0eFVfaXdzVXlFTlNvUDFaMVlXN1AzMXB6V2QtbW9DUmVLMWdmczFj0gGrAUFVX3lxTE42ZXFZOGEtR3RSUExmUEhQUVZXWXpRdmRZeUY1QlpibkE2bnZVa1lZTE05S1drcjAxTS0tSkdGdzNvMkNwcXNlSmVFRHRXTENOQXZ0b1ZOQWdtTVNVb0hud05LMWhIN3ZLb2pyRTBlUGtBcGc2dlFwLUpHR2tKd1Q5SFRwV3pRTTE1dXYzNkRFdjRZRGFib044bC00QnpicUsxSGU3QTNmM1JIWQ?oc=5",
-      "date": "2026-07-10",
-      "dateSource": "rss"
-    },
-    {
-      "title": "After Australia visit, PM Modi leaves for New Zealand for final leg of three-nation tour",
-      "source": "The New Indian Express",
-      "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxOeHFvUk11VkUxZnhWTDhmVHNCcmd5ZmhBOV9tOWU0Zm1MTEZiX2dIZl9XYk9qVkZvN2lSeUZSVDFjQjl3WU5CTWpvZ1JFYTJkOFRQRFBuZUJLcWtTOGczT002emZ1ZEN2Y3hWaHBRMFg2eTZleUJMSkh0RTk5TndzcW5mZVViSmtTZXRZRElIbGxobEhqR29rcTNJNTRPSjZYd0ZGc2Y3cmVNWXBIRXdGLUJ3QlNhUGF1RDlsVGswVEt0Qnk0TTV5cjl3X1h0bFk1Q01IZtIB4gFBVV95cUxPQXZxVXAxR2JqelBtWlU0OUhOREJBaThiN3FRZFk0Z0cxdGFNRTdnclNBLWxPX2d6XzVQVkRmUEJfMGhIUzM1aWU1TDlaWXJMcGYtX0tGTnhaQ0JrVGFvOWN1d1FEcnNNSEVfYzhhb3YwQjhGTHZLeUhCcVNMNmlFN3l5VHBwUG9MbzV5Y05ldnE2NGE1NTZ3MWNOaDg4VjZydGZ0SnBBVGFFTFdvODJ6LVRDaml6dEtJa2V1QTFFUXh0aG8xWGFuQ2IzcVRQWHRrZ3paaEhtLVB4TnBkejgzbEt3?oc=5",
-      "date": "2026-07-10",
+      "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPRTM1M0I1WDI0UnNkM1NWZHFMRHJLdF8taDNTZWxxcnM3QVAtbzF2RnIzY3Jpa2FYYUl2dk4tX0tITTFUQVJ1V2JNRUJPTXg3cjM0S25yekpCWThKdlZWcHVnR2hDYmFvWEJGM3ZhQkU1SEpQVXR5OEJXZEY4OVR6bmY1dTk4SWx6eThGTDBLaVM5NENyU1hIV19kU3paTjNobGZLZUMwZlRGSnM3dHgwU0hleWZ1Y09lZUNBMXlMTlZ4bHNYWWZNZ1hPQdIB0wFBVV95cUxQdUJmUmRtanFjYXpjNFg0SkEza0xzN0preDUtRDRDRGNneXFqdjZHTy1udXkwUWRpdTBsOGJoc1pIRWJzZWI1T2lnTDFsWFlQY0t6dG9PSGMwaXJURW9Pbm1Ob25tU2p5a19mMU80NnFyeXFnMld5U19KbUFjZkhNR1k1azJIRVlKNnlSdlNQTkl3UVZxQ0Z0SENhWjE2REwzZFBDUnplSnRNMEpsU0tycHdDbmdpckQ1T3VtQjlaNWNBQTR1ZVVlcGtKdjY0VGRLNy1Z?oc=5",
+      "date": "2026-08-14",
       "dateSource": "rss"
     }
   ],
   "seen": {
+    "f180e0e2e819": "2026-08-15",
+    "506fa1571d8f": "2026-08-15",
+    "6491d57d650a": "2026-08-15",
+    "ab0acc6ea92e": "2026-08-15",
+    "0b9229bb46b3": "2026-08-15",
+    "775c48c97b9a": "2026-08-15",
+    "1ea3dc16ea0f": "2026-08-15",
+    "cd348d5b86e5": "2026-08-15",
+    "88beea775b6b": "2026-08-15",
+    "ecd179c65bda": "2026-08-14",
+    "018fb2f511e9": "2026-08-14",
+    "4098fd10013d": "2026-08-14",
+    "d1974738acc3": "2026-08-14",
+    "309c4b0f2940": "2026-08-14",
+    "e9aee629c3d3": "2026-08-14",
+    "25baf2017614": "2026-08-14",
+    "2a70b5444cb1": "2026-08-14",
+    "15adbff79d73": "2026-08-14",
+    "00419432fe85": "2026-08-14",
     "9fd8e2564a03": "2026-08-13",
     "3daa4fe899ca": "2026-08-13",
     "8ee99890c460": "2026-08-13",
     "1cc0f2af6184": "2026-08-13",
     "e8a94d984e7c": "2026-08-13",
+    "1f21d2bd8ae8": "2026-08-13",
     "785c85b1e378": "2026-08-12",
     "81941451ff9d": "2026-08-12",
     "0504451833ba": "2026-08-11",
@@ -90,7 +94,6 @@
     "cf681d08cac9": "2026-08-09",
     "d87779490660": "2026-08-09",
     "dc4c0a2b67a2": "2026-08-09",
-    "1c8f2bc0de4b": "2026-08-09",
     "6c543de7fcdc": "2026-08-08",
     "419f2c54560c": "2026-08-08",
     "40db720317d9": "2026-08-08",
@@ -167,9 +170,11 @@
     "9c7a50d2c688": "2026-07-29",
     "0d7a9b248119": "2026-07-29",
     "86e3c9dd6432": "2026-07-28",
+    "71f786b8cac4": "2026-07-28",
     "07fa1e2d92d5": "2026-07-27",
     "399b411ec142": "2026-07-26",
     "2492b3b524c4": "2026-07-26",
+    "6aeb8831c6f9": "2026-07-25",
     "1d0d286fdc60": "2026-07-24",
     "75203ce9c519": "2026-07-24",
     "ec1769ecf2c1": "2026-07-23",
@@ -330,6 +335,7 @@
     "f6acd303dd45": "2026-07-08",
     "205f18ccbed5": "2026-07-08",
     "63eb938287fd": "2026-07-08",
+    "342516d648f9": "2026-07-08",
     "a941f90e44dd": "2026-07-07",
     "74519539c237": "2026-07-07",
     "7d4d6af7806d": "2026-07-07",
@@ -399,6 +405,7 @@
     "f0e9f2095a6a": "2026-07-02",
     "91663c190f8a": "2026-07-02",
     "832eb83f3759": "2026-07-02",
+    "cc3eaec6d8db": "2026-07-02",
     "dbdcb4dbd7bf": "2026-07-01",
     "b4454674c831": "2026-06-30",
     "7a6030f7072b": "2026-06-29",
@@ -585,6 +592,7 @@
     "27fffd532b6d": "2026-06-10",
     "92b526744ae0": "2026-06-10",
     "ae7e87e19653": "2026-06-10",
+    "c30e73864065": "2026-06-10",
     "22fadc84bffb": "2026-06-09",
     "7568aae94ab5": "2026-06-09",
     "42b099f32ddc": "2026-06-09",
@@ -607,6 +615,7 @@
     "22dfbe94ebba": "2026-06-02",
     "9a07c27682e8": "2026-06-02",
     "3436a3533d81": "2026-06-02",
+    "1c8f2bc0de4b": "2026-06-01",
     "857152a381f1": "2026-05-29",
     "5bba009c27b3": "2026-05-28",
     "a7cf8d01238a": "2026-05-28",
@@ -618,6 +627,7 @@
     "4dfaa4bd886b": "2026-05-27",
     "9dde18df5909": "2026-05-27",
     "6ad1adb67f41": "2026-05-27",
+    "f33be2ae68ec": "2026-05-27",
     "73626d3eb99f": "2026-05-26",
     "be46efbc78c6": "2026-05-26",
     "674fcd9f7d3a": "2026-05-26",
@@ -673,6 +683,7 @@
     "0380c3258c32": "2026-05-19",
     "a03ba1107d52": "2026-05-19",
     "e577c31c22e5": "2026-05-19",
+    "566045d502fd": "2026-05-19",
     "c5594e768cd4": "2026-05-18",
     "6b915c86efdc": "2026-05-18",
     "f315980870ae": "2026-05-18",
@@ -723,6 +734,7 @@
     "27d244c11989": "2026-05-15",
     "e12171e0c981": "2026-05-14",
     "9ed3fa1a74c5": "2026-05-14",
+    "cd2186c4b390": "2026-05-14",
     "7cfde1cc5936": "2026-05-13",
     "20a69ad3e68e": "2026-05-12",
     "8a922a6c372f": "2026-05-12",
