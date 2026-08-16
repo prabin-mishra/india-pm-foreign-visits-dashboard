@@ -580,7 +580,7 @@
         <div class="field"><label for="visitType">Visit type</label><select id="visitType"></select></div>
         <div class="field"><label for="q">Search</label><input id="q" type="search" placeholder="Israel, USA, summit…" /></div>
         <div class="filter-spacer"></div>
-        <span class="result-count" id="tableSubtitle"></span>
+        <span class="result-count" id="tableSubtitle" aria-live="polite" aria-atomic="true"></span>
         <button class="btn-reset" id="resetFilters" type="button">Reset</button>
       </div>
     </div>
@@ -1287,7 +1287,16 @@ function handleSortClick(key) {
 }
 
 function renderTable(rows) {
-  document.getElementById('tableSubtitle').textContent = `${rows.length} trip${rows.length === 1 ? '' : 's'}`;
+  // aria-live="polite" on this span (see markup) announces filter/search/sort results to
+  // screen-reader users, who otherwise get no signal that the registry and charts changed —
+  // the 5 filter controls and search box previously updated this text silently. Spelling out
+  // "N of M" only when the view is actually narrowed keeps the default (unfiltered) state as
+  // the plain "N trips" it always was, and gives a screen-reader user real context (how many
+  // trips this view is filtered out of) without the visual label growing when it isn't needed.
+  const total = trips.length;
+  document.getElementById('tableSubtitle').textContent = rows.length === total
+    ? `${rows.length} trip${rows.length === 1 ? '' : 's'}`
+    : `${rows.length} of ${total} trip${total === 1 ? '' : 's'}`;
   const dl = document.getElementById('downloadCsv');
   dl.disabled = !rows.length;
   dl.setAttribute('aria-label', rows.length

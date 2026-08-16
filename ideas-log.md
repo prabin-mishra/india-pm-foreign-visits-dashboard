@@ -576,3 +576,50 @@ log. All three fallback tiers untouched — the fact reads only `rows`, the alre
 in-memory trip list, identically regardless of which tier populated `trips`.
 
 **Files touched:** `index.html`
+
+## 2026-08-16 — Announce filter/search results to screen readers
+
+**Shipped.** The registry's "N trips" result-count span (`#tableSubtitle`) updates visibly on every
+change to the five filter controls (PM, Year, Country, Visit type, Search) and on sort, but carried
+no `aria-live` — a screen-reader user changing a filter got no signal at all that the registry and
+all six charts had just changed, and no route to "how many trips does this view now show" short of
+manually re-navigating into the table. Added `aria-live="polite" aria-atomic="true"` to the span so
+every filter/search change is announced automatically. Also tightened the announced text itself:
+when a filter actually narrows the view it now reads "23 of 44 trips" instead of just "23 trips" —
+context a sighted user gets for free from the surrounding filter bar, but a screen-reader user
+hearing the span in isolation would otherwise miss entirely. The unfiltered baseline ("44 trips")
+is untouched, so the visible label doesn't grow when nothing is filtered.
+
+A fresh find, not a repeat of any backlogged item: I checked the log's existing a11y list (drawer
+focus trap, chart data tables, sortable columns) and all three are shipped; this is a different gap
+in the same family — visible-but-silent state changes — that nothing in the log had named before.
+Small, isolated to two lines (one HTML attribute, one text-branch), and carries the standard ARIA
+"live region announces results count" pattern, so no new UI, dependency, or design decision.
+
+**Runners-up**
+- *Registry column visibility toggle for narrow screens* — mobile polish, open since 08-08; the
+  table already scrolls horizontally in its own container, unchanged priority from every prior log.
+- *Per-chart "download as PNG" button* — flagged 08-14/08-15; Plotly's modebar is deliberately
+  disabled, so this needs its own UI, bigger than today's slot.
+- *Skeleton loaders for KPI/chart panels* — flagged 08-14/08-15; real perceived-performance polish,
+  but thinner value than a live, unflagged accessibility gap.
+- *robots.txt + sitemap.xml + canonical link* — rejected a ninth time on the same "marginal payoff
+  for a single-URL site" grounds as every prior log.
+- *"On this day" historical-trips callout* — fresh idea (trips that started on today's month/day in
+  past years), but most calendar days have zero matches in a 44-trip dataset, so the feature would
+  be empty or hidden more often than not — inconsistent value for a permanent UI slot.
+- *Lazy-render below-the-fold charts via IntersectionObserver* — fresh idea, but Plotly's already
+  deferred (08-09) and first paint is already unblocked; the marginal gain didn't clearly outweigh
+  adding a second render-gating path alongside the existing `plotlyReady` one.
+
+**Verification:** `node --check` on both inline scripts. Playwright against the served page (Plotly
+stubbed; `cdn.plot.ly` blocked in this sandbox) at 1280px and 375px: `#tableSubtitle` carries
+`aria-live="polite"`/`aria-atomic="true"`; unfiltered load reads "44 trips"; selecting Visit type →
+Multi-country updates it live to "23 of 44 trips"; searching "Bhutan" updates it to "2 of 44 trips";
+Reset restores "44 trips". All 6 charts initialize, all 5 KPI cards render, all 44 registry rows
+render, no horizontal scroll at either width. Console clean bar the pre-existing, sandbox-only
+Google Fonts network block noted in every prior log. All three fallback tiers untouched — the
+change reads only `rows.length` and `trips.length`, both already in memory regardless of which tier
+populated `trips`.
+
+**Files touched:** `index.html`
