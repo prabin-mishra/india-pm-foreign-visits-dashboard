@@ -1,13 +1,13 @@
 {
-  "generated": "2026-08-15T03:44:12Z",
+  "generated": "2026-08-16T03:51:58Z",
   "status": "reported",
   "reported": {
     "countries": [
       "Bangladesh"
     ],
     "primary": "Bangladesh",
-    "asOf": "2026-08-14",
-    "sourceCount": 3
+    "asOf": "2026-08-16",
+    "sourceCount": 4
   },
   "trip": {
     "label": "Bangladesh",
@@ -18,21 +18,28 @@
     ]
   },
   "window": {
-    "from": "2026-08-08",
-    "to": "2026-08-18"
+    "from": "2026-08-10",
+    "to": "2026-08-20"
   },
   "articles": [
     {
-      "title": "India-Bangladesh ties in focus as PM Tarique Rahman likely to visit Delhi ahead of Brics summit",
-      "source": "Firstpost",
-      "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxOT3pNc0drZGJMVE5NTkxreXZjaXdXcTdneEh5bmREamc2ZXhYUHRpTmtQdmM3OWJzQTRFWVo5bEcyZU5kS2V6akhrSU1XTG5ZQWM5bnAyTnJpQk5jbFF2SHFVeVFyVHJNV2J1d29iNWZHUEN3NF9CZ1VRZG1Jd3J3YjVSNkZ3T3JsQkdzaFBvTFA4eTBERXl4NWhBWDNIN0NZT2s2MzFneXUya18zVzI1djRVdDNYd050bXIwOUwyd2t5ZmlEUzRkek5kaEtRcGRlUkRPOVJ1Q3fSAd4BQVVfeXFMTVFaX3pMMkhpSXAzNTVSeE9kcER3VVJuQzhuOHVjZ1FaN2FYQTI4NFV4emNjbTNCSmRPbmQ2ZHBFWXVocnBHazlZSUs0NmZBdWtYZGZaWnkxS050OHZRbUpTeEdwN1FESWZwenZTWmZzMkNua3BEZUpJamlDV01UNkNuaDBqTl9obWFzMkFmaVlRVnI3dGR0MEhZdFVBSFkzRDNWWUV3WHZWekZOcEhubGZvREdaaFc0ekJLR215Nm1QRlFCRHk4MlNhbG1QdVZHRi1CSG9OWDJfendEeGFR?oc=5",
+      "title": "India and Bangladesh in talks for visit by PM Tarique Rahman next week",
+      "source": "The Times of India",
+      "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPOHpQeVpscm9QeHJaaWUxWTJybjdxOW1FSWNZOV9ta3p4R3lVUGNhT004SS1mR3AzbTA4SkVRU2VrS0RWT285M19mczhxSnZOSndhdXRaTE0zb0g5RklwY3k2aEx2cGxFWjllR211NmxuOXVPTnZBYjR1UkZnYlNnd0VCdTg2NEFrNUJxc2NjdHMyeFRMYlFzVzFueWtsVWt6UTdISW0tSFNLLUFLbk1RLTh5eVJvbVdZMjVrY3E2TC1HM2o3c054T0tUOVVOYnE1S2RqVtIB2gFBVV95cUxNYWtpNEhCOFVOcXhlUUVuRDFQWGRKWVJyRS1neFgtdTVVaWg4VXZ3SDhJT3RjZ1JPNFVCUmVvdmZxUDZXSy0tQ1FyWFVyZDZ6WWUyM2hDZi1hemJXczJIaEFRZDl5eFhCT2hxQmZzTXh1RFNfeWZtTEVXaTF2c0hSekpKX1dleXZ1Q014TmI2MGhCeGR0bkVNeGRwMnBzVTFyZ05ELWRFTGw1aWtSSVE0NVgwVkQyb3NYa244T3BlTk5HY25zTUl1eTE2eXFEaTdQbFhyY0VaQllPQQ?oc=5",
+      "date": "2026-08-16",
+      "dateSource": "rss"
+    },
+    {
+      "title": "Video | Tarique Rahman To Visit India: Can Modi Meeting Reset Strained India-Bangladesh Ties?",
+      "source": "NDTV",
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPOHgyaTd0MmEzeTZpN3BwZ25icGllc09vdGliTDNPR2hjbzYtTDRPa2hnM3N4Ui16c0NDdkxZdV96Vmp4UmNEZlZYTUEtZzQ0T2RDV0dyeDBkdURycTVoZmlucjZsX0xPQkdxVjdjYmNRRlA5Y0dJVWl4a0pneXEwazhxaFhmaHBSU2Q2MlpDR3BaLTN6WU54c0UxRTFrLUU5WEdWOU9NVnRDSUpPMTlwVmlGSGhRVFhoSnc?oc=5",
       "date": "2026-08-14",
       "dateSource": "rss"
     },
     {
-      "title": "Modi-Rahman meet before BRICS? Bangladesh PM likely to visit New Delhi as India ties enter new phase",
-      "source": "Moneycontrol.com",
-      "url": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxQX0x2R2U4YzI1SDdxZjlpMlNRb0phSDhNcGZLZjJGSVA0dkNjXzRQTFVDdy1YaXJrMXZ6T2lON2xQZkNXS1ZhSXdaVXVsRG9XWVZJWGtZa2RsTzUzcFdmdzl1OTIwWVN1eXNYMmd1TVlQQWJPeTdkbXBxbFZCbFo1MVEtT3owYnZMUno3WE8teEtEUzdvU2VnRVQ0Wm1TZ1JIMVhHZjItQjBWdVQzaUtjWmRGWVAxeVVxN1JYc1MyNTIzRlRxTTZWOGh0REZPd3BzUlg4LVlFOWJnR1RYME5vb1RnZWdxRVNOcTVQX9IB8gFBVV95cUxOdDRJZXBselZqalhid0pEUW91YXFub2RCS0EyUDdsZE1ROGtnMEJWM0NMNUd6UkFSQnRja1VYUjRzQ1hBMzB4N053WXJ1ajN2LWFLVzRNd01mRVotZG9mZzJmQWoxRS0xWlRodHB3c2N3aDJmVlhkYWw5QzNRRXRFaG95bTFDNkFxVXdWVjd1TV9HaXR4dlNmQ0h0dlUxWjRnV1l3QUlxdXlJU3JxNmtweFZFWnRzZTdmSlh5UVl6TjI2dGgzYmY5REM3UTUxb01kaTlHM0xGQW5fOUp4VUo1T0hZN29ybUMyUmdVdS1xcGpTQQ?oc=5",
+      "title": "India-Bangladesh ties in focus as PM Tarique Rahman likely to visit Delhi ahead of Brics summit",
+      "source": "Firstpost",
+      "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxOT3pNc0drZGJMVE5NTkxreXZjaXdXcTdneEh5bmREamc2ZXhYUHRpTmtQdmM3OWJzQTRFWVo5bEcyZU5kS2V6akhrSU1XTG5ZQWM5bnAyTnJpQk5jbFF2SHFVeVFyVHJNV2J1d29iNWZHUEN3NF9CZ1VRZG1Jd3J3YjVSNkZ3T3JsQkdzaFBvTFA4eTBERXl4NWhBWDNIN0NZT2s2MzFneXUya18zVzI1djRVdDNYd050bXIwOUwyd2t5ZmlEUzRkek5kaEtRcGRlUkRPOVJ1Q3fSAd4BQVVfeXFMTVFaX3pMMkhpSXAzNTVSeE9kcER3VVJuQzhuOHVjZ1FaN2FYQTI4NFV4emNjbTNCSmRPbmQ2ZHBFWXVocnBHazlZSUs0NmZBdWtYZGZaWnkxS050OHZRbUpTeEdwN1FESWZwenZTWmZzMkNua3BEZUpJamlDV01UNkNuaDBqTl9obWFzMkFmaVlRVnI3dGR0MEhZdFVBSFkzRDNWWUV3WHZWekZOcEhubGZvREdaaFc0ekJLR215Nm1QRlFCRHk4MlNhbG1QdVZHRi1CSG9OWDJfendEeGFR?oc=5",
       "date": "2026-08-14",
       "dateSource": "rss"
     },
@@ -45,6 +52,8 @@
     }
   ],
   "seen": {
+    "932a9319503f": "2026-08-16",
+    "95dff8656dec": "2026-08-16",
     "f180e0e2e819": "2026-08-15",
     "506fa1571d8f": "2026-08-15",
     "6491d57d650a": "2026-08-15",
@@ -54,6 +63,13 @@
     "1ea3dc16ea0f": "2026-08-15",
     "cd348d5b86e5": "2026-08-15",
     "88beea775b6b": "2026-08-15",
+    "ae83d2ccb3b8": "2026-08-15",
+    "ce485aad5213": "2026-08-15",
+    "d1c61b3cb370": "2026-08-15",
+    "218861cfb586": "2026-08-15",
+    "93d9f812b1a0": "2026-08-15",
+    "7746a3405c20": "2026-08-15",
+    "aa2646cfe574": "2026-08-15",
     "ecd179c65bda": "2026-08-14",
     "018fb2f511e9": "2026-08-14",
     "4098fd10013d": "2026-08-14",
@@ -64,6 +80,9 @@
     "2a70b5444cb1": "2026-08-14",
     "15adbff79d73": "2026-08-14",
     "00419432fe85": "2026-08-14",
+    "19c663d33ebf": "2026-08-14",
+    "633c34252af5": "2026-08-14",
+    "b528f5a5fa8d": "2026-08-14",
     "9fd8e2564a03": "2026-08-13",
     "3daa4fe899ca": "2026-08-13",
     "8ee99890c460": "2026-08-13",
@@ -184,6 +203,7 @@
     "33d2050ec451": "2026-07-23",
     "6236c3149bd2": "2026-07-22",
     "6acda961489a": "2026-07-20",
+    "7059cae42c16": "2026-07-18",
     "10180f9fd5e8": "2026-07-17",
     "77b35ffc4657": "2026-07-17",
     "f0a6c31b85fa": "2026-07-17",
@@ -257,6 +277,7 @@
     "4aa993dbbf7a": "2026-07-10",
     "ccab3740964f": "2026-07-10",
     "cd1dd1e3f380": "2026-07-10",
+    "1898b0f69c47": "2026-07-10",
     "49b97ad38cca": "2026-07-09",
     "af97ef7e8f50": "2026-07-09",
     "9c69b09e7411": "2026-07-09",
@@ -391,6 +412,7 @@
     "2be1930e5ec2": "2026-07-06",
     "c6b07122b6ff": "2026-07-05",
     "8a8d2295613a": "2026-07-04",
+    "7b661085984f": "2026-07-04",
     "f7a19783970d": "2026-07-03",
     "643b61af4f59": "2026-07-03",
     "6b2eeb297cd5": "2026-07-03",
@@ -407,6 +429,7 @@
     "832eb83f3759": "2026-07-02",
     "cc3eaec6d8db": "2026-07-02",
     "dbdcb4dbd7bf": "2026-07-01",
+    "21197b78a1a7": "2026-07-01",
     "b4454674c831": "2026-06-30",
     "7a6030f7072b": "2026-06-29",
     "3302318264c0": "2026-06-29",
@@ -492,6 +515,7 @@
     "f19fbb9e6bf1": "2026-06-17",
     "9a619192ec47": "2026-06-17",
     "97fcf46e6671": "2026-06-17",
+    "2c00733a3502": "2026-06-17",
     "adaa7ce8db4e": "2026-06-16",
     "3d4e6dec64e7": "2026-06-16",
     "b54261510078": "2026-06-16",
@@ -522,6 +546,7 @@
     "6baf7b5a0e77": "2026-06-16",
     "169b12b7b432": "2026-06-16",
     "624e910a2a9e": "2026-06-16",
+    "ffa464791f28": "2026-06-16",
     "5558b0384ca6": "2026-06-15",
     "7b1b643f37eb": "2026-06-15",
     "7977ef5fff8f": "2026-06-15",
@@ -588,6 +613,7 @@
     "575525899b8e": "2026-06-11",
     "d41b011f0ed0": "2026-06-11",
     "7f6b2a88b09d": "2026-06-11",
+    "c1cdaedf7809": "2026-06-11",
     "b4f2cb693599": "2026-06-10",
     "27fffd532b6d": "2026-06-10",
     "92b526744ae0": "2026-06-10",
@@ -602,6 +628,7 @@
     "9a356f64338d": "2026-06-09",
     "ace28e355ec6": "2026-06-09",
     "6c90295ba2fb": "2026-06-09",
+    "47ad0d73edae": "2026-06-09",
     "83d55743b8cc": "2026-06-08",
     "b5c005ec719c": "2026-06-08",
     "96b14f0564f4": "2026-06-07",
@@ -628,6 +655,7 @@
     "9dde18df5909": "2026-05-27",
     "6ad1adb67f41": "2026-05-27",
     "f33be2ae68ec": "2026-05-27",
+    "bf347331d0c0": "2026-05-27",
     "73626d3eb99f": "2026-05-26",
     "be46efbc78c6": "2026-05-26",
     "674fcd9f7d3a": "2026-05-26",
