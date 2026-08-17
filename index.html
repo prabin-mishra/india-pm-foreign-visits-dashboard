@@ -154,6 +154,9 @@
     }
     .skip-link:focus { left: 0; }
 
+    /* Screen-only byline shown at the top of a printed page for citation; see @media print. */
+    .print-byline { display: none; }
+
     .wrap { max-width: var(--content-w); margin: 0 auto; padding: 0 var(--sp-6); }
 
     /* ============ Header ============ */
@@ -511,10 +514,50 @@
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
+
+    /* ============ Print ============
+       Registry + methodology are the citable core; charts are replaced by their existing
+       accessible data tables (opened for print, see beforeprint/afterprint below) rather than
+       printing Plotly canvases, whose interactive chrome and colours aren't built for paper. */
+    @media print {
+      /* Force the light palette regardless of the on-screen toggle, so print never wastes ink
+         on a dark background. */
+      [data-theme="dark"] {
+        --bg: #f6f4ef; --surface: #fdfcfa; --surface-2: #efece4; --surface-3: #e7e3d8;
+        --border: #e0dcd0; --border-strong: #c8c2b2; --text: #1d1b16; --text-2: #5d594e; --text-3: #6e6957;
+        --accent: #0e6b70; --accent-strong: #0a5257; --accent-soft: rgba(14,107,112,.10);
+        --gold: #a97a12; --gold-text: #7d5b0c; --gold-soft: rgba(169,122,18,.12);
+        --ok: #45702a; --warn: #8f4e1c; --scrim: rgba(24,21,15,.44);
+      }
+
+      .print-byline {
+        display: block; font-size: .82rem; color: var(--text-3);
+        padding: var(--sp-4) var(--sp-6) 0;
+      }
+
+      /* Interactive-only chrome that means nothing on paper. */
+      .skip-link, .site-nav, #themeToggle, .filterbar .field, .filterbar .btn-reset,
+      .btn-download, #newsBlock, #drawer, #drawer-overlay, .sort-icon {
+        display: none !important;
+      }
+
+      /* Sticky positioning has no meaning across paginated output and can duplicate chrome. */
+      .site-header, .filterbar, th { position: static !important; backdrop-filter: none !important; }
+
+      /* Charts don't print reliably (interactive canvas, on-screen-only colours); their
+         existing accessible data tables carry the same numbers and print cleanly. */
+      .charts [role="img"] { display: none !important; }
+      .chart-data { border: none; }
+      .chart-data summary { pointer-events: none; }
+      .chart-data-scroll { overflow: visible !important; }
+
+      tr, .panel, .chart-data, .method .panel { break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <p class="print-byline">India PM Foreign Visits Tracker — https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/ — printed <span id="printDate"></span></p>
 
   <header class="site-header">
     <div class="wrap">
@@ -2031,6 +2074,26 @@ window.addEventListener('popstate', () => {
     closeDrawer({push: false});
   }
 });
+
+// Printing: expand every chart's accessible data table (normally collapsed) so the numbers
+// a chart represents actually appear on paper, and restore each one's prior open/closed state
+// afterwards so print doesn't change what's showing on screen. Also stamp the print byline
+// with today's date for citation.
+(function () {
+  let priorOpenState = null;
+  window.addEventListener('beforeprint', () => {
+    const details = document.querySelectorAll('details.chart-data');
+    priorOpenState = Array.from(details).map(d => d.open);
+    details.forEach(d => { d.open = true; });
+    const printDate = document.getElementById('printDate');
+    if (printDate) printDate.textContent = new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'});
+  });
+  window.addEventListener('afterprint', () => {
+    if (!priorOpenState) return;
+    document.querySelectorAll('details.chart-data').forEach((d, i) => { d.open = priorOpenState[i]; });
+    priorOpenState = null;
+  });
+})();
 
 loadTrips();
 </script>

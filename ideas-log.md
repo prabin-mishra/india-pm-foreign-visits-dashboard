@@ -623,3 +623,67 @@ change reads only `rows.length` and `trips.length`, both already in memory regar
 populated `trips`.
 
 **Files touched:** `index.html`
+
+## 2026-08-17 — Print stylesheet
+
+**Shipped.** A `@media print` block makes the page produce a clean, citable printout instead of
+whatever the screen chrome happens to render onto paper. Hidden: site nav, dark-mode toggle,
+filter form controls, CSV/download buttons, "Latest coverage" (third-party, image-heavy, not core
+to the dataset), the trip drawer, and the sort-arrow glyphs. Kept: hero, KPIs, facts, live-trip
+status, the result-count text (so an active filter is still legible on the page), the registry
+table, and Methodology. The six Plotly canvases — interactive chrome and on-screen-only colours
+that don't survive paper — are replaced by their existing accessible data tables (shipped 08-08):
+`beforeprint`/`afterprint` handlers force every `<details class="chart-data">` open for the print
+pass and restore each one's exact prior open/closed state afterward, so a reader who had a table
+open on screen doesn't lose that state and one who hadn't isn't left with six tables sprung open
+after printing. Dark mode's CSS variables are overridden back to the light palette specifically
+under `@media print`, regardless of the on-screen toggle, so printing in dark mode doesn't burn
+ink on a near-black background. A small byline (site name, URL, "printed \<date\>") appears only
+in print, at the top of page one, giving a paper copy the same citation trail the 08-07 permalink
+and 08-12 copy-citation features already give a shared link.
+
+Named once, on day one (08-04: "the deliberate opposite of the obvious pick... real but niche
+demand") and never repeated or explicitly rejected since — genuinely fresh, not a repeat pick.
+Chosen over the day's other candidates because it's the only one that's both fully open (no
+existing accessibility, correctness, or trust defect currently outranks it) and cleanly one-day:
+pure CSS plus two small event listeners, no new dependency, no data-provenance touch, and it
+leans on data tables and citation infrastructure the site already has rather than building new
+UI. It also serves the stated journalist/researcher audience directly — a page designed to be
+cited benefits from being printable without dragging a UI shell onto the page.
+
+**Runners-up**
+- *robots.txt + sitemap.xml + canonical link* — rejected a tenth time on the same "marginal
+  payoff for a single-URL site" grounds as every prior log.
+- *Registry column visibility toggle for narrow screens* — mobile polish, open since 08-08; the
+  table already scrolls horizontally in its own container, unchanged priority from prior logs.
+- *Skeleton loaders for KPI/chart panels* — flagged 08-14/08-15; real perceived-performance
+  polish, but the print gap was older (open since 08-04, not 08-14) and fully unaddressed.
+- *Per-chart "download as PNG" button* — flagged 08-14/08-15; Plotly's modebar is deliberately
+  disabled, so this needs its own UI, bigger than today's slot.
+- *WCAG contrast audit of `--text-3`/`--gold-text` against both themes* — fresh idea, genuine
+  accessibility value, but scoping "which pairs, which threshold, what changes" cleanly enough
+  for one day needs more definitional work than today's brainstorm gave it. Worth a dedicated
+  cycle rather than a rushed pass today.
+
+**Verification:** `node --check` on both inline scripts. Playwright against the served page
+(Plotly stubbed; `cdn.plot.ly` blocked in this sandbox) at 1280px and 375px: normal screen
+rendering unaffected — all 6 charts initialize, all 5 KPIs and 44 registry rows render, the
+`.print-byline` stays `display:none`, no horizontal scroll at either width, console clean bar the
+pre-existing, sandbox-only Google Fonts network block noted in every prior log. Under
+`emulateMedia('print')`: nav, theme toggle, CSV button, and news block report `display:none`;
+the six chart canvases (`[role="img"]` under `.charts`) report `display:none` while their
+`.chart-data-scroll` wrappers report `overflow:visible`; the registry table and result-count
+stay visible; toggling dark mode on and re-emulating print shows the light background colour
+(`rgb(246,244,239)`), confirming the theme override, and reverts to the dark background on
+returning to screen media. Directly dispatching `beforeprint`/`afterprint` (Chromium's headless
+print pipeline doesn't reliably fire `afterprint` without a real dialog, so this isolates the
+handler logic itself) against a mixed baseline (two tables pre-opened by the "user," four
+closed) confirms all six force open on `beforeprint` and the exact original per-table
+open/closed pattern — not a blanket collapse — is restored on `afterprint`; the print byline
+shows the correct stamped date. Full-page print screenshots confirm the layout: hero/KPIs render
+cleanly, each analysis panel shows its data table instead of a chart canvas with no visual
+breakage, and the registry table reads cleanly with the header row and action buttons gone.
+All three fallback tiers untouched — the change is a screen/print CSS split plus two `window`
+event listeners operating on DOM already built from whichever tier populated `trips`.
+
+**Files touched:** `index.html`
