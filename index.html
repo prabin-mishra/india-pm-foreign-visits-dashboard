@@ -1735,7 +1735,10 @@ function renderLiveTrip(list) {
   if (trip && status === 'ongoing') return renderLiveVerified(card, trip, 'ongoing');
   // 2. No verified ongoing trip, but credible news corroborates one the registry hasn't published
   const rep = liveNews && liveNews.reported;
-  if (rep && rep.countries && rep.countries.length) return renderLiveReported(card, rep);
+  if (rep && rep.countries && rep.countries.length) {
+    if (corroboratesLiveTrip(liveNews.articles)) return renderLiveReported(card, rep);
+    console.warn('[news] reported trip not corroborated by current coverage — falling back to registry status');
+  }
   // 3. Otherwise show the registry's next upcoming / most-recent trip
   if (trip) return renderLiveVerified(card, trip, status);
   card.innerHTML = '';
@@ -1775,6 +1778,25 @@ function renderLiveVerified(card, trip, status) {
       <div class="live-countries">${trip.countries.map(c => `<span class="tag">${esc(c)}</span>`).join('')}</div>
     </div>
     <div class="live-visual">${flightSVG(status, trip.countries, 'var(--accent)', PLAY_INTRO)}</div>`;
+}
+
+// "Reportedly abroad now" is an unofficial claim about this moment, so the
+// coverage under it has to say the PM is actually there. Headlines about a
+// refused, cancelled or merely proposed trip — or about another country's
+// leader travelling to India — read as a trip to a naive country match, and
+// once put the wrong country on this band. scripts/refresh.py filters them at
+// source; this repeats the check so a stale or hand-edited news.json cannot
+// revive the claim, the same way validateArticles re-checks article dates.
+const NEWS_NEGATED_RE = /refus|cancel|call(?:s|ed)? off|postpon|defer|scrapp?|shelv|snub|\bskips?\b|declin|rules? out|no plans|won['’]?t\b|will not\b|pull(?:s|ed)? out|denies?\b/i;
+const NEWS_SPECULATIVE_RE = /\b(?:likely|expected|set|slated|due|poised|planning|planned|proposed|scheduled)\s+to\b|\b(?:may|might|could|will|would|to)\s+(?:soon\s+)?(?:visit|travel|arrive|land|head|fly|tour|go|embark|attend)\b|\buncertain\b|\bin talks\b|\bmull|\bahead of\b|\bnext (?:week|month)\b|\bawait/i;
+const NEWS_ON_GROUND_RE = /\barriv|\bland(?:s|ed|ing)\b|\breach(?:es|ed)\b|touch(?:es|ed)? down|\bis in\b|\bbegins?\b|\bkick(?:s|ed)? off|\bconclude|\bwrap(?:s|ped)? up|\bholds? talks\b|\bwelcomed\b|\bon (?:a )?(?:two|three|four|five|six|seven)[- ]day\b/i;
+
+function corroboratesLiveTrip(articles) {
+  const current = (articles || [])
+    .map(a => (a && a.title) || '')
+    .filter(t => t && !NEWS_NEGATED_RE.test(t) && (!NEWS_SPECULATIVE_RE.test(t) || NEWS_ON_GROUND_RE.test(t)));
+  // Two independent reports of a trip in progress, one of them from the ground.
+  return current.length >= 2 && current.some(t => NEWS_ON_GROUND_RE.test(t));
 }
 
 // News-reported trip: shown only when the registry has none in progress. Clearly
@@ -1880,7 +1902,10 @@ function renderNews(data) {
   const block = document.getElementById('newsBlock');
   const arts = (data && data.articles) || [];
   const trip = (data && data.trip) || null;
-  const label = trip && trip.label ? ` · ${esc(trip.label)}` : '';
+  // An uncorroborated reported trip loses its live band above; don't headline
+  // the coverage with that country either.
+  const unconfirmed = data && data.status === 'reported' && !corroboratesLiveTrip(arts);
+  const label = trip && trip.label && !unconfirmed ? ` · ${esc(trip.label)}` : '';
   const win = newsWindow(data);
   const {kept, log} = validateArticles(arts, win);
 

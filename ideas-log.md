@@ -739,3 +739,64 @@ network block noted in every prior log. All three fallback tiers untouched — t
 token read by every element regardless of which tier populated `trips`.
 
 **Files touched:** `index.html`
+
+---
+
+## 2026-08-18 — Read what the headline claims, not just which country it names (directed fix, not a cycle pick)
+
+**Problem.** The live band read "Reportedly abroad now — Bangladesh", corroborated by three
+sources, on a day the PM was in Delhi. All three headlines were about *Bangladesh's* PM
+travelling *to India*, and none described a trip that was happening:
+
+| headline | what it actually says |
+|---|---|
+| "…Bangladesh PM **Refuses to Visit India** Until Sheikh Hasina's Extradition" | refused |
+| "Bangladesh PM Tarique Rahman's **India visit uncertain** as Dhaka, Delhi discuss dates" | not agreed |
+| "Bangladesh PM **Likely To Visit India Next Week**" | not yet happened |
+
+`detect_reported_trip` matched "Bangladesh" beside a travel cue ("visit") in three independent
+recent articles and concluded the PM was there. The detector had no concept of *who* was
+travelling, *which direction*, or *whether the trip was real* — country proximity was the whole
+test. Three distinct failure classes, all live at once: reversed direction, negation, and
+speculation.
+
+**Shipped.** Two layers, mirroring the existing date-validation design (pipeline filters at
+source, page re-checks what it is served).
+
+*Direction* — `scripts/refresh.py`, applies to all coverage since it decides which trip a story
+belongs to. A country immediately followed by a leader title ("Bangladesh PM", "Sri Lanka
+President") names a person, not a destination, so it no longer counts as a trip leg — unless the
+same headline shows the PM as the guest ("Israel President welcomes Modi", which does place him
+there). If such a leader is also travelling *to India*, the headline is discarded outright.
+
+*Claim strength* — gates the reported band only, so registry-confirmed trips keep their previews
+and wrap-ups. A headline can corroborate "abroad now" only if it is not negated (refuses, cancels,
+postpones, skips, rules out, won't) and not merely prospective (likely to, may visit, next week,
+uncertain, in talks, ahead of) — with the exception that a prospective clause is fine alongside
+on-the-ground reporting, since "lands in Moscow, likely to meet Putin" is a current trip. On top
+of the existing 3-source threshold, at least one source must place him on the ground; three
+articles that only *discuss* a visit no longer raise the band.
+
+*Client-side* — `corroboratesLiveTrip()` repeats the negation/speculation/on-ground test over the
+served articles before rendering the band, and drops the country from the "Latest coverage"
+heading when it fails, so a stale or hand-edited `news.json` cannot revive a false claim.
+
+**Non-partisan check:** the change only makes the site slower to assert an unofficial claim; it
+adds no commentary and cannot state anything the registry does not, in either direction.
+
+**Verification:** new `scripts/test_headline_claims.py` (26 checks, stdlib, no network) pins all
+three production headlines plus negated/prospective/current variants, an inbound foreign leader,
+a leader hosting the PM, and end-to-end `detect_reported_trip` — asserting both that the false
+Bangladesh band disappears and that the genuine Israel band from 2026-08-09 still detects at 3
+sources. Existing `test_news_dates.py` still passes unchanged. Re-ran the live news path against
+today's feeds: 21 recent articles → 15 assert a trip in progress, 6 correctly rejected (including
+"Bangladesh PM … 'has no plans' to visit India" and "India and Bangladesh in talks for visit by PM
+Tarique Rahman next week"), no reported trip detected, `data/news.json` regenerated to the
+registry's most recent trip. In-browser: served page renders "No trip in progress. Latest —
+Indonesia, Australia & New Zealand", console clean, no horizontal scroll at 375px; injecting the
+old Bangladesh `news.json` suppresses the band and the coverage heading, injecting the Israel one
+still renders "Reportedly abroad now — Israel". `visits.json` and all three fallback tiers
+untouched.
+
+**Files touched:** `scripts/refresh.py`, `scripts/test_headline_claims.py` (new), `index.html`,
+`data/news.json` (regenerated output)

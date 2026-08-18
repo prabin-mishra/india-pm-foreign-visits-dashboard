@@ -41,6 +41,20 @@ name a country of the current trip as a destination, and must not name more
 non-trip destinations than trip ones — which is how a five-nation-tour headline
 stops being filed under a two-country trip that merely shares one leg.
 
+What a headline actually claims
+-------------------------------
+Matching a country name near a travel word is not the same as reading the news.
+Three kinds of story name a country beside a travel cue while saying the PM is
+*not* abroad, and each one produced a false "reportedly abroad" band:
+    reversed  "Bangladesh PM Likely To Visit India Next Week"  (someone else,
+              travelling the other way — this one shipped as a Bangladesh trip)
+    negated   "Bangladesh PM Refuses to Visit India Until …"
+    prospective "… India visit uncertain as Dhaka, Delhi discuss dates"
+So a country mention that is really a person ("Bangladesh PM") is not a
+destination, travel *to India* by a foreign leader disqualifies the headline
+outright, and the live band additionally requires headlines that assert a trip
+in progress — with at least one report placing him on the ground.
+
 Run locally the same way the GitHub Action runs it:
     python3 scripts/refresh.py
 Optional: parse a saved registry dump instead of fetching live:
@@ -406,17 +420,87 @@ DEST_CUE_RE = re.compile(
     r"nation (?:trip|tour|visit)|touches down|\ben route", re.I)
 
 
+# A country named beside a travel cue is still not proof the PM went there.
+# Three classes of headline read as a trip to a naive match and are not one:
+#   direction   "Bangladesh PM to visit India"  - inbound travel by someone else
+#   negation    "refuses to visit", "trip called off", "visit postponed"
+#   prospect    "likely to visit", "may travel next week", "dates uncertain"
+# Direction decides *whose* trip a story is about, so it is filtered everywhere.
+# Negation and prospect bear only on whether a trip is happening *now*, so they
+# gate the reported-trip banner while remaining valid coverage of a real trip.
+
+# "<Country> PM/President/…" names a person, not a destination.
+LEADER_TITLE_RE = re.compile(
+    r"^(?:['’]s)?\s+(?:PM\b|Prime Minister|President|King\b|Queen\b|Chancellor|Premier|"
+    r"Emir\b|Sultan|Crown Prince|Foreign Minister|Foreign Secretary|Ambassador|Envoy|"
+    r"Minister|Delegation|Government|Govt\b|Cabinet|Counterpart|Leader\b)", re.I)
+
+# …unless that leader is receiving the PM — "Israel President welcomes Modi"
+# still places him in Israel.
+PM_AS_GUEST_RE = re.compile(r"(?:welcom|receiv|host|greet)\w*[^.]{0,24}\bModi\b", re.I)
+
+# Travel *towards* India. Paired with a foreign leader as the subject, the story
+# is about someone else's inbound visit, not about the PM being abroad.
+INBOUND_INDIA_RE = re.compile(
+    r"\bIndia (?:visit|trip|tour)\b|\bvisits? (?:to )?India\b|\bvisiting India\b|"
+    r"\b(?:trip|tour) to India\b|"
+    r"\b(?:arriv|land|reach|head|travel|fly|flies|com)\w*\s+(?:in|to)\s+India\b", re.I)
+
+
 def destination_countries(title):
     low = title.lower()
+    inbound = INBOUND_INDIA_RE.search(title)
+    pm_is_guest = PM_AS_GUEST_RE.search(title)
     out = []
     for m in COUNTRY_RE.finditer(title):
         canon = _CANON_LOOKUP.get(m.group(1).lower())
         if not canon or canon == "India" or canon in out:
             continue
+        if LEADER_TITLE_RE.match(title[m.end():m.end() + 40]) and not pm_is_guest:
+            if inbound:
+                return []  # that leader is travelling to India — not the PM's trip
+            continue       # a person, not a place; other mentions may still count
         window = low[max(0, m.start() - 34): m.end() + 34]
         if DEST_CUE_RE.search(window):
             out.append(canon)
     return out
+
+
+NEGATED_RE = re.compile(
+    r"refus\w*|cancel\w*|call(?:s|ed)? off|postpon\w*|defer(?:s|red)?|scrapp?\w*|shelv\w*|"
+    r"snub\w*|\bskips?\b|declin\w*|rules? out|ruled out|no plans|won['\u2019]?t\b|will not\b|"
+    r"pull(?:s|ed)? out|abandon\w*|denies?\b|\bnot (?:to )?visit\b", re.I)
+
+SPECULATIVE_RE = re.compile(
+    r"\b(?:likely|expected|set|slated|due|poised|planning|planned|proposed|scheduled)\s+to\b|"
+    r"\b(?:may|might|could|will|would|to)\s+(?:soon\s+)?"
+    r"(?:visit|travel|arrive|land|head|fly|tour|go|embark|attend)\b|"
+    r"\buncertain\b|\bin talks\b|\bmull\w*|\bweigh(?:s|ing)\b|\bconsider(?:s|ing)\b|"
+    r"\bahead of\b|\bnext (?:week|month)\b|\bplans? (?:a |an |his )?(?:visit|trip|tour)\b|"
+    r"\bawait\w*", re.I)
+
+# Hard evidence of the PM on the ground, as opposed to a trip being discussed.
+ON_GROUND_RE = re.compile(
+    r"\barriv\w+|\bland(?:s|ed|ing)\b|\breach(?:es|ed)\b|touch(?:es|ed)? down|\bis in\b|"
+    r"\bbegins?\b|\bkick(?:s|ed)? off|\bconclude\w*|\bwrap(?:s|ped)? up|\bholds? talks\b|"
+    r"\bwelcomed\b|\breceiv\w+ (?:a )?(?:ceremonial|guard|red[- ]carpet|grand|warm) welcome|"
+    r"\bstate visit to\b|\bon (?:a )?(?:two|three|four|five|six|seven)[- ]day\b", re.I)
+
+
+def presence_claim(title):
+    """Can this headline support the claim that the PM is abroad *now*?
+
+    Returns (ok, reason). A negated trip never can. A prospective one can only
+    when the same headline also reports him on the ground — "arrives in X,
+    likely to meet Y" is a current trip; "likely to visit X" is not.
+    """
+    m = NEGATED_RE.search(title)
+    if m:
+        return False, f"trip negated ({m.group(0).lower()})"
+    m = SPECULATIVE_RE.search(title)
+    if m and not ON_GROUND_RE.search(title):
+        return False, f"prospective, not current ({m.group(0).lower()})"
+    return True, ""
 
 
 def articles_out(items, limit=6):
@@ -437,6 +521,10 @@ def detect_reported_trip(pool, min_sources=3, recency_days=3):
     articles, with its freshest mention within recency_days of the newest signal.
     These guards keep out framing noise (e.g. 'counter China') and stale recaps.
 
+    Corroborating headlines must also assert a trip in progress — see
+    presence_claim — and at least one must place the PM on the ground, so a
+    cancelled or merely proposed trip cannot raise the live band.
+
     `pool` is already deduped by URL with dates clamped by the ledger, so a
     re-dated week-old article no longer counts as corroboration for today.
     """
@@ -454,8 +542,20 @@ def detect_reported_trip(pool, min_sources=3, recency_days=3):
     if not items:
         return None
 
-    hits = defaultdict(list)
+    # Only headlines that actually assert a trip in progress may corroborate one.
+    credible = []
     for it in items:
+        ok, why = presence_claim(it["title"])
+        if ok:
+            credible.append(it)
+        else:
+            print(f"[news] NOT-CURRENT {it['date']} | {why} | {it['title'][:70]!r}", file=sys.stderr)
+    print(f"[news] {len(items)} recent -> {len(credible)} assert a trip in progress", file=sys.stderr)
+    if not credible:
+        return None
+
+    hits = defaultdict(list)
+    for it in credible:
         for c in destination_countries(it["title"]):
             hits[c].append(it)
     cand = {c: v for c, v in hits.items() if len(v) >= min_sources}
@@ -471,9 +571,15 @@ def detect_reported_trip(pool, min_sources=3, recency_days=3):
 
     countries = sorted(cand, key=lambda c: min(x["dt"] for x in cand[c]))  # tour order
     primary = countries[-1]  # most recently begun leg = current location
+    # Corroboration by count is not enough: at least one report must place him on
+    # the ground there, not merely discuss the leg.
+    if not any(ON_GROUND_RE.search(x["title"]) for x in cand[primary]):
+        print(f"[news] no on-the-ground report for {primary} — not claiming a live trip",
+              file=sys.stderr)
+        return None
     as_of = freshest.date().isoformat()
     window = trip_window(None, None, as_of)
-    articles = select_trip_articles(items, countries, window)
+    articles = select_trip_articles(credible, countries, window)
     return {
         "countries": countries,
         "primary": primary,
