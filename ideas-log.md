@@ -687,3 +687,55 @@ All three fallback tiers untouched — the change is a screen/print CSS split pl
 event listeners operating on DOM already built from whichever tier populated `trips`.
 
 **Files touched:** `index.html`
+
+## 2026-08-18 — Fix dark-mode `--text-3` WCAG AA contrast failure
+
+**Shipped.** Measured every color-token pair in both themes against the WCAG 2.1 relative-luminance
+formula, applied to the actual backgrounds each token is used against in the CSS (not just `--bg`).
+Every pair passed AA except one: dark-mode `--text-3` (`#837e6f`), used throughout for small
+secondary text (filter labels, panel subtitles, drawer detail labels, news source lines — all under
+`0.9rem`, so the 4.5:1 "normal text" floor applies, not the 3:1 "large text" one). Against `--bg` it
+scraped by at 4.58:1, but against the panel backgrounds it actually sits on in real markup it failed:
+4.30:1 on `--surface` (most panel/card subtitles), and 3.97:1 on `--surface-2` — the background of
+`.drawer-grid > div`, i.e. every "Dates / Duration / Countries" label in the trip drawer, the site's
+most-used piece of chrome. Lightened to `#908b7c` (same hue/saturation, `+5` lightness in HSL),
+verified to clear 4.5:1 against all three realistic backgrounds (5.46 / 5.12 / 4.73:1). Light-mode
+`--text-3` and `--gold-text` in both themes were already comfortably passing (5.00–8.52:1) and are
+untouched. One CSS custom-property value, no other change.
+
+Named fresh in the 08-17 log ("genuine accessibility value, but scoping... needs more definitional
+work... worth a dedicated cycle") — today *was* that dedicated cycle: doing the actual per-background
+contrast math (not just spot-checking against `--bg`) is what turned a vague "audit this" into a
+one-line, fully-verified fix. Directly serves CLAUDE.md's named "accessibility fix" dimension, carries
+zero non-partisan risk (a color value, not content), and is trivially reversible.
+
+**Runners-up**
+- *Registry column visibility toggle for narrow screens* — mobile polish, open since 08-08; the table
+  already scrolls horizontally in its own container, unchanged priority from every prior log.
+- *Skeleton loaders for KPI/chart panels* — flagged 08-14 through 08-17; real perceived-performance
+  polish, but a measured contrast failure in the site's most-used chrome (the drawer) outranks it.
+- *Per-chart "download as PNG" button* — flagged 08-14 through 08-17; Plotly's modebar is deliberately
+  disabled, so this needs its own UI, bigger than today's slot.
+- *robots.txt + sitemap.xml + canonical link* — rejected an eleventh time on the same "marginal payoff
+  for a single-URL site" grounds as every prior log.
+- *`og:image:width`/`og:image:height` meta tags* — fresh, minor SEO polish (lets social crawlers skip
+  a fetch-and-measure round trip); real but strictly smaller than a live contrast failure.
+
+**Verification:** computed WCAG 2.1 relative-luminance contrast for every `--text-3`/`--gold-text`/
+`--text-2`/link/status-color pair in both themes against every background each token is actually
+composited over in the CSS (not just `--bg`) — confirmed dark `--text-3` was the only failure (3.59–
+4.30:1 depending on background; `--surface-3` isn't used as a real background so its 3.59:1 worst case
+never fires in practice, but `--surface`/`--surface-2` at 4.30/3.97:1 do). Re-ran the same formula
+against the replacement `#908b7c` for all three real backgrounds: 5.46:1 (`--bg`), 5.12:1 (`--surface`),
+4.73:1 (`--surface-2`) — all clear 4.5:1. `node --check` on both inline scripts (no JS touched, sanity
+check only). Playwright against the served page (Plotly stubbed; `cdn.plot.ly` blocked in this
+sandbox) at 1280px and 375px: 5 KPIs and 44 registry rows render, dark-mode toggle applies the new
+token (`getComputedStyle` confirms `#908b7c`; the drawer's `.drawer-grid .l` label resolves to
+`rgb(144,139,124)`), opening/closing the trip drawer works, no horizontal scroll at 375px. Full-page
+screenshots at both themes show no visual regression — the new value is a subtle, still-clearly-
+tertiary lightening, not a jump to `--text-2`. Light mode is byte-for-byte untouched (diff confirms
+only the one dark-mode line changed). Console clean bar the pre-existing, sandbox-only Google Fonts
+network block noted in every prior log. All three fallback tiers untouched — this is a static CSS
+token read by every element regardless of which tier populated `trips`.
+
+**Files touched:** `index.html`
