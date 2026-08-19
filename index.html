@@ -212,6 +212,27 @@
     .b-ok   { background: var(--accent-soft); color: var(--accent); }
     .b-warn { background: var(--gold-soft); color: var(--gold-text); }
 
+    /* ============ Skeleton loaders ============
+       Shown before real content lands: static markup for the KPI strip (replaced wholesale
+       the moment renderKpis() sets #kpis.innerHTML), and a class toggled off per-chart in
+       renderCharts() once Plotly actually draws into that panel. prefers-reduced-motion is
+       already handled globally above (animation-duration forced to .01ms), so no separate
+       reduced-motion rule is needed here. */
+    @keyframes skel-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+    .skeleton {
+      display: inline-block; border-radius: 4px; vertical-align: middle;
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 37%, var(--surface-2) 63%);
+      background-size: 400% 100%; animation: skel-shimmer 1.4s ease infinite;
+    }
+    .stat .skeleton.v { width: 3.4em; height: 1.9rem; }
+    .stat .skeleton.l { width: 7em; height: .8rem; margin-top: 8px; }
+    .stat .skeleton.s { width: 9em; height: .76rem; margin-top: 4px; }
+    [role="img"].chart-loading {
+      display: block; border-radius: var(--radius-md);
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 37%, var(--surface-2) 63%);
+      background-size: 400% 100%; animation: skel-shimmer 1.4s ease infinite;
+    }
+
     /* Headline stat strip */
     .stats {
       display: grid; grid-template-columns: repeat(5, 1fr);
@@ -597,7 +618,13 @@
           <span id="statusChips"></span>
           <span id="updateStatus" role="status">Loading visit data…</span>
         </div>
-        <div class="stats" id="kpis" aria-label="Headline statistics"></div>
+        <div class="stats" id="kpis" aria-label="Headline statistics">
+          <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
+          <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
+          <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
+          <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
+          <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
+        </div>
         <div class="facts" id="facts" aria-live="polite"></div>
       </div>
     </section>
@@ -643,32 +670,32 @@
         <div class="charts">
           <div class="panel">
             <div class="panel-head"><h3>Trip frequency map</h3><span class="sub">Country touches in view</span></div>
-            <div id="map" style="height:400px" role="img" aria-label="Choropleth map of PM visit frequency by country"></div>
+            <div id="map" class="chart-loading" style="height:400px" role="img" aria-label="Choropleth map of PM visit frequency by country"></div>
             <div id="mapTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>Trips over time</h3><span class="sub">Trips &amp; countries, per month</span></div>
-            <div id="timeline" style="height:400px" role="img" aria-label="Line chart of trips and unique countries visited per month"></div>
+            <div id="timeline" class="chart-loading" style="height:400px" role="img" aria-label="Line chart of trips and unique countries visited per month"></div>
             <div id="timelineTableWrap"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Most visited countries</h3><span class="sub">Top 15 in view</span></div>
-            <div id="ranking" style="height:360px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
+            <div id="ranking" class="chart-loading" style="height:360px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
             <div id="rankingTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>PM comparison</h3><span class="sub">Trips vs unique countries</span></div>
-            <div id="pmCompare" style="height:320px" role="img" aria-label="Grouped bar chart comparing trips and unique countries per PM"></div>
+            <div id="pmCompare" class="chart-loading" style="height:320px" role="img" aria-label="Grouped bar chart comparing trips and unique countries per PM"></div>
             <div id="pmCompareTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>Single vs multi-country tours</h3><span class="sub">By year</span></div>
-            <div id="yoyChart" style="height:320px" role="img" aria-label="Stacked bar chart of trips by year and visit type"></div>
+            <div id="yoyChart" class="chart-loading" style="height:320px" role="img" aria-label="Stacked bar chart of trips by year and visit type"></div>
             <div id="yoyTableWrap"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Travel calendar</h3><span class="sub">Trip density by year and month</span></div>
-            <div id="calHeatmap" style="height:280px" role="img" aria-label="Heatmap of trip density by year and month"></div>
+            <div id="calHeatmap" class="chart-loading" style="height:280px" role="img" aria-label="Heatmap of trip density by year and month"></div>
             <div id="calHeatmapTableWrap"></div>
           </div>
         </div>
@@ -1099,8 +1126,25 @@ function renderChartTable(wrapId, caption, headers, bodyRows) {
     </details>`;
 }
 
+// Each chart div carries a shimmering .chart-loading placeholder (CSS) until its own
+// Plotly.react() call draws into it, so panels reveal progressively rather than all at once.
+const CHART_IDS = ['map', 'timeline', 'ranking', 'pmCompare', 'yoyChart', 'calHeatmap'];
+function revealChart(id) { document.getElementById(id).classList.remove('chart-loading'); }
+
 async function renderCharts(rows) {
   await plotlyReady; // Plotly loads deferred; wait rather than assume it's ready by now.
+  try {
+    await renderChartsInner(rows);
+  } catch (e) {
+    // A total CDN failure (Plotly undefined) would otherwise leave all six panels
+    // shimmering forever, misrepresenting "still loading" as "broken". Fail loudly
+    // (as before the skeleton existed) and drop back to a plain empty panel.
+    console.error('[charts]', e);
+    CHART_IDS.forEach(revealChart);
+  }
+}
+
+async function renderChartsInner(rows) {
   const c = chartTheme();
   const cfg = {displayModeBar: false, responsive: true};
   const countryCounts = rows.flatMap(t => t.countries).reduce((m, x) => ((m[x] = (m[x] || 0) + 1), m), {});
@@ -1121,6 +1165,7 @@ async function renderCharts(rows) {
       showcountries: true, countrycolor: c.grid,
     },
   }), cfg);
+  revealChart('map');
   renderChartTable('mapTableWrap', 'Visits by country, current filters',
     ['Country', 'Visits'],
     Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).map(([country, n]) => [country, fmt(n)]));
@@ -1159,6 +1204,7 @@ async function renderCharts(rows) {
     xaxis: {gridcolor: 'rgba(0,0,0,0)', linecolor: c.grid, tickcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...tripsY, ...ctryY))},
   }), cfg);
+  revealChart('timeline');
   renderChartTable('timelineTableWrap', 'Trips and unique countries per month, current filters',
     ['Month', 'Trips', 'Countries'],
     months.map((m, i) => [`${MONTHS_SHORT[Number(m.slice(5, 7)) - 1]} ${m.slice(0, 4)}`, fmt(tripsY[i]), fmt(ctryY[i])]));
@@ -1178,6 +1224,7 @@ async function renderCharts(rows) {
     yaxis: {gridcolor: 'rgba(0,0,0,0)'},
     bargap: .35,
   }), cfg);
+  revealChart('ranking');
   renderChartTable('rankingTableWrap', 'Top 15 most-visited countries, current filters',
     ['Country', 'Visits'],
     ranking.map(([country, n]) => [country, fmt(n)]));
@@ -1196,6 +1243,7 @@ async function renderCharts(rows) {
     xaxis: {gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...pmTrips, ...pmCountries))},
   }), cfg);
+  revealChart('pmCompare');
   renderChartTable('pmCompareTableWrap', 'Trips and unique countries by Prime Minister, current filters',
     ['Prime Minister', 'Trips', 'Unique countries'],
     pmNames.map((pm, i) => [pm, fmt(pmTrips[i]), fmt(pmCountries[i])]));
@@ -1214,6 +1262,7 @@ async function renderCharts(rows) {
     xaxis: {type: 'category', gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...years.map((_, i) => single[i] + multi[i])))},
   }), cfg);
+  revealChart('yoyChart');
   renderChartTable('yoyTableWrap', 'Single- vs multi-country trips by year, current filters',
     ['Year', 'Single-country', 'Multi-country', 'Total'],
     years.map((yr, i) => [yr, fmt(single[i]), fmt(multi[i]), fmt(single[i] + multi[i])]));
@@ -1238,6 +1287,7 @@ async function renderCharts(rows) {
     xaxis: {gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {type: 'category', autorange: 'reversed', gridcolor: 'rgba(0,0,0,0)'},
   }), cfg);
+  revealChart('calHeatmap');
   renderChartTable('calHeatmapTableWrap', 'Trip count by year and month, current filters',
     ['Year', ...MONTHS_SHORT],
     allYears.map((yr, i) => [String(yr), ...heatZ[i].map(fmt)]));

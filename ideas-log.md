@@ -800,3 +800,66 @@ untouched.
 
 **Files touched:** `scripts/refresh.py`, `scripts/test_headline_claims.py` (new), `index.html`,
 `data/news.json` (regenerated output)
+
+## 2026-08-19 — Skeleton loaders for the KPI strip and the six chart panels
+
+**Shipped.** Before today, `#kpis` and the six `role="img"` chart divs sat completely empty from
+first paint until, respectively, the tier-1 `data/visits.json` fetch resolved and the deferred
+~3.5 MB Plotly bundle (08-09) finished loading and drawing — on a slow connection, a page that
+looks broken rather than loading. Two changes, no new dependency:
+
+1. The five `.stat` cards in `#kpis` now ship as static shimmer-bar markup in the page's own HTML
+   (confirmed via raw `curl`, so it's present before any JS runs at all). `renderKpis()` already
+   overwrites `#kpis.innerHTML` wholesale, so the moment real data lands the skeleton is replaced
+   with zero extra JS — no new render path.
+2. Each chart div gets a `chart-loading` class (shimmer background via CSS) in its initial markup;
+   `renderCharts()` now removes that class right after that specific panel's own `Plotly.react()`
+   call, so panels reveal progressively as each chart actually draws rather than all six flipping
+   at once. Wrapped in a try/catch: a total CDN failure (Plotly undefined) clears all six skeletons
+   immediately instead of shimmering forever — strictly better than the old blank-panel failure
+   mode, and still logs the one clear `[charts]` error the 08-09 log established. Shimmer uses
+   `background-position` animation only; the existing global `prefers-reduced-motion` rule already
+   flattens all `animation-duration` to `.01ms`, so no separate reduced-motion CSS was needed.
+
+Named as a runner-up five days running (08-14 through 08-18) and never rejected on the merits —
+only ever outranked by something more urgent that day (a11y defects, a live correctness bug, a
+contrast failure). Today's fresh brainstorm turned up nothing that outranked it again, so it
+finally got the slot: genuine perceived-performance value, one-day scope (CSS + ~10 lines of JS,
+no chart-by-chart redesign), fully reversible, and carries zero non-partisan risk (a loading
+state, not content).
+
+**Runners-up**
+- *Registry column visibility toggle for narrow screens* — mobile polish, open since 08-08; the
+  table already scrolls horizontally in its own container, unchanged priority from every prior log.
+- *Per-chart "download as PNG" button* — flagged 08-14 through 08-18; Plotly's modebar is
+  deliberately disabled, so this needs its own UI, bigger than today's slot.
+- *`og:image:width`/`og:image:height` meta tags* — flagged fresh 08-18; real but strictly smaller
+  than a five-times-repeated perceived-performance gap.
+- *robots.txt + sitemap.xml + canonical link* — rejected a twelfth time on the same "marginal
+  payoff for a single-URL site" grounds as every prior log.
+- *"Trips by weekday started" fact* — fresh idea (a new way to read the data, in the spirit of the
+  08-15 gap fact), but registry dates record only day/month/year with no time-of-day meaning
+  beyond the calendar date, and weekday-of-departure isn't a claim the underlying data actually
+  supports distinguishing from noise at 44 rows — dropped rather than shipped a thin stat.
+
+**Verification:** `node --check` on both inline scripts. Confirmed via raw `curl` that the served
+HTML (pre-JS) already contains the 5 KPI skeleton cards and all 6 `chart-loading` chart divs.
+Playwright against the served page (`cdn.plot.ly` blocked in this sandbox, routed to a stub) at
+1280px and 375px, both themes: with the data fetch and Plotly script artificially delayed
+(900 ms / 1500 ms respectively) and polled every 150ms — 15 KPI skeleton bars + 6 chart skeletons
+visible while both are pending; KPI skeletons clear and show real values (e.g. "44") the instant
+the data fetch resolves, while chart skeletons persist until Plotly also resolves; all 6 clear
+together right after Plotly loads. Screenshots at both viewports/themes confirm the shimmer reads
+correctly and matches the site's existing tokens, no layout shift, no horizontal scroll at 375px.
+Simulated total CDN failure (`route.abort()` on `cdn.plot.ly`): all 6 chart skeletons clear instead
+of shimmering forever, KPIs and all 44 registry rows still render correctly, console shows exactly
+one new `[charts] ReferenceError: Plotly is not defined` plus the pre-existing blocked-resource
+errors — no new failure mode introduced. Un-delayed run: all 6 charts draw, 5 KPIs and 44 registry
+rows render, dark-mode toggle re-renders charts correctly with skeleton classes already cleared,
+no horizontal scroll at either width, console clean bar the pre-existing, sandbox-only Google Fonts
+block noted in every prior log. Filters, sort, CSV export, drawer, permalinks, and print stylesheet
+are untouched (no code in those paths was touched). All three fallback tiers untouched — the
+skeleton is a screen-only, tier-agnostic loading state that clears on however `trips` gets
+populated.
+
+**Files touched:** `index.html`
