@@ -1148,6 +1148,16 @@ async function renderChartsInner(rows) {
   const c = chartTheme();
   const cfg = {displayModeBar: false, responsive: true};
   const countryCounts = rows.flatMap(t => t.countries).reduce((m, x) => ((m[x] = (m[x] || 0) + 1), m), {});
+  // A filter/search combination with zero matches is a real, reachable state (the registry
+  // table already handles it with an explicit "No trips match" message + reset button), but
+  // every chart used to just render its empty axes with no explanation. One shared annotation,
+  // centered over each panel, so a filtered-to-nothing view reads the same way everywhere on
+  // the page instead of looking broken above a table that explains itself.
+  const emptyNote = rows.length ? [] : [{
+    text: 'No trips match the current filters', showarrow: false,
+    x: 0.5, y: 0.5, xref: 'paper', yref: 'paper',
+    font: {family: 'Inter, system-ui, sans-serif', size: 13, color: c.axis},
+  }];
 
   Plotly.react('map', [{
     type: 'choropleth', locationmode: 'country names',
@@ -1158,6 +1168,7 @@ async function renderChartsInner(rows) {
     hovertemplate: '%{location}: %{z} visit(s)<extra></extra>',
   }], baseLayout(c, {
     margin: {t: 0, l: 0, r: 0, b: 0},
+    annotations: emptyNote,
     geo: {
       projection: {type: 'natural earth'}, bgcolor: 'rgba(0,0,0,0)',
       showframe: false, showcoastlines: false,
@@ -1200,6 +1211,7 @@ async function renderChartsInner(rows) {
     },
   ], baseLayout(c, {
     margin: {t: 26, l: 34, r: 10, b: 35},
+    annotations: emptyNote,
     legend: {orientation: 'h', y: 1.18, x: 0, font: {size: 12}},
     xaxis: {gridcolor: 'rgba(0,0,0,0)', linecolor: c.grid, tickcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...tripsY, ...ctryY))},
@@ -1220,6 +1232,7 @@ async function renderChartsInner(rows) {
     hovertemplate: '%{y}: %{x} visit(s)<extra></extra>',
   }], baseLayout(c, {
     margin: {t: 0, l: 150, r: 30, b: 30},
+    annotations: emptyNote,
     xaxis: {gridcolor: c.grid, zerolinecolor: c.grid, dtick: intDtick(Math.max(1, ...ranking.map(r => r[1])))},
     yaxis: {gridcolor: 'rgba(0,0,0,0)'},
     bargap: .35,
@@ -1239,6 +1252,7 @@ async function renderChartsInner(rows) {
   ], baseLayout(c, {
     barmode: 'group', bargap: .4,
     margin: {t: 10, l: 34, r: 10, b: 30},
+    annotations: emptyNote,
     legend: {orientation: 'h', y: 1.18, x: 0, font: {size: 12}},
     xaxis: {gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...pmTrips, ...pmCountries))},
@@ -1258,6 +1272,7 @@ async function renderChartsInner(rows) {
   ], baseLayout(c, {
     barmode: 'stack', bargap: .45,
     margin: {t: 10, l: 34, r: 10, b: 30},
+    annotations: emptyNote,
     legend: {orientation: 'h', y: 1.18, x: 0, font: {size: 12}},
     xaxis: {type: 'category', gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...years.map((_, i) => single[i] + multi[i])))},
@@ -1284,6 +1299,7 @@ async function renderChartsInner(rows) {
     showscale: false,
   }], baseLayout(c, {
     margin: {t: 10, l: 44, r: 10, b: 30},
+    annotations: emptyNote,
     xaxis: {gridcolor: 'rgba(0,0,0,0)'},
     yaxis: {type: 'category', autorange: 'reversed', gridcolor: 'rgba(0,0,0,0)'},
   }), cfg);

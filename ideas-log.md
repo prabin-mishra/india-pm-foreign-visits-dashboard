@@ -530,6 +530,57 @@ every prior log. All three fallback tiers untouched — icons are static assets 
 
 **Files touched:** `index.html`, `favicon.png` (new), `apple-touch-icon.png` (new)
 
+## 2026-08-20 — Empty-state message on all six charts when filters match zero trips
+
+**Shipped.** Filtering or searching to a combination with zero matches (e.g. a PM/year pair that
+never happened, or a search term matching nothing) is a real, reachable state — the registry
+table already handled it with an explicit "No trips match the current filters" message and a
+reset button, but every one of the six analysis charts above it just rendered its empty axes
+with no explanation at all: a blank world map, an axis-only line chart, empty bars. A user
+scanning top-down would hit six unexplained blank panels before reaching the one message, further
+down the page, that actually tells them what happened. Added one shared Plotly annotation —
+"No trips match the current filters," centered in the panel, using the chart's own theme-aware
+axis color — computed once at the top of `renderChartsInner` from `rows.length` and passed into
+each of the six chart layouts via the existing `baseLayout(c, {...})` merge point. Empty when
+there are matches (unchanged behaviour, verified byte-identical to before), populated only when
+there are none. One array literal, six one-line additions, no new dependency, no chart redesign.
+
+Fresh find, not a repeat of any logged item: checked the backlog (registry column toggle,
+per-chart PNG export, robots.txt/sitemap, og:image dimensions) and none of them describe this gap.
+It's a clean fit for the "interactivity" dimension — closing a visible inconsistency in the site's
+own existing empty-state handling — sized to one choke point, fully reversible, and carries zero
+non-partisan risk (a loading/empty UI state, not content or commentary).
+
+**Runners-up**
+- *Registry column visibility toggle for narrow screens* — mobile polish, open since 08-08; the
+  table already scrolls horizontally in its own container, unchanged low priority from every
+  prior log.
+- *robots.txt + sitemap.xml + canonical link* — rejected a thirteenth time on the same "marginal
+  payoff for a single-URL site" grounds as every prior log.
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18; real but thinner value than a
+  visible, confirmable UX inconsistency between the charts and the table right below them.
+- *Per-chart "download as PNG" button* — flagged 08-14 through 08-19; Plotly's modebar is
+  deliberately disabled, so this needs its own UI, bigger than today's slot.
+- *Debounce the search input* — checked the code; the dataset is 44 rows, so a full re-render per
+  keystroke is not a measurable perf problem here. Correctly not a perf idea.
+
+**Verification:** `node --check` on both real inline scripts (the JSON-LD block is not JS and
+correctly fails a syntax check; ignored). `cdn.plot.ly` is blocked in this sandbox (confirmed via
+`curl`, same as every prior log), so verified via Playwright against the served page with a
+call-capturing `Plotly.react` stub at 1280px and 375px, light and dark: unfiltered baseline — all
+6 charts called with `annotations: []` (no change from current behaviour); filling the search box
+with a no-match term — all 6 re-render with `annotations: [{text: "No trips match the current
+filters", x: 0.5, y: 0.5, xref: "paper", yref: "paper", font: {color: <theme axis color>}}]`,
+matching the registry's own "No trips match the current filters." message and the "0 of 44 trips"
+live-region text word-for-word; clicking Reset clears every chart's annotations again. Dark mode
+resolves the annotation to the theme's dark axis color, no console errors. No horizontal scroll at
+either viewport. The two console-level resource failures present in both runs
+(`cdn.plot.ly`, Google Fonts) are the same pre-existing sandbox-only network blocks noted in every
+prior log, confirmed by name via `requestfailed`. All three fallback tiers untouched — the change
+reads only `rows.length`, already computed identically regardless of which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-08-15 — "Longest gap without a trip" fact
 
 **Shipped.** The hero's existing `facts` row (which already surfaces "Most visited" and "Longest
