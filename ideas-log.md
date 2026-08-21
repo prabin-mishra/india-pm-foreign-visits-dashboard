@@ -914,3 +914,60 @@ skeleton is a screen-only, tier-agnostic loading state that clears on however `t
 populated.
 
 **Files touched:** `index.html`
+
+## 2026-08-21 — Restore in-page navigation on mobile instead of hiding it
+
+**Shipped.** At ≤640px, `.site-nav { display: none; }` removed the four in-page nav links
+(Analysis, Registry, Methodology, Data) from the header entirely, with nothing put in their
+place — confirmed via a real 375px screenshot, not just reading the CSS: below 640px a mobile
+visitor had no way to jump to a section short of scrolling the whole page, and the theme toggle
+sat oddly close to the wordmark instead of pinned to the right edge (a side effect of the same
+missing element, since `.site-nav`'s `margin-left: auto` was what pushed it there). Measuring
+the actual header at 375px showed the wordmark alone (`India PM Foreign Visits` + the
+`TRACKER` badge) was 256px wide against 343px of available space — there was never room to
+just un-hide the full-size nav next to it.
+
+Fix, CSS only: the decorative `TRACKER` badge drops and the wordmark's name shrinks slightly
+(1.06rem → .92rem) to free real space; both wordmark and the theme toggle become fixed-size
+flex items (`flex: none`) so they stay fully visible; the nav becomes the one flexible,
+horizontally-scrollable item between them (`flex: 1 1 auto; overflow-x: auto`) — the same
+"tab bar" pattern used in countless mobile apps, with slightly tighter link padding so more of
+it fits before scrolling is needed. No markup, JS, or data changed — the four links are the
+same `<a href="#analysis">`-style anchors as before, including `Data`'s existing
+`target="_blank"`.
+
+Fresh find, not a repeat: the log's mobile-polish backlog (registry column toggle, open since
+08-08) never named the nav itself, and no prior entry mentions `site-nav`. Chosen over that
+backlog item because a completely absent navigation control is a functional gap, not polish,
+and it's the more foundational mobile issue — the registry table's horizontal scroll is at
+least usable today, this had zero mobile affordance at all.
+
+**Runners-up**
+- *Registry column visibility toggle for narrow screens* — mobile polish, open since 08-08; the
+  table already scrolls horizontally in its own container, a real workaround the nav never had.
+- *Per-chart "download as PNG" button* — flagged 08-14 through 08-19; Plotly's modebar is
+  deliberately disabled, so this needs its own UI, bigger than today's slot.
+- *robots.txt + sitemap.xml + canonical link* — rejected a fourteenth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18/08-19; real but strictly
+  smaller than a mobile visitor having zero way to jump to a section.
+- *"Trips by season" fact* — fresh idea (which quarter/season the PM travels most), but 44 trips
+  split across 4 seasons is thin enough that the "top" season is likely noise, not signal —
+  same class of concern that shelved "trips by weekday" on 08-19.
+
+**Verification:** measured the real header at 375px before the fix (Playwright, Plotly
+CDN stubbed since this sandbox blocks `cdn.plot.ly`): wordmark 256px vs. 343px available,
+nav rendered at 1px wide — confirming the gap was structural, not cosmetic. After the fix, at
+320px/375px/390px (iPhone-SE through iPhone-12 widths): all four nav links present in the DOM,
+nav is horizontally scrollable (`scrollLeft` reaches 183px, revealing `Methodology`/`Data`),
+clicking a visible link (`Analysis`) navigates to `#analysis` correctly, `Data` keeps its
+`target="_blank"`, no page-level horizontal scroll at any of the three widths, theme toggle
+sits flush right. Desktop (1280px) screenshot confirms the nav, badge, and toggle are
+byte-identical to before — the changes are entirely inside the `max-width: 640px` media query
+plus two harmless additive properties (`white-space: nowrap`, `flex: none`) in the base rules
+that only matter once the nav is actually squeezed. Dark mode at 375px renders the same layout
+with correct theme tokens. `node --check` on both inline scripts (untouched, sanity check
+only). All 5 KPIs, 44 registry rows, and the full page render with no console errors. All three
+fallback tiers untouched — this is a pure CSS change with no JS or data-path touched at all.
+
+**Files touched:** `index.html`, `ideas-log.md`
