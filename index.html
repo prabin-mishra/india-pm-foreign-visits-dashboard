@@ -282,6 +282,15 @@
     .btn-download svg { width: 14px; height: 14px; }
     .btn-download[disabled] { opacity: .45; cursor: not-allowed; }
     .btn-download[disabled]:hover { background: transparent; color: var(--text-2); }
+    .btn-columns { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .btn-columns svg { width: 14px; height: 14px; }
+    .btn-columns[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+    /* Compact mode hides the columns least needed for a quick scan — full detail (Type, Days,
+       Source) is always one tap away in the trip drawer. Pure CSS: the underlying <th>/<td>
+       are still rendered and still sort/export normally, they're just not displayed. */
+    .table-wrap.compact-cols [data-col="visitType"],
+    .table-wrap.compact-cols [data-col="days"],
+    .table-wrap.compact-cols [data-col="source"] { display: none; }
 
     /* Highlights line */
     .facts { display: flex; flex-wrap: wrap; column-gap: var(--sp-6); row-gap: var(--sp-2); padding: var(--sp-5) 0 0; font-size: .86rem; color: var(--text-2); }
@@ -542,7 +551,11 @@
       .field select, .field input[type="search"] { width: 100%; }
       .filter-spacer { display: none; }
       #registry .section-head { flex-direction: column; align-items: flex-start; }
-      .registry-actions { width: 100%; justify-content: space-between; }
+      /* Three items (helper text + 2 buttons) no longer fit on one 375px-wide line now that
+         the column toggle sits next to Download CSV — wrap instead of silently overflowing
+         the row (which was dragging the whole page into horizontal scroll). */
+      .registry-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; row-gap: var(--sp-2); }
+      .registry-actions .sub { flex: 1 0 100%; }
       .news-grid { grid-template-columns: 1fr; }
       #drawer { padding: var(--sp-6); }
     }
@@ -726,6 +739,10 @@
           </div>
           <div class="registry-actions">
             <span class="sub">Select a row for trip details</span>
+            <button class="btn-reset btn-columns" id="colToggle" type="button" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16 4h4v16h-4z"/></svg>
+              <span id="colToggleLabel">Compact columns</span>
+            </button>
             <button class="btn-reset btn-download" id="downloadCsv" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
               Download CSV
@@ -1440,19 +1457,19 @@ function renderTable(rows) {
     const active = state.sortKey === col.key;
     const ariaSort = active ? (state.sortDir === 'asc' ? 'ascending' : 'descending') : 'none';
     const icon = active ? (state.sortDir === 'asc' ? '▲' : '▼') : '↕';
-    return `<th aria-sort="${ariaSort}"><button type="button" class="th-sort" data-sort="${col.key}">${col.label}<span class="sort-icon" aria-hidden="true">${icon}</span></button></th>`;
-  }).join('') + '<th>Source</th>';
+    return `<th data-col="${col.key}" aria-sort="${ariaSort}"><button type="button" class="th-sort" data-sort="${col.key}">${col.label}<span class="sort-icon" aria-hidden="true">${icon}</span></button></th>`;
+  }).join('') + '<th data-col="source">Source</th>';
   table.innerHTML =
     `<caption>India PM foreign trips — ${rows.length} result(s) in current filtered view</caption>` +
     `<thead><tr>${thead}</tr></thead>` +
     `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="View details for ${t.label}">
-      <td><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
-      <td class="itin">${t.label}</td>
-      <td><span class="tags">${t.countries.map(x => `<span class="tag">${x}</span>`).join('')}</span></td>
-      <td><span class="type-pill ${t.visitType === 'Multi-country' ? 't-multi' : 't-single'}">${t.visitType === 'Multi-country' ? 'Multi-country' : 'Single'}</span></td>
-      <td class="num"><span class="days-cell"><span class="days-bar" style="width:${Math.max(6, Math.round(t.days / maxDays * 44))}px"></span>${t.days}</span></td>
-      <td style="white-space:nowrap">${t.pm}</td>
-      <td><span class="status ${t.sourceMode === 'fallback' ? 's-warn' : 's-ok'}">${t.sourceMode === 'fallback' ? 'Snapshot' : t.sourceMode === 'json' ? 'Pipeline' : 'Live'}</span></td>
+      <td data-col="start"><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
+      <td data-col="label" class="itin">${t.label}</td>
+      <td data-col="countries"><span class="tags">${t.countries.map(x => `<span class="tag">${x}</span>`).join('')}</span></td>
+      <td data-col="visitType"><span class="type-pill ${t.visitType === 'Multi-country' ? 't-multi' : 't-single'}">${t.visitType === 'Multi-country' ? 'Multi-country' : 'Single'}</span></td>
+      <td data-col="days" class="num"><span class="days-cell"><span class="days-bar" style="width:${Math.max(6, Math.round(t.days / maxDays * 44))}px"></span>${t.days}</span></td>
+      <td data-col="pm" style="white-space:nowrap">${t.pm}</td>
+      <td data-col="source"><span class="status ${t.sourceMode === 'fallback' ? 's-warn' : 's-ok'}">${t.sourceMode === 'fallback' ? 'Snapshot' : t.sourceMode === 'json' ? 'Pipeline' : 'Live'}</span></td>
     </tr>`).join('')}</tbody>`;
 }
 
@@ -2126,6 +2143,25 @@ document.getElementById('themeToggle').onclick = () => {
 
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
 document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
+
+// Registry "Compact columns" toggle: on narrow screens the 7-column table means real
+// horizontal scroll to see the whole row. Type/Days/Source are all still one tap away in
+// the trip drawer, so hiding them is a pure CSS display toggle — the underlying <th>/<td>
+// stay in the DOM (sorting and CSV export both read the trip data directly, not the table
+// markup, so neither is affected) and are just not shown. Preference is remembered like the
+// theme toggle, so a user who compacts once doesn't have to redo it.
+function applyColumnMode(compact) {
+  document.querySelector('.table-wrap').classList.toggle('compact-cols', compact);
+  document.getElementById('colToggle').setAttribute('aria-pressed', String(compact));
+  document.getElementById('colToggleLabel').textContent = compact ? 'All columns' : 'Compact columns';
+}
+let compactCols = localStorage.getItem('regCompactCols') === '1';
+applyColumnMode(compactCols);
+document.getElementById('colToggle').addEventListener('click', () => {
+  compactCols = !compactCols;
+  localStorage.setItem('regCompactCols', compactCols ? '1' : '0');
+  applyColumnMode(compactCols);
+});
 
 // Drawer event delegation on static table element
 document.getElementById('tripTable').addEventListener('click', e => {

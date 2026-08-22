@@ -971,3 +971,70 @@ only). All 5 KPIs, 44 registry rows, and the full page render with no console er
 fallback tiers untouched — this is a pure CSS change with no JS or data-path touched at all.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-22 — "Compact columns" toggle for the trip registry
+
+**Shipped.** The registry's 7-column table (Dates, Itinerary, Countries, Type, Days, PM,
+Source) has relied on the `table-wrap`'s own horizontal scroll to be usable on a phone since
+day one — real, but a workaround, not a fix. Added a "Compact columns" button next to
+Download CSV that hides Type, Days, and Source with one tap, leaving the four columns that
+matter for a quick scan (Dates, Itinerary, Countries, PM); a second tap ("All columns")
+restores the rest. All three hidden fields are still one row-tap away in the trip drawer,
+which already shows every field in full, so nothing is lost, just decluttered. It's a pure
+CSS `display:none` toggle keyed off `data-col` attributes added to each `<th>`/`<td>` — the
+cells stay in the DOM, so sorting (keys unaffected) and CSV export (reads `filtered()` trip
+data directly, never the table markup) both work exactly as before regardless of which mode
+is active. The preference persists in `localStorage` the same way the theme toggle already
+does, is a real `<button aria-pressed>` (not a checkbox list, so no new form semantics), and
+works identically on desktop for anyone who prefers a denser table.
+
+This is the single most-repeated backlog item in this log, named open in every entry from
+08-08 through 08-21 (14 entries) and never once rejected on the merits — only ever outranked
+by something more urgent that day. Today's fresh brainstorm (a `rel="noopener"` gap on two
+`data/visits.json` links, `og:image` width/height meta, a per-chart PNG export, a new
+"average trip length" stat, a page-level "back to top" control) turned up nothing that
+outranked a mobile-experience gap open for two full weeks, so it finally got the slot.
+
+**Bug caught in verification, fixed in the same change:** adding a second button to
+`.registry-actions` meant three flex items (helper text + 2 buttons) no longer fit one line
+at 375px — the row silently overflowed its container and dragged the *whole page* into
+horizontal scroll (confirmed via `scrollWidth` before/after: 375px clean before this change,
+406px after, isolated to `.registry-actions`, not the table). Fixed by adding `flex-wrap: wrap`
+to the existing 640px breakpoint rule for `.registry-actions` and letting the helper text take
+its own line — the same class of "flex row silently overflows its box" defect the 08-08 log
+hit with CSS Grid, different layout mode.
+
+**Runners-up**
+- `rel="noopener"` missing on two `target="_blank"` links to `data/visits.json` (footer,
+  Methodology) — a genuine, tiny defect (reverse-tabnabbing risk, low severity since the link
+  is same-origin JSON), but thinner than a 14-times-repeated mobile gap.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18/08-19, real but minor SEO
+  polish, same reasoning as every prior log that passed on it.
+- Per-chart "download as PNG" button — flagged 08-14 through 08-19; Plotly's modebar is
+  deliberately disabled, so this still needs its own UI, bigger than today's slot.
+- "Average trip length by PM" fact — a new way to read the data, but it's a cross-PM
+  comparison, and CLAUDE.md's non-partisan guardrail means any new stat that ranks or
+  compares PMs needs more deliberate framing than a one-day slot affords; the existing PM
+  comparison chart already carries that risk carefully, a fresh one shouldn't be rushed.
+- Page-level "back to top" control — real but niche; the in-page nav (fixed 08-21) already
+  covers jumping between sections including back to the hero.
+
+**Verification:** `node --check` on both real inline scripts (JSON-LD block fails as always,
+expected — not JS). Playwright against the served page (Plotly stubbed; `cdn.plot.ly` blocked
+in this sandbox) at 1280px and 375px, light and dark: default state is unpressed/"all columns"
+(byte-identical to before); one click sets `aria-pressed="true"`, flips the label to "All
+columns", hides Type/Days/Source across every row while Dates/Itinerary/Countries/PM stay
+visible, and persists through a full page reload via `localStorage`; a second click restores
+all 7 columns. `document.documentElement.scrollWidth` confirms no page-level horizontal
+scroll at 375px in either mode (the pre-fix regression measured 406px vs. a 375px viewport;
+the flex-wrap fix brought it back to 375px). All 6 charts still initialize
+(`.chart-loading` clears on all of them), 5 KPIs and 44 registry rows render, sort arrows and
+click-to-sort still work with compact mode on, CSV export unaffected (reads trip data, not
+table markup). Full-page screenshots at both viewports and both themes confirm the toggle's
+pressed/unpressed styling and the wrapped mobile action row read correctly. Console clean bar
+the pre-existing, sandbox-only Google Fonts network block (`ERR_CONNECTION_RESET`) noted in
+every prior log. All three fallback tiers untouched — the change is a display-only toggle
+over the DOM `render()` already builds from `rows`, identical regardless of which tier
+populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
