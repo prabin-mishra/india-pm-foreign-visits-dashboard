@@ -1038,3 +1038,58 @@ over the DOM `render()` already builds from `rows`, identical regardless of whic
 populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-23 — Per-chart "download as PNG" button
+
+**Shipped.** Each of the six analysis panels gets a small download-icon button next to its
+subtitle, reproducing exactly what Plotly's own modebar camera icon would do —
+`Plotly.downloadImage(chartId, {format: 'png', scale: 2})` — since `displayModeBar: false`
+(shipped for a cleaner look) leaves journalists and researchers with no way to pull a chart
+out of the page for reuse. Descriptive per-chart filenames (`trip-frequency-map.png`,
+`pm-comparison.png`, etc.) and per-chart `aria-label`s. Ships `disabled` in the raw HTML
+(confirmed via `curl`, before any JS runs) and is enabled the instant that panel's own
+`revealChart()` fires — the same choke point the 08-19 skeleton loaders already clear through,
+so no new render-gating path. No new dependency: `downloadImage` is a built-in Plotly method,
+not a custom modebar rebuild.
+
+Named a runner-up six times running (08-14 through 08-19) and passed over each time as
+"needs its own UI, bigger than today's slot" — re-examined that assumption today: since
+`downloadImage` already does the actual export work, the real scope is one small button per
+panel plus a single delegated click handler, not a rebuilt modebar. That reframing is what
+moved it from backlog to shippable. Chosen over this cycle's fresh finds because it's a
+complete, self-contained capability (not a partial fix like the `rel="noopener"` gap), it's
+squarely CLAUDE.md's "interactivity" dimension, and it carries zero non-partisan risk — a
+chart export button changes nothing about what any chart shows.
+
+**Runners-up**
+- `rel="noopener"` missing on two `target="_blank"` links to `data/visits.json` (Methodology
+  body copy, footer) — confirmed still open (flagged 08-22); real but a smaller, single-line
+  fix next to a capability six logs deep on the backlog.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18/08-19/08-22 every time as
+  "real but minor," same reasoning holds again.
+- "Longest gap between trips, same PM only" as a second variant of the 08-15 fact — checked and
+  dropped: the existing gap fact already reads as "in the current filtered view," and a
+  same-PM-only variant would need its own UI slot to coexist rather than replace it, more scope
+  than a fresh variant on an existing fact should carry.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected a fifteenth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- Preconnect (not just `dns-prefetch`) to `cdn.plot.ly` — real but marginal now that Plotly's
+  load is already deferred (08-09) and off the critical path for first paint.
+
+**Verification:** `node --check` on both extracted inline scripts. `curl` of the raw served
+HTML confirms all six buttons ship `disabled` before any JS runs. Playwright against the served
+page (Plotly stubbed with a capturing `react`/`downloadImage`; `cdn.plot.ly` blocked in this
+sandbox) at 1280px and 375px, light and dark: all six buttons enabled immediately after their
+chart renders, correct per-chart `data-filename`/`aria-label`; clicking each fires
+`Plotly.downloadImage` with the exact expected `{format:'png', filename, scale:2}`; buttons stay
+enabled and continue to work correctly after a filter change, a sort, Reset, Compact-columns
+toggle, CSV export, dark-mode toggle, and opening/closing the trip drawer — none of those paths
+touched. No page-level horizontal scroll at either width (`scrollWidth === clientWidth`).
+Screenshots confirm the button reads correctly inline with each panel's subtitle in both themes
+and wraps cleanly at 375px alongside the existing panel-head layout. All 5 KPIs and 44 registry
+rows render. Console clean bar the pre-existing, sandbox-only Google Fonts network block
+(`ERR_CONNECTION_RESET`) noted in every prior log. All three fallback tiers untouched — the
+button reads only `window.Plotly` and the chart div already drawn by whichever tier populated
+`trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`

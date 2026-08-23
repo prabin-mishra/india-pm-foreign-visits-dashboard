@@ -189,6 +189,16 @@
     }
     .icon-btn:hover { background: var(--surface-2); color: var(--text); }
     .icon-btn svg { width: 17px; height: 17px; }
+    .panel-head-right { display: flex; align-items: center; gap: var(--sp-2); flex: none; }
+    .chart-dl-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: var(--radius-sm); flex: none;
+      border: 1px solid var(--border); background: transparent; color: var(--text-3); cursor: pointer;
+      transition: background .18s ease, color .18s ease;
+    }
+    .chart-dl-btn svg { width: 13px; height: 13px; }
+    .chart-dl-btn:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+    .chart-dl-btn:disabled { opacity: .35; cursor: default; }
 
     /* ============ Hero ============ */
     .hero { padding: var(--sp-16) 0 var(--sp-10); }
@@ -696,32 +706,32 @@
         </div>
         <div class="charts">
           <div class="panel">
-            <div class="panel-head"><h3>Trip frequency map</h3><span class="sub">Country touches in view</span></div>
+            <div class="panel-head"><h3>Trip frequency map</h3><span class="panel-head-right"><span class="sub">Country touches in view</span><button class="chart-dl-btn" type="button" data-chart="map" data-filename="trip-frequency-map" aria-label="Download trip frequency map as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="map" class="chart-loading" style="height:400px" role="img" aria-label="Choropleth map of PM visit frequency by country"></div>
             <div id="mapTableWrap"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h3>Trips over time</h3><span class="sub">Trips &amp; countries, per month</span></div>
+            <div class="panel-head"><h3>Trips over time</h3><span class="panel-head-right"><span class="sub">Trips &amp; countries, per month</span><button class="chart-dl-btn" type="button" data-chart="timeline" data-filename="trips-over-time" aria-label="Download trips over time chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="timeline" class="chart-loading" style="height:400px" role="img" aria-label="Line chart of trips and unique countries visited per month"></div>
             <div id="timelineTableWrap"></div>
           </div>
           <div class="panel wide">
-            <div class="panel-head"><h3>Most visited countries</h3><span class="sub">Top 15 in view</span></div>
+            <div class="panel-head"><h3>Most visited countries</h3><span class="panel-head-right"><span class="sub">Top 15 in view</span><button class="chart-dl-btn" type="button" data-chart="ranking" data-filename="most-visited-countries" aria-label="Download most visited countries chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="ranking" class="chart-loading" style="height:360px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
             <div id="rankingTableWrap"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h3>PM comparison</h3><span class="sub">Trips vs unique countries</span></div>
+            <div class="panel-head"><h3>PM comparison</h3><span class="panel-head-right"><span class="sub">Trips vs unique countries</span><button class="chart-dl-btn" type="button" data-chart="pmCompare" data-filename="pm-comparison" aria-label="Download PM comparison chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="pmCompare" class="chart-loading" style="height:320px" role="img" aria-label="Grouped bar chart comparing trips and unique countries per PM"></div>
             <div id="pmCompareTableWrap"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h3>Single vs multi-country tours</h3><span class="sub">By year</span></div>
+            <div class="panel-head"><h3>Single vs multi-country tours</h3><span class="panel-head-right"><span class="sub">By year</span><button class="chart-dl-btn" type="button" data-chart="yoyChart" data-filename="single-vs-multi-country-tours" aria-label="Download single vs multi-country tours chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="yoyChart" class="chart-loading" style="height:320px" role="img" aria-label="Stacked bar chart of trips by year and visit type"></div>
             <div id="yoyTableWrap"></div>
           </div>
           <div class="panel wide">
-            <div class="panel-head"><h3>Travel calendar</h3><span class="sub">Trip density by year and month</span></div>
+            <div class="panel-head"><h3>Travel calendar</h3><span class="panel-head-right"><span class="sub">Trip density by year and month</span><button class="chart-dl-btn" type="button" data-chart="calHeatmap" data-filename="travel-calendar" aria-label="Download travel calendar chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="calHeatmap" class="chart-loading" style="height:280px" role="img" aria-label="Heatmap of trip density by year and month"></div>
             <div id="calHeatmapTableWrap"></div>
           </div>
@@ -1160,7 +1170,11 @@ function renderChartTable(wrapId, caption, headers, bodyRows) {
 // Each chart div carries a shimmering .chart-loading placeholder (CSS) until its own
 // Plotly.react() call draws into it, so panels reveal progressively rather than all at once.
 const CHART_IDS = ['map', 'timeline', 'ranking', 'pmCompare', 'yoyChart', 'calHeatmap'];
-function revealChart(id) { document.getElementById(id).classList.remove('chart-loading'); }
+function revealChart(id) {
+  document.getElementById(id).classList.remove('chart-loading');
+  const btn = document.querySelector(`.chart-dl-btn[data-chart="${id}"]`);
+  if (btn) btn.disabled = false;
+}
 
 async function renderCharts(rows) {
   await plotlyReady; // Plotly loads deferred; wait rather than assume it's ready by now.
@@ -2143,6 +2157,18 @@ document.getElementById('themeToggle').onclick = () => {
 
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
 document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
+
+// Per-chart "download as PNG" — Plotly's own modebar is deliberately disabled
+// (displayModeBar: false) for a cleaner look, so this reproduces just its camera-icon
+// behaviour as one small button per panel. Disabled until that chart's own Plotly.react()
+// call has actually drawn into the div (see revealChart), since Plotly.downloadImage()
+// needs a rendered plot to export from.
+document.querySelectorAll('.chart-dl-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.disabled || !window.Plotly) return;
+    Plotly.downloadImage(btn.dataset.chart, {format: 'png', filename: btn.dataset.filename, scale: 2});
+  });
+});
 
 // Registry "Compact columns" toggle: on narrow screens the 7-column table means real
 // horizontal scroll to see the whole row. Type/Days/Source are all still one tap away in
