@@ -10,6 +10,9 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230e6b70'/%3E%3Ccircle cx='50' cy='40' r='24.5' fill='%23fff'/%3E%3Cpolygon points='27.63,50 72.37,50 50,86' fill='%23fff'/%3E%3C/svg%3E" />
   <link rel="icon" type="image/png" sizes="48x48" href="favicon.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <!-- Mobile browser chrome (address/status bar) tinted to match the current theme's
+       page background; kept in sync with the light/dark toggle in applyTheme(). -->
+  <meta name="theme-color" id="themeColorMeta" content="#f6f4ef" />
   <!-- SEO / OG -->
   <meta name="description" id="metaDescription" content="Independent, open dataset tracking every foreign visit by India's Prime Ministers — countries, dates, duration, and multi-country tours." />
   <meta property="og:title" content="India PM Foreign Visits Tracker" />
@@ -2146,6 +2149,9 @@ function applyTheme() {
   document.getElementById('iconMoon').style.display = dark ? 'none' : '';
   document.getElementById('iconSun').style.display  = dark ? '' : 'none';
   document.getElementById('themeToggle').setAttribute('aria-pressed', String(dark));
+  // Keep the mobile browser chrome (address/status bar) tinted to match --bg for
+  // whichever theme is active, same values as the [data-theme="dark"] CSS block.
+  document.getElementById('themeColorMeta').setAttribute('content', dark ? '#14130f' : '#f6f4ef');
 }
 applyTheme();
 document.getElementById('themeToggle').onclick = () => {

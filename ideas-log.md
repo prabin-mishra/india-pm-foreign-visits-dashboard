@@ -1093,3 +1093,60 @@ button reads only `window.Plotly` and the chart div already drawn by whichever t
 `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-24 — Mobile browser chrome tinted to match the active theme
+
+**Shipped.** The page had no `<meta name="theme-color">` at all — confirmed via a head scan,
+not just a hunch — so on Android Chrome and iOS Safari the address/status bar around the page
+stayed the browser's default white or black regardless of which theme was active, an unbranded
+seam right at the top of the screen on the exact devices the 08-21/08-22 mobile-polish work was
+aimed at. Added a single `<meta name="theme-color" id="themeColorMeta">` tag, defaulting to the
+light `--bg` value (`#f6f4ef`) in the static markup, and one line in the existing `applyTheme()`
+choke point — already the single place both the manual toggle and the saved/system-preference
+initial load funnel through — that sets its `content` to `#14130f` (dark `--bg`) or `#f6f4ef`
+(light `--bg`) in lockstep with `data-theme`. No new choke point, no CSS media-query duplicate
+logic: it reuses the exact same "saved preference else system, else manual toggle" resolution
+the rest of the theme system already has, so the browser chrome can never disagree with what's
+on screen.
+
+Fresh find, not a repeat: checked the log's trust/branding items (favicon 08-14, caveats panel
+08-13) and neither mentions browser-chrome color. Chosen today over a keyboard-shortcut search
+focus ("/") idea and a `rel="noopener"` fix because recent cycles (08-19 through 08-23) leaned
+heavily on interactivity and mobile-layout work; this is the first trust/branding-adjacent pick
+since 08-14 and closes a real, visible gap on the mobile devices the last two cycles targeted,
+for a one-line, fully reversible change.
+
+**Runners-up**
+- *Keyboard shortcut ("/") to focus the search field* — genuine, fresh interactivity value for
+  repeat users re-filtering the registry, but the site shipped three interactivity/mobile
+  features in the last four cycles (08-20 through 08-23); a trust/branding gap open since launch
+  was the better balance for today.
+- `rel="noopener"` missing on two `target="_blank"` links to `data/visits.json` (Methodology
+  body copy, footer) — confirmed still open (flagged 08-22/08-23); real but low severity since
+  both links are same-origin JSON, and thinner than a visible cross-device branding gap.
+- *Canonical `<link>` tag* — reconsidered fresh given the `?trip=<slug>` permalinks shipped
+  08-07 (a real new argument beyond the "marginal payoff" grounds this was rejected on 15 times
+  running), but the permalinks differ only in query string on the same path, which search
+  engines already consolidate without help, and `og:url`/JSON-LD already declare the bare URL —
+  the SEO case is real but marginal, so still not the best use of today's slot.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18 through 08-22 every time as
+  "real but minor," same reasoning holds again.
+- `robots.txt` + `sitemap.xml` — rejected a sixteenth time on the same "marginal payoff for a
+  single-URL site" grounds as every prior log.
+- *Trip-duration histogram (a new way to read the data)* — genuinely fresh, but a seventh chart
+  would need to replicate the skeleton loader, empty-state annotation, accessible data table, and
+  PNG-download infrastructure every existing chart now carries — a mini-epic, not a one-day idea.
+
+**Verification:** `node --check` on both extracted inline scripts. `curl` of the raw served HTML
+confirms the meta tag ships with the light-mode default (`#f6f4ef`) before any JS runs. Playwright
+against the served page (Plotly stubbed; `cdn.plot.ly` blocked in this sandbox, confirmed via
+`requestfailed` — same class of restriction as every prior log) at 1280px and 375px: initial
+`theme-color` matches the resolved `data-theme` on load; clicking the theme toggle flips both
+`data-theme` and `theme-color` together (`#f6f4ef` ↔ `#14130f`) in the same click; toggling back
+returns both to their original values. All 5 KPI cards and all 44 registry rows render at both
+widths, no horizontal scroll (`scrollWidth === clientWidth`), console clean bar the pre-existing,
+sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log. All three
+fallback tiers untouched — the change is a static meta tag plus one line inside the theme system,
+entirely independent of which tier populates `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
