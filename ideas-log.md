@@ -1150,3 +1150,67 @@ fallback tiers untouched — the change is a static meta tag plus one line insid
 entirely independent of which tier populates `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+
+## 2026-08-25 — "Other trips to the same destinations" cross-links in the trip drawer
+
+**Shipped.** Opening a trip's drawer now shows a section, right below the country tags, listing
+up to five other trips that share at least one destination country — e.g. opening "France &
+Slovakia" surfaces "France & USA," "France & United Arab Emirates (UAE)," and "Germany, Denmark &
+France," each a clickable button showing the trip's label and date range. Clicking one re-opens
+the drawer on that trip in place (same `openDrawer()` call the registry table and permalinks
+already use), updating the URL slug so the new trip is itself shareable, and the section is
+absent entirely for a trip whose destinations don't recur elsewhere (verified live: Seychelles,
+and the three-country Jordan/Ethiopia/Oman trip, both render zero related links and no stray
+heading). Matching reads `trip.countries`, the same normalized array the drawer's own country tags
+and the 08-10 compound-name fix already produce, so "Trinidad and Tobago"-style names match
+correctly with no new parsing logic. Capped at 5 with a "+N more" note if a country ever recurs
+more than that (no country does yet in the live 44-trip dataset — max is France at 4 — but the
+cap keeps the drawer from growing unbounded as the pipeline adds more years of data).
+
+This is a genuinely new way to read the data — no prior entry lets a reader follow one country's
+visit history across trips without leaving the drawer to re-filter and re-scroll the registry —
+and CLAUDE.md names that dimension explicitly. Chosen over the standing "/" search-shortcut
+runner-up (itself deferred once already, 08-24, purely for dimension balance) because this ranks
+higher on user impact for the stated journalist/researcher audience and had never been named in
+the log before, while "/" remains a smaller, still-open convenience item. Pure read-side logic
+over `trips`, already in memory regardless of which fallback tier populated it — no new
+dependency, no data-provenance touch, and a factual cross-reference by shared country carries no
+scoring or comparison risk between PMs or parties.
+
+**Runners-up**
+- *Keyboard shortcut ("/") to focus the search field* — flagged fresh 08-24, genuine interactivity
+  value, deferred there for dimension balance; today a "new way to read the data" idea with no
+  prior log entry outranked it on impact, not on staleness. Still open.
+- `rel="noopener"` missing on two `target="_blank"` links to `data/visits.json` (Methodology body
+  copy, footer) — confirmed still open (flagged 08-22 through 08-24); real but a single-line fix,
+  thinner than a new cross-reading capability.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18 through 08-22 every time as "real
+  but minor," same reasoning holds again.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected a seventeenth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Trip-duration histogram (a new way to read the data)* — flagged fresh 08-24 as "a mini-epic, not
+  a one-day idea" since a seventh chart needs the full skeleton/empty-state/data-table/PNG-export
+  infrastructure every existing chart carries; still true today, and the drawer cross-link idea
+  gets at the same "new way to read the data" dimension without that overhead.
+
+**Verification:** `node --check` on both extracted inline scripts (the JSON-LD block fails as
+always, expected — not JS). Playwright against the served page (Plotly stubbed; `cdn.plot.ly`
+blocked in this sandbox) at 1280px and 375px, light and dark: opening "France & Slovakia" shows
+exactly 3 related links in newest-first order with correct labels/date ranges; clicking one
+re-renders the drawer for that trip (title updates, URL `?trip=` slug changes), keeps the drawer
+open and the background `inert`, and Escape still closes it and restores focus correctly —
+confirming the existing focus trap and background-inert behavior survive a nested in-drawer
+navigation. Opening "Seychelles" (a country appearing once) and the three-country "Jordan,
+Ethiopia, and Oman" trip (no repeats among the three) both render zero related links and omit the
+section heading entirely, not an empty list. All 6 charts initialize, all 5 KPI cards and all 44
+registry rows render, no horizontal scroll at either width (`scrollWidth <= clientWidth`).
+Screenshots confirm the new section reads correctly against both themes' tokens and wraps cleanly
+on a 375px viewport alongside the existing drawer-action buttons. Console clean bar the
+pre-existing, sandbox-only Google Fonts network block noted in every prior log. Print stylesheet
+untouched — `#drawer`/`#drawer-overlay` were already in its hide-list from the 08-17 log, so the
+new section is already excluded from print output with no additional rule needed. All three
+fallback tiers untouched — the feature reads only `trips`, the already-normalized in-memory list,
+identically regardless of which tier populated it.
+
+**Files touched:** `index.html`, `ideas-log.md`

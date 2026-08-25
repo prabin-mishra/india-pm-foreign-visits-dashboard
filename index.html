@@ -515,6 +515,16 @@
     .drawer-grid .v { font-size: .92rem; font-weight: 600; font-variant-numeric: tabular-nums; }
     .drawer-sec { font: 600 .8rem/1 var(--font-ui); letter-spacing: .07em; text-transform: uppercase; color: var(--text-2); margin: var(--sp-5) 0 var(--sp-3); }
     .drawer-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .drawer-related { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+    .drawer-related-link {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%;
+      font-size: .88rem; font-weight: 600; color: inherit; font-family: inherit; text-align: left;
+      border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;
+      background: transparent; cursor: pointer; transition: background .18s ease, border-color .18s ease;
+    }
+    .drawer-related-link:hover, .drawer-related-link:focus-visible { background: var(--surface-2); }
+    .drawer-related-link .date { font-size: .78rem; font-weight: 500; color: var(--text-3); font-variant-numeric: tabular-nums; flex: none; }
+    .drawer-related-more { font-size: .78rem; color: var(--text-3); margin: 8px 0 0; }
     .drawer-actions { display: flex; flex-direction: column; gap: var(--sp-3); margin-top: var(--sp-6); }
     .drawer-link {
       display: inline-flex; align-items: center; gap: 8px;
@@ -1544,6 +1554,25 @@ async function copyTripCitation(trip, btn) {
   flashCopied(btn, 'Citation copied', 'Copy citation', 'Citation copied to clipboard');
 }
 
+// Other trips sharing at least one destination country — lets a reader following one
+// country's visit history jump straight to the rest of it. `trips` is already sorted
+// newest-first (see the 08-07 log), so the capped slice needs no re-sort.
+function relatedTripsHtml(trip) {
+  const all = trips.filter(t => t.slug !== trip.slug && t.countries.some(c => trip.countries.includes(c)));
+  if (!all.length) return '';
+  const shown = all.slice(0, 5);
+  const more = all.length - shown.length;
+  return `
+    <h3 class="drawer-sec">Other trips to the same destinations</h3>
+    <ul class="drawer-related">
+      ${shown.map(t => `<li><button type="button" class="drawer-related-link" data-slug="${t.slug}">
+        <span>${t.label}</span><span class="date">${fmtRange(t.start, t.end)}</span>
+      </button></li>`).join('')}
+    </ul>
+    ${more > 0 ? `<p class="drawer-related-more">+${more} more trip${more !== 1 ? 's' : ''} to these destinations</p>` : ''}
+  `;
+}
+
 function openDrawer(trip, {push = true} = {}) {
   document.getElementById('drawerContent').innerHTML = `
     <p class="drawer-eyebrow">${trip.visitType} · ${trip.year}</p>
@@ -1558,6 +1587,7 @@ function openDrawer(trip, {push = true} = {}) {
     ${trip.outcomes ? `<h3 class="drawer-sec">Outcomes</h3><p>${trip.outcomes}</p>` : ''}
     <h3 class="drawer-sec">Countries visited</h3>
     <div class="drawer-tags">${trip.countries.map(x => `<span class="tag">${x}</span>`).join('')}</div>
+    ${relatedTripsHtml(trip)}
     <div class="drawer-actions">
       <button type="button" class="drawer-link copy-link" id="drawerCopyLink" data-slug="${trip.slug}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
@@ -2222,6 +2252,12 @@ document.getElementById('drawer').addEventListener('click', e => {
   if (citeBtn) {
     const trip = trips.find(t => t.slug === citeBtn.dataset.slug);
     if (trip) copyTripCitation(trip, citeBtn);
+    return;
+  }
+  const relatedBtn = e.target.closest('.drawer-related-link');
+  if (relatedBtn) {
+    const trip = trips.find(t => t.slug === relatedBtn.dataset.slug);
+    if (trip) openDrawer(trip);
   }
 });
 
