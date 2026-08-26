@@ -507,6 +507,16 @@
     }
     #drawer.open { transform: translateX(0); visibility: visible; }
     .drawer-close { position: absolute; top: var(--sp-4); right: var(--sp-4); }
+    .drawer-chrono { display: flex; justify-content: space-between; gap: 8px; margin: var(--sp-6) 0 0; }
+    .drawer-chrono-btn {
+      display: inline-flex; align-items: center; gap: 6px; max-width: 48%;
+      font-size: .76rem; font-weight: 600; color: var(--text-2); font-family: inherit;
+      border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px;
+      background: transparent; cursor: pointer; transition: background .18s ease, color .18s ease, border-color .18s ease;
+    }
+    .drawer-chrono-btn:hover, .drawer-chrono-btn:focus-visible { background: var(--surface-2); color: var(--accent); }
+    .drawer-chrono-btn[disabled] { opacity: .35; cursor: default; pointer-events: none; }
+    .drawer-chrono-btn .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .drawer-eyebrow { font-size: .68rem; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--gold-text); margin: var(--sp-6) 0 var(--sp-2); }
     .drawer-title { font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; line-height: 1.15; letter-spacing: -.01em; margin: 0 0 var(--sp-5); text-wrap: balance; }
     .drawer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; margin-bottom: var(--sp-6); }
@@ -1573,8 +1583,27 @@ function relatedTripsHtml(trip) {
   `;
 }
 
+// Step to the chronologically adjacent trip. `trips` is sorted newest-first (see the 08-07
+// log), so the entry one index later started earlier, and one index earlier started later.
+// Reads the full unfiltered `trips` list, same as relatedTripsHtml above — a browsing control,
+// not scoped to the current filter view.
+function chronoNavHtml(trip) {
+  const idx = trips.findIndex(t => t.slug === trip.slug);
+  if (idx === -1) return '';
+  const earlier = trips[idx + 1];
+  const later   = trips[idx - 1];
+  const navBtn = (target, dir, arrow) => target
+    ? `<button type="button" class="drawer-chrono-btn" data-slug="${target.slug}" aria-label="${dir} trip — ${esc(target.label)}, ${fmtRange(target.start, target.end)}">${dir === 'Earlier' ? `<span aria-hidden="true">${arrow}</span><span class="lbl">${dir}</span>` : `<span class="lbl">${dir}</span><span aria-hidden="true">${arrow}</span>`}</button>`
+    : `<button type="button" class="drawer-chrono-btn" disabled aria-label="No ${dir.toLowerCase()} trip">${dir === 'Earlier' ? `<span aria-hidden="true">${arrow}</span><span class="lbl">${dir}</span>` : `<span class="lbl">${dir}</span><span aria-hidden="true">${arrow}</span>`}</button>`;
+  return `<nav class="drawer-chrono" aria-label="Browse trips chronologically">
+    ${navBtn(earlier, 'Earlier', '←')}
+    ${navBtn(later, 'Later', '→')}
+  </nav>`;
+}
+
 function openDrawer(trip, {push = true} = {}) {
   document.getElementById('drawerContent').innerHTML = `
+    ${chronoNavHtml(trip)}
     <p class="drawer-eyebrow">${trip.visitType} · ${trip.year}</p>
     <h2 class="drawer-title">${trip.label}</h2>
     <div class="drawer-grid">
@@ -2257,6 +2286,12 @@ document.getElementById('drawer').addEventListener('click', e => {
   const relatedBtn = e.target.closest('.drawer-related-link');
   if (relatedBtn) {
     const trip = trips.find(t => t.slug === relatedBtn.dataset.slug);
+    if (trip) openDrawer(trip);
+    return;
+  }
+  const chronoBtn = e.target.closest('.drawer-chrono-btn:not([disabled])');
+  if (chronoBtn) {
+    const trip = trips.find(t => t.slug === chronoBtn.dataset.slug);
     if (trip) openDrawer(trip);
   }
 });

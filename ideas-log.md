@@ -1214,3 +1214,58 @@ fallback tiers untouched — the feature reads only `trips`, the already-normali
 identically regardless of which tier populated it.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-26 — Earlier/Later chronological trip navigation in the drawer
+
+**Shipped.** Opening any trip's drawer now shows a two-button nav bar at the top — "← Earlier"
+and "Later →" — that steps to the chronologically adjacent trip in the full historical record
+(not just the current filter view), one click at a time, without closing the drawer or
+returning to the registry. Each button's `aria-label` names the target trip and its date range
+for screen-reader users; the boundary trips (newest and oldest in the dataset) render the
+far-side button `disabled` rather than hidden, so the timeline's edges are visually legible
+rather than silently absent. Reuses `openDrawer()` for the actual step — same focus trap,
+background-inert, and URL-permalink update as every other in-drawer navigation (row click,
+permalink load, the 08-25 related-trips links) — so no new interaction model, just a new entry
+point into it. `trips` is already sorted newest-first (08-07), so "earlier"/"later" is a plain
+index walk with no new data derivation or PM-scoping question to resolve.
+
+This is a genuinely new way to read the data — no prior entry lets a reader move along the
+timeline itself, trip to trip, the way the 08-25 cross-links let them move sideways by shared
+destination. Checked the backlog first: the "/" search-shortcut runner-up (open since 08-24,
+deferred twice) and the `rel="noopener"` gap (open since 08-22, deferred four times) are both
+smaller, already-scoped fixes; this ranked higher today on user impact for the stated
+journalist/researcher audience and, like the 08-25 pick, had never been named in the log before.
+Pure read-side logic over `trips`, already in memory regardless of which fallback tier populated
+it — no new dependency, no data-provenance touch, and stepping through trips in date order
+carries no scoring or comparison risk between PMs or parties.
+
+**Runners-up**
+- *Keyboard shortcut ("/") to focus the search field* — flagged 08-24, deferred again 08-25 for
+  dimension balance; still open, still smaller than a new way to read the data.
+- `rel="noopener"` missing on two `target="_blank"` links to `data/visits.json` (Methodology body
+  copy, footer) — confirmed still open (flagged 08-22 through 08-25); real but a single-line fix.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18 through 08-22 every time as "real
+  but minor," same reasoning holds again.
+- *Highlight the matched search term in registry rows* — fresh idea, real UX polish for the
+  search box, but thinner value than a new drawer-browsing capability with no prior log mention.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected an eighteenth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+
+**Verification:** `node --check` on both extracted inline scripts. Playwright against the served
+page (Plotly stubbed; `cdn.plot.ly` blocked in this sandbox) at 1280px and 375px, light and dark:
+opening a mid-list trip shows both buttons enabled with correct `aria-label`s naming the neighbor
+trip and dates; clicking "Earlier" changes the drawer title, keeps the drawer open and background
+`inert`, and updates the URL `?trip=` slug; clicking "Later" returns to the exact original trip
+(round-trip verified). Boundary trips confirmed correctly: the newest trip renders "Later"
+`disabled` with "Earlier" enabled, the oldest renders the reverse. The focus trap's focusable-item
+query picks up the enabled chrono buttons alongside the existing controls. Confirmed the 08-25
+related-trips section and the chrono nav coexist and both remain functional in the same drawer
+(searched "France", opened a match, clicked a related-trip link, verified the chrono nav updates
+to the new trip's neighbors). Copy-link, copy-citation buttons, click-to-sort (`aria-sort` on the
+Days column flips to descending), and the CSV export button are all unaffected. No horizontal
+scroll at either width, with or without the drawer open. Console clean bar the pre-existing,
+sandbox-only Google Fonts network block noted in every prior log. All three fallback tiers
+untouched — the feature reads only `trips`, the already-normalized in-memory list, identically
+regardless of which tier populated it.
+
+**Files touched:** `index.html`, `ideas-log.md`
