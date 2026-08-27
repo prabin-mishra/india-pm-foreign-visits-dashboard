@@ -445,6 +445,7 @@
       padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-2);
       border: 1px solid var(--border);
     }
+    mark.hit { background: var(--gold-soft); color: var(--gold-text); border-radius: 2px; padding: 0 1px; font-weight: 700; }
     .type-pill { display: inline-flex; font-size: .74rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
     .t-multi  { background: var(--accent-soft); color: var(--accent); }
     .t-single { background: var(--surface-2); color: var(--text-2); }
@@ -1501,11 +1502,11 @@ function renderTable(rows) {
     `<thead><tr>${thead}</tr></thead>` +
     `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="View details for ${t.label}">
       <td data-col="start"><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
-      <td data-col="label" class="itin">${t.label}</td>
-      <td data-col="countries"><span class="tags">${t.countries.map(x => `<span class="tag">${x}</span>`).join('')}</span></td>
+      <td data-col="label" class="itin">${highlightMatch(t.label, state.q)}</td>
+      <td data-col="countries"><span class="tags">${t.countries.map(x => `<span class="tag">${highlightMatch(x, state.q)}</span>`).join('')}</span></td>
       <td data-col="visitType"><span class="type-pill ${t.visitType === 'Multi-country' ? 't-multi' : 't-single'}">${t.visitType === 'Multi-country' ? 'Multi-country' : 'Single'}</span></td>
       <td data-col="days" class="num"><span class="days-cell"><span class="days-bar" style="width:${Math.max(6, Math.round(t.days / maxDays * 44))}px"></span>${t.days}</span></td>
-      <td data-col="pm" style="white-space:nowrap">${t.pm}</td>
+      <td data-col="pm" style="white-space:nowrap">${highlightMatch(t.pm, state.q)}</td>
       <td data-col="source"><span class="status ${t.sourceMode === 'fallback' ? 's-warn' : 's-ok'}">${t.sourceMode === 'fallback' ? 'Snapshot' : t.sourceMode === 'json' ? 'Pipeline' : 'Live'}</span></td>
     </tr>`).join('')}</tbody>`;
 }
@@ -1699,6 +1700,20 @@ function trapDrawerTab(e) {
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Wraps the first case-insensitive occurrence of `query` in the escaped text with <mark>, so a
+// reader can see *why* a row matched their search (the underlying filter checks every field via
+// JSON.stringify, not just the visible columns, so a hit here isn't guaranteed — that's fine,
+// it's a "here's a visible reason" aid, not a claim the match is exhaustive). Splits on the raw
+// text first and escapes each segment separately, rather than escaping then searching, so HTML
+// entity substitution can never shift the match offsets or double-escape the highlighted slice.
+function highlightMatch(text, query) {
+  const s = String(text);
+  if (!query) return esc(s);
+  const idx = s.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return esc(s);
+  return esc(s.slice(0, idx)) + '<mark class="hit">' + esc(s.slice(idx, idx + query.length)) + '</mark>' + esc(s.slice(idx + query.length));
 }
 function todayISO() { return new Date().toISOString().slice(0, 10); }
 function daysDiff(aISO, bISO) { return Math.round((new Date(bISO + 'T00:00:00') - new Date(aISO + 'T00:00:00')) / 86400000); }

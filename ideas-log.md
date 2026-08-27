@@ -1269,3 +1269,59 @@ untouched — the feature reads only `trips`, the already-normalized in-memory l
 regardless of which tier populated it.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-27 — Highlight the matched search term in registry rows
+
+**Shipped.** Typing in the registry search box now wraps the matched text in a gold `<mark>` in
+the itinerary, country-tag, and PM columns, so a reader can see *why* a row is in the filtered
+view instead of just that it is. The underlying filter (`filtered()`) still checks every field
+via `JSON.stringify(t)`, not only these three visible columns, so a row can still appear with no
+visible highlight (e.g. a match on `visitType` or `sourceMode`) — that's an existing, unchanged
+behavior, and the highlight is a "here's a visible reason" aid, not a claim of exhaustiveness.
+
+Implementation note: the registry table previously inserted `t.label`, each country tag, and
+`t.pm` unescaped, unlike every other call site in the file (drawer, live-status card), which
+already run the same trip fields through `esc()`. Wrapping a match in `<mark>` safely requires
+finding the match in the raw text and escaping the three resulting segments independently —
+escaping first and searching after would let entity substitution shift the match offset — so the
+new `highlightMatch()` helper escapes unconditionally, closing that pre-existing gap as a
+byproduct of doing the highlighting correctly, not as a separate fix riding along.
+
+This was the fresh idea flagged as a runner-up on 08-26 ("genuine UX polish for the search box");
+picked over 08-26's still-open runner-up, "/" to focus search, because it acts directly on the
+existing search box's biggest gap for a journalist scanning 44 rows — no visual link between what
+they typed and why a row is there — while "/" only speeds reaching the box, and lost on relative
+impact three cycles running (08-24, 08-25, 08-26). `mark.hit` reuses the already-established
+`--gold-soft`/`--gold-text` tokens (the site's existing non-accent highlight color, used for the
+"currently abroad" headline), not a new color choice.
+
+**Runners-up**
+- *`rel="noopener"` missing on two `target="_blank"` links to `data/visits.json`* (Methodology
+  body copy, footer) — confirmed still open (flagged 08-22 through 08-26); real, a two-attribute
+  fix, but thinner than closing the search box's biggest usability gap.
+- *Keyboard shortcut ("/") to focus the search field* — open since 08-24, deferred four times now
+  for dimension/impact reasons; still smaller than today's pick.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18 through 08-26 every time as "real
+  but minor," same reasoning holds again.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected a nineteenth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Upgrade `cdn.plot.ly` from `dns-prefetch` to `preconnect`* — fresh idea, real but marginal:
+  the script is already `defer`red (08-09) and off the critical render path, so the connection
+  warm-up saves little.
+
+**Verification:** `node --check` on both extracted inline scripts (the JSON-LD block fails as
+always, expected — not JS). Playwright against the served page (Plotly stubbed; `cdn.plot.ly`
+blocked in this sandbox) at 1280px and 375px, light and dark: searching "israel" highlights
+"Israel" in both the itinerary and country-tag columns; searching "russia" highlights it in a
+single-country row's itinerary/tag and in the itinerary/tag of a "Russia & Austria" multi-country
+row, leaving "Austria" unmarked; clearing the box removes every `<mark>`; a search matching only a
+hidden field (`"pipeline"` — the field is stored as `"json"`, only rendered as the word
+"Pipeline" — a pre-existing quirk, not something this change touches) returns zero rows with no
+crash, confirming the helper only ever runs against real column text. Sort-by-date, compact-
+columns, and the search highlight all verified working together in the same view. No horizontal
+scroll at either width. Console clean bar the pre-existing, sandbox-only Google Fonts network
+block noted in every prior log. Screenshots confirm the gold mark reads clearly against both
+themes' surface tokens. All three fallback tiers untouched — the feature is pure display logic
+over `trips` and `state.q`, already in memory regardless of which tier populated them.
+
+**Files touched:** `index.html`, `ideas-log.md`
