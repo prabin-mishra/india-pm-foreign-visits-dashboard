@@ -1270,6 +1270,61 @@ regardless of which tier populated it.
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-08-28 — Stale-refresh warning when the daily pipeline hasn't run recently
+
+**Shipped.** `data/visits.json` already carries `meta.updated`, the date the GitHub Actions
+pipeline last committed a refresh, but the tier-1 status badge unconditionally read "Verified
+pipeline data" regardless of that date's age — if the daily job silently broke, the site would
+keep asserting full confidence in data that might be weeks stale, on a page whose own hero copy
+promises "Updated daily." Added a `daysSince()` helper and a threshold check (≥2 days, since the
+job runs once daily at 03:00 UTC — a single missed run doesn't fire the warning, but two does) at
+the one place tier 1 already reports its status. Past the threshold, the badge switches from the
+green "Verified pipeline data" to an amber "Refresh may be delayed," reusing the site's existing
+`b-warn` token (the same one "Embedded snapshot" already uses), and the message names the day
+count plainly: "…the daily GitHub Actions refresh hasn't run recently… updated 2026-08-15 (13
+days ago)." An unparseable or missing `meta.updated` is treated as unknown, not stale — the badge
+and message are left exactly as before, since a claim about staleness needs to be verifiable to
+be honest. Tiers 2 and 3 are untouched: `live` is fetched at request time (so a staleness clock
+doesn't apply) and `fallback` already carries its own warning badge for a different reason.
+
+Fresh find, not a repeat: checked the log's trust/credibility entries (08-13 caveats panel, 08-14
+favicon, 08-18 contrast fix, 08-24 theme-color) and none address data currency, and grepping the
+log for "stale" turned up only the unrelated 08-11 news-dating work. This is the strongest trust
+gap available today — CLAUDE.md names "trust and credibility signals" as a dimension, and the
+site's *only* defense against a silently broken pipeline was a viewer noticing the tiny date text
+themselves; now a missed refresh is visibly flagged rather than mutely presented as verified. Pure
+display-layer logic reading a field the pipeline already writes — no data-provenance touch, and a
+data-freshness badge carries no partisan-framing risk of any kind.
+
+**Runners-up**
+- *`rel="noopener"` missing on two `target="_blank"` links to `data/visits.json`* (Methodology
+  body copy, footer) — confirmed still open (flagged 08-22 through 08-27, seven logs running); a
+  real two-attribute fix, but thinner than a silent-failure gap in the site's core trust claim.
+- *Keyboard shortcut ("/") to focus the search field* — open since 08-24, deferred five times now;
+  still smaller in impact than today's pick.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18 through 08-26 every time as "real
+  but minor," same reasoning holds again.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected a twentieth time on the same "marginal
+  payoff for a single-URL site" grounds as every prior log.
+- *"Days abroad this year" cumulative fact* — a fresh "new way to read the data" idea, but a live
+  correctness gap in the site's freshness claim outranks a new analytical stat today.
+
+**Verification:** `node --check` on both extracted inline scripts. Unit-checked `daysSince()`
+directly (today → 0, 5 days ago → 5, unparseable string/`null`/empty string → `null`). Playwright
+against the served page (Plotly stubbed; `cdn.plot.ly` blocked in this sandbox) at 1280px and
+375px, light and dark: with the live `data/visits.json` (updated one day before today) — badge
+stays "Verified pipeline data," message unchanged. Against a copy of `data/visits.json` with
+`meta.updated` rewritten 13 days in the past — badge switches to amber "Refresh may be delayed,"
+message correctly names the pipeline gap and "(13 days ago)," screenshot-confirmed in both light
+and dark. No horizontal scroll at either width in either data condition. All 5 KPI cards, all 44
+registry rows, and all 6 charts (confirmed via cleared `chart-loading` class) render normally in
+both conditions. Console clean bar the pre-existing, sandbox-only Google Fonts network block noted
+in every prior log. Tiers 2/3 confirmed byte-unchanged via `grep` on their `setStatus()` call
+sites. All three fallback tiers untouched — this reads only `data.meta.updated`, already fetched
+by tier 1 regardless of the rest of the payload.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-08-27 — Highlight the matched search term in registry rows
 
 **Shipped.** Typing in the registry search box now wraps the matched text in a gold `<mark>` in

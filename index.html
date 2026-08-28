@@ -1038,11 +1038,21 @@ function filtered() {
   );
 }
 
+// Whole days between an ISO 'YYYY-MM-DD' date and now, in UTC. Returns null if
+// unparseable, so an unreadable or missing meta.updated is never mistaken for staleness.
+function daysSince(isoDate) {
+  if (!isoDate) return null;
+  const d = new Date(isoDate + 'T00:00:00Z');
+  if (isNaN(d.getTime())) return null;
+  return Math.floor((Date.now() - d.getTime()) / 86400000);
+}
+
 function setStatus(mode, extra = '') {
   const box   = document.getElementById('updateStatus');
   const chips = document.getElementById('statusChips');
   const msgs  = {
     'json':     ['Loaded from <code>data/visits.json</code>, committed daily by GitHub Actions.', `<span class="badge b-ok">Verified pipeline data</span>`],
+    'json-stale': ['Loaded from <code>data/visits.json</code>, but the daily GitHub Actions refresh hasn’t run recently — showing the last data it fetched.', `<span class="badge b-warn">Refresh may be delayed</span>`],
     'live':     ['Parsed from a live mirror of the PM India registry.', `<span class="badge b-ok">Live mirror</span>`],
     'fallback': ['Network sources unreachable — showing the embedded verified snapshot.', `<span class="badge b-warn">Embedded snapshot</span>`],
     'loading':  ['Loading visit data…', `<span class="badge b-ok">Loading</span>`],
@@ -2176,7 +2186,11 @@ async function loadTrips() {
     const data = await res.json();
     if (!data.trips || !data.trips.length) throw new Error('Empty visits.json');
     trips = normalizeTrips(data.trips, 'json');
-    setStatus('json', `${trips.length} trips · updated ${data.meta?.updated || ''}`);
+    const updated = data.meta?.updated;
+    const staleDays = daysSince(updated); // null if unparseable — never claim staleness we can't verify
+    const isStale = staleDays !== null && staleDays >= 2; // daily 03:00 UTC job; >=2 days means a run was missed
+    setStatus(isStale ? 'json-stale' : 'json',
+      `${trips.length} trips · updated ${updated || ''}${isStale ? ` (${staleDays} days ago)` : ''}`);
     populateFilters();
     render();
     renderLiveTrip(trips);
