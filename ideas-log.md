@@ -1270,6 +1270,59 @@ regardless of which tier populated it.
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-08-29 — "/" keyboard shortcut to jump to the registry search field
+
+**Shipped.** Pressing `/` anywhere on the page now moves focus straight to the registry search
+box, the same convention GitHub, Slack, and most search-heavy sites use. Guarded so it never
+steals a keystroke: it's ignored while focus is already in an `input`, `textarea`, `select`, or
+any `contenteditable`, and ignored with any modifier held (`Ctrl`/`Cmd`/`Alt`), so typing a
+literal "/" into the search box itself, or into any other field, behaves exactly as before. A
+small `/` hint sits inside the field, right-aligned — visible only when the field is empty and
+unfocused (`:not(:placeholder-shown)`/`:focus` both hide it via a pure-CSS sibling selector, no
+JS state) and hidden entirely on touch-only devices (`@media (hover: none)`), since there's no
+physical key to press there. An `aria-describedby` span carries the same instruction for
+screen-reader users, who don't get the visual hint. No new dependency, no data-provenance touch.
+
+Named open five times running (08-24 through 08-28) — genuine interactivity value, deferred each
+time only for dimension balance against that day's higher-impact pick, never on the merits.
+Nothing in today's fresh brainstorm (the `rel="noopener"` gap, `og:image` dimensions, a
+per-year "days abroad" fact) outranked closing the oldest surviving item in the backlog, and the
+last five cycles already covered trust (08-24, 08-28) and new-ways-to-read-the-data (08-25,
+08-26) twice each, with interactivity itself absent since 08-27's search highlight — today's pick
+balances that mix rather than adding a third trust or data-reading feature in a row.
+
+**Runners-up**
+- *`rel="noopener"` missing on two `target="_blank"` links to `data/visits.json`* (Methodology
+  body copy, footer) — confirmed still open (flagged 08-22 through 08-28, now eight logs
+  running); real, a two-attribute fix, but thinner than the interactivity backlog's oldest item.
+- *"Days abroad this year" cumulative fact* — flagged fresh 08-28 as a genuine new way to read
+  the data; still open, and the site already shipped two data-reading features in the last four
+  cycles (08-25, 08-26), so it lost on dimension balance today rather than merit.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18 through 08-26 every time as "real
+  but minor," same reasoning holds again.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected a twenty-first time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Trip-duration histogram (a new way to read the data)* — still a mini-epic per 08-24/08-25: a
+  seventh chart needs the full skeleton/empty-state/data-table/PNG-export infrastructure every
+  existing chart carries.
+
+**Verification:** `node --check` on both real inline scripts (the JSON-LD block fails as always,
+expected — not JS). Playwright against the served page (Plotly stubbed; `cdn.plot.ly` blocked in
+this sandbox) at 1280px and 375px, light and dark: with nothing focused, pressing `/` moves focus
+to `#q`; the `/` hint is visible beforehand and disappears the instant the field gains focus;
+typing "israel" fills the field normally (the literal `/` never fires the shortcut mid-query),
+filters the registry to 1 of 44 trips, and hides the hint (`:not(:placeholder-shown)`); clearing
+the field and focusing the PM `<select>` first, then pressing `/`, leaves focus on the select —
+confirming the guard against stealing focus from another form control. Emulated a touchscreen
+device (iPhone 12 profile, `hover: none`) and confirmed the hint computes to `display: none`
+there. All 6 charts initialize, all 5 KPI cards and all 44 registry rows render, no horizontal
+scroll at either width (`scrollWidth === clientWidth`). Console clean bar the pre-existing,
+sandbox-only Google Fonts network block noted in every prior log. All three fallback tiers
+untouched — the shortcut and hint operate purely on the DOM and `#q`, identically regardless of
+which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-08-28 — Stale-refresh warning when the daily pipeline hasn't run recently
 
 **Shipped.** `data/visits.json` already carries `meta.updated`, the date the GitHub Actions

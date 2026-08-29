@@ -282,6 +282,20 @@
     select:focus-visible, input[type="search"]:focus-visible { outline-offset: 0; }
     input[type="search"] { cursor: text; min-width: 170px; }
     input[type="search"]::placeholder { color: var(--text-3); }
+    .search-wrap { position: relative; }
+    .search-wrap input[type="search"] { width: 100%; padding-right: 28px; }
+    .search-kbd {
+      position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+      font: 600 .68rem/1 var(--font-ui); color: var(--text-3);
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px;
+      padding: 2px 5px; pointer-events: none;
+    }
+    /* The hint is for pointer-and-keyboard users discovering the shortcut; once the field
+       has focus or already holds a query, "press / to search" no longer applies. Also
+       hidden on touch-only devices, which have no physical "/" key to press. */
+    .search-wrap input:focus ~ .search-kbd,
+    .search-wrap input:not(:placeholder-shown) ~ .search-kbd { display: none; }
+    @media (hover: none) { .search-kbd { display: none; } }
     .filter-spacer { flex: 1; }
     .result-count { font-size: .84rem; color: var(--text-2); font-variant-numeric: tabular-nums; padding-bottom: 9px; white-space: nowrap; }
     .btn-reset {
@@ -711,7 +725,14 @@
         <div class="field"><label for="year">Year</label><select id="year"></select></div>
         <div class="field"><label for="country">Country</label><select id="country"></select></div>
         <div class="field"><label for="visitType">Visit type</label><select id="visitType"></select></div>
-        <div class="field"><label for="q">Search</label><input id="q" type="search" placeholder="Israel, USA, summit…" /></div>
+        <div class="field">
+          <label for="q">Search</label>
+          <div class="search-wrap">
+            <input id="q" type="search" placeholder="Israel, USA, summit…" aria-describedby="qShortcutHint" />
+            <kbd class="search-kbd" aria-hidden="true">/</kbd>
+          </div>
+          <span id="qShortcutHint" class="sr-only">Press the slash key to jump to this field from anywhere on the page.</span>
+        </div>
         <div class="filter-spacer"></div>
         <span class="result-count" id="tableSubtitle" aria-live="polite" aria-atomic="true"></span>
         <button class="btn-reset" id="resetFilters" type="button">Reset</button>
@@ -2251,6 +2272,19 @@ document.getElementById('themeToggle').onclick = () => {
 
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
 document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
+
+// "/" jumps straight to the registry search field from anywhere on the page — the standard
+// site-search shortcut (GitHub, Slack, etc.). Ignored while the user is already typing
+// somewhere (another field, or "/" as a literal search character) so it never steals a
+// keystroke; ignored with any modifier held, so browser/OS shortcuts using "/" are untouched.
+document.addEventListener('keydown', e => {
+  if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+  const ae = document.activeElement;
+  const typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable);
+  if (typing) return;
+  e.preventDefault();
+  document.getElementById('q').focus();
+});
 
 // Per-chart "download as PNG" — Plotly's own modebar is deliberately disabled
 // (displayModeBar: false) for a cleaner look, so this reproduces just its camera-icon
