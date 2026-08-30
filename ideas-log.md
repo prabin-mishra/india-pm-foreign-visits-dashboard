@@ -1433,3 +1433,66 @@ themes' surface tokens. All three fallback tiers untouched — the feature is pu
 over `trips` and `state.q`, already in memory regardless of which tier populated them.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-30 — Per-trip browser tab title while the drawer is open
+
+**Shipped.** Opening any trip's drawer — by row click, permalink load, chrono-nav step, or a
+related-trips link — now sets `document.title` to that trip's own citation-style label, e.g.
+`Malaysia, 7–8 Feb 2026 · India PM Foreign Visits Tracker`, reusing the exact `fmtRange()`
+formatting the 08-12 copy-citation feature already established rather than inventing a new date
+string. Closing the drawer (Escape, overlay click, or the close button) restores the site's
+default title exactly, captured once at load (`DEFAULT_TITLE = document.title`). Before this,
+every open trip — cold permalink loads included — left the tab reading the same generic
+"India PM Foreign Visits Tracker" regardless of which trip was open, so a journalist with several
+permalinks open in different tabs, or in browser history/bookmarks, had no way to tell them apart
+without switching to each one. Three lines total: capture the default once, set it in
+`openDrawer()`, restore it in `closeDrawer()` — no new helper, no new state.
+
+Deliberately scoped to `document.title` only, not `og:title`/`twitter:title`/meta description:
+this is a static single-file site with no server-side rendering, so a social-media crawler
+(Twitter, Slack, Facebook) fetches the raw HTML and never runs this JS — mutating those tags
+client-side would look like a fix but wouldn't change a single shared-link preview.
+`document.title` is the one piece of this idea that's actually true in a static site: it's read
+directly by the browser (tab title, history entry, bookmark name), so it's the only part worth
+shipping.
+
+Fresh find, not a repeat: it sits directly on the permalink (08-07), copy-citation (08-12), and
+chrono-nav (08-26) infrastructure the log has built up over six weeks, but no prior entry names
+tab-title identity as a gap. Chosen over the standing backlog because both remaining old items
+(`rel="noopener"`, `og:image` dimensions) were re-examined and are genuinely thin — the
+`noopener` gap is on two links to a same-origin JSON file, so the reverse-tabnabbing risk it
+guards against doesn't actually apply, and `og:image` sizing only saves a crawler one
+fetch-and-measure round trip. Neither outranks giving journalists a real way to tell open trip tabs
+apart, which today's fresh brainstorm also confirmed nothing else beat.
+
+**Runners-up**
+- `rel="noopener"` missing on two `target="_blank"` links to `data/visits.json` (Methodology body
+  copy, footer) — open since 08-22 (nine logs running); re-examined today and downgraded: both
+  targets are the site's own same-origin JSON file, so `noopener`'s actual security purpose
+  (blocking a malicious tab from reaching back via `window.opener`) doesn't apply here. Real
+  correctness nit, essentially zero risk in practice — leaving it open rather than shipping a
+  cosmetic-only fix.
+- *"Days abroad this year" cumulative fact* — flagged fresh 08-28; on inspection, a year-scoped
+  variant of the existing "Days abroad" KPI is largely redundant with just filtering Year, so it
+  reads as thin rather than a genuinely new way to read the data. Not carried forward.
+- `og:image:width`/`og:image:height` meta tags — flagged 08-18 through 08-26 every time as "real
+  but minor," same reasoning holds again.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected a twenty-second time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Trip-duration histogram (a new way to read the data)* — still a mini-epic per 08-24/08-25: a
+  seventh chart needs the full skeleton/empty-state/data-table/PNG-export infrastructure every
+  existing chart carries.
+
+**Verification:** `node --check` on both extracted inline scripts. Playwright against the served
+page (Plotly stubbed; `cdn.plot.ly` blocked in this sandbox) at 1280px and 375px, light and dark:
+default tab title is the site name on load; clicking a mid-list row sets the title to that trip's
+label + date range; clicking "Later" in the chrono nav updates the title to the new trip without
+closing the drawer; Escape and overlay-click both revert the title to the exact default string;
+loading a cold `?trip=<slug>` permalink sets the correct per-trip title immediately, before any
+click. All 5 KPI cards, all 6 charts, and all 44 registry rows render at both widths; no
+horizontal scroll (`scrollWidth === clientWidth`) at either. Console clean bar the pre-existing,
+sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log. All three
+fallback tiers untouched — the change reads only the in-memory `trip` object already used by the
+open drawer, identically regardless of which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`

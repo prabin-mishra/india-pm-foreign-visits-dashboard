@@ -936,6 +936,7 @@ const DATA_JSON_URL  = 'data/visits.json';
 const LIVE_TEXT_URL  = 'https://r.jina.ai/http://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/';
 const REGISTRY_URL   = 'https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/';
 const ARCHIVE_URL    = 'https://www.pmindia.gov.in/en/pm-visits/';
+const DEFAULT_TITLE  = document.title; // restored when the trip drawer closes
 
 let trips = [];
 let liveNews = null; // parsed data/news.json, incl. any news-reported trip
@@ -1674,6 +1675,7 @@ function openDrawer(trip, {push = true} = {}) {
   setBackgroundInert(true);
   lockBodyScroll(true);
   document.getElementById('drawerClose').focus();
+  document.title = `${trip.label}, ${fmtRange(trip.start, trip.end)} · ${DEFAULT_TITLE}`;
   if (push) { state.trip = trip.slug; writeUrlState(); }
 }
 
@@ -1689,6 +1691,7 @@ function closeDrawer({push = true} = {}) {
   setBackgroundInert(false);
   lockBodyScroll(false);
   if (lastFocusedRow && document.contains(lastFocusedRow)) lastFocusedRow.focus();
+  document.title = DEFAULT_TITLE;
   if (push && state.trip) { state.trip = null; writeUrlState(); }
 }
 
