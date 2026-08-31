@@ -24,7 +24,9 @@
   <meta name="twitter:title" content="India PM Foreign Visits Tracker" />
   <meta name="twitter:description" id="twitterDescription" content="Track every foreign visit by India's Prime Ministers with interactive maps, timelines, and filters." />
   <meta name="twitter:image" content="https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/preview.png" />
-  <!-- JSON-LD structured data (dateModified/description patched from data/visits.json at runtime) -->
+  <!-- JSON-LD structured data (description/temporalCoverage/dateModified patched from
+       data/visits.json at runtime; everything else here is static field description, not
+       data-dependent, so it's authored directly rather than built in JS). -->
   <script type="application/ld+json" id="jsonLd">
   {
     "@context": "https://schema.org",
@@ -34,6 +36,16 @@
     "url": "https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/",
     "license": "https://opensource.org/licenses/MIT",
     "isAccessibleForFree": true,
+    "inLanguage": "en",
+    "keywords": ["India", "Prime Minister", "foreign visits", "diplomacy", "state visits", "international travel", "government data", "open data", "civic tech"],
+    "spatialCoverage": "Worldwide — bilateral and multilateral foreign visits by India's Prime Minister",
+    "variableMeasured": [
+      {"@type": "PropertyValue", "name": "Prime Minister", "description": "The Indian Prime Minister who undertook the trip"},
+      {"@type": "PropertyValue", "name": "Destination country", "description": "Country or countries visited on the trip"},
+      {"@type": "PropertyValue", "name": "Start date", "description": "Date the trip began"},
+      {"@type": "PropertyValue", "name": "End date", "description": "Date the trip ended"},
+      {"@type": "PropertyValue", "name": "Visit type", "description": "Single-country or multi-country classification"}
+    ],
     "creator": {"@type": "Organization", "name": "PM India registry", "url": "https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/"},
     "distribution": [{"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://prabin-mishra.github.io/india-pm-foreign-visits-dashboard/data/visits.json"}]
   }
@@ -2194,6 +2206,10 @@ function updateSeoMeta(allTrips, updated) {
     const ld = JSON.parse(document.getElementById('jsonLd').textContent);
     ld.description = desc;
     if (updated) ld.dateModified = updated;
+    // ISO 8601 interval covering the earliest trip start to the latest trip end in the
+    // dataset — the field Google Dataset Search surfaces as a result's date range.
+    const starts = allTrips.map(t => t.start), ends = allTrips.map(t => t.end);
+    ld.temporalCoverage = `${starts.reduce((a, b) => a < b ? a : b)}/${ends.reduce((a, b) => a > b ? a : b)}`;
     document.getElementById('jsonLd').textContent = JSON.stringify(ld, null, 2);
   } catch (e) { console.warn('[jsonld]', e); }
 }

@@ -1496,3 +1496,56 @@ fallback tiers untouched — the change reads only the in-memory `trip` object a
 open drawer, identically regardless of which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-31 — Enrich the Dataset JSON-LD for Google Dataset Search
+
+**Shipped.** The page's `schema.org/Dataset` block had only the bare minimum
+(`name`/`description`/`url`/`license`/`creator`/`distribution`) — nothing that helps Google Dataset
+Search (datasetsearch.research.google.com), the one still-active discoverability channel this
+dataset was never marked up for, actually surface or describe it. Added the fields Google's own
+dataset-markup guidance calls out: `keywords` (generic terms — India, Prime Minister, foreign
+visits, diplomacy, open data — deliberately no PM or party names, so the markup can't read as
+promoting any administration), `inLanguage`, `spatialCoverage` ("Worldwide — bilateral and
+multilateral foreign visits by India's Prime Minister", since visits span 59+ countries rather than
+one place), `variableMeasured` (five `PropertyValue` entries describing the PM/country/dates/visit-
+type fields the dataset actually carries), and `temporalCoverage` as an ISO 8601 interval computed
+from the real min trip-start/max trip-end in `allTrips` (`2021-03-26/2026-07-11` today) — patched
+in `updateSeoMeta()` alongside the `description`/`dateModified` fields that function already
+updates on every load, so it stays accurate as new trips land daily. The static, non-data-dependent
+fields (`keywords`, `inLanguage`, `spatialCoverage`, `variableMeasured`) are authored directly in
+the JSON-LD block rather than built in JS, matching the comment already there distinguishing static
+from runtime-patched fields.
+
+Chosen over the FAQPage-schema idea for the methodology caveats section: that would target a
+channel (FAQ rich results) Google restricted to authoritative government/health sites in August
+2023, so the payoff for this site specifically is close to zero now — thinner than it looks. Dataset
+markup, by contrast, is exactly what Google Dataset Search indexes on, and directly serves the
+"researchers" audience this project is built for.
+
+**Runners-up**
+- *FAQPage JSON-LD on the caveats `<details>` section* — see above; deprioritized once checked
+  against Google's actual current FAQ rich-result eligibility.
+- *"Average trip duration" as a fourth registry fact* — new-way-to-read-the-data idea, but it's
+  arithmetic a reader can already do from the existing "Days abroad" and "Trips" KPIs sitting next
+  to each other; thinner than genuinely new metadata.
+- *Copy-current-filtered-view link button* — `writeUrlState()` already keeps the browser URL bar
+  live in sync with every filter change via `pushState`, so a dedicated copy button would duplicate
+  what's already one Ctrl+L away.
+- `robots.txt` + `sitemap.xml` + canonical link — rejected a twenty-third time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Lazy-render below-the-fold charts via IntersectionObserver* — re-flagged since 08-16; Plotly's
+  already deferred (08-09) and gated on `plotlyReady`, so a second render-gating path still doesn't
+  clearly pay for itself.
+
+**Verification:** the JSON-LD block parses as valid JSON (Python `json.loads`) both statically and
+after runtime patching. `node --check` on both extracted inline scripts. Playwright against the
+served page at 1280px and 375px: with `cdn.plot.ly` blocked (this sandbox's standing constraint),
+the only console error is the expected `Plotly is not defined` from `renderChartsInner` — same as
+every prior log; with Plotly stubbed, console is fully clean, all six charts reveal
+(`chart-loading` count 0), all 5 KPI cards and all 44 registry rows render, no horizontal scroll at
+either width. Confirmed `updateSeoMeta()` runs identically from all three fallback-tier call sites
+(`data/visits.json`, Jina live mirror, embedded snapshot), so `temporalCoverage` computes correctly
+regardless of which tier populated `trips`. `dateModified` and `description` continue patching as
+before — this change only adds fields alongside them, touching no existing key.
+
+**Files touched:** `index.html`, `ideas-log.md`
