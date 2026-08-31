@@ -1549,3 +1549,40 @@ regardless of which tier populated `trips`. `dateModified` and `description` con
 before — this change only adds fields alongside them, touching no existing key.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-08-31 — Fix the choropleth: one canonical country name per destination
+
+**User-reported bug, not a brainstormed idea.** The map coloring was not uniform — the United
+States showed as barely visited despite four trips.
+
+**Cause:** the registry spells the same destination several ways across the years — `USA`,
+`United States of America (USA)`, `UAE`, `United Arab Emirates (UAE)`, `Dubai`,
+`Samarkand, Uzbekistan`. Each spelling became its own bucket in `countryCounts`, so the choropleth
+handed Plotly the same country two or three times; Plotly drew one path per location and the last
+one painted (the low-count alias) won, leaving the US at the pale end of the scale. `Samarkand`
+also counted as a nation of its own, inflating "Unique countries" to 59 when it is 54.
+
+**Shipped:**
+- `COUNTRY_CANON` + `canonCountry()` in `normalizeTrips`: every split destination resolves to one
+  canonical name (the form Plotly's country-name lookup uses), parenthetical aliases stripped,
+  city rows resolved to their country, duplicates dropped per trip. Everything downstream —
+  KPIs, filters, ranking, monthly countries, CSV, globe coords — reads the corrected list. The
+  itinerary label itself is still displayed exactly as published.
+- `geo.resolution: 50` — the default 110m world has *no polygon at all* for Seychelles, Maldives,
+  Mauritius or Singapore, so those visits were uncolored no matter what the data said.
+- `--ch-map-low` was within a couple of RGB points of `--ch-land` in both themes, so a
+  once-visited country read as unvisited; stepped it onto the accent hue (`#cfe1de` / `#1e3c3d`).
+- Methodology caveat now documents the canonicalization.
+
+**Rejected alternatives:** switching the trace to `locationmode: 'ISO-3'` with a name→ISO3 table —
+deterministic, but any future destination missing from the table would vanish from the map
+silently, and it would fix only the map while leaving the counts and filters fragmented.
+Canonicalizing at `normalizeTrips` fixes the defect at its source for every consumer.
+
+**Verification:** against the served page — 54 locations, zero duplicates, zero empty-geometry
+paths (was 6), United States `z=4` painted once at the dark end, `coordOf()` resolves all 54
+canonical names for the globe visual, filtering by "United States" returns the expected 4 trips
+with their original labels intact. Console clean at 1280px and 375px, no horizontal scroll, both
+themes checked. All three fallback tiers share `normalizeTrips`, so none is privileged or altered.
+
+**Files touched:** `index.html`, `ideas-log.md`
