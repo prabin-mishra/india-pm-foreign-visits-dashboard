@@ -96,7 +96,9 @@
       --ch-secondary:  #c8930f;
       --ch-grid:       #e5e1d5;
       --ch-axis:       #6c675a;
-      --ch-map-low:    #eae7dd;
+      /* Low end of the choropleth scale — kept a clear step away from --ch-land so a
+         once-visited country never reads as an unvisited one. */
+      --ch-map-low:    #cfe1de;
       --ch-land:       #eceadf;
 
       /* Type */
@@ -144,7 +146,7 @@
       --ch-secondary:  #d9a83e;
       --ch-grid:       #2e2c23;
       --ch-axis:       #918c7c;
-      --ch-map-low:    #26241d;
+      --ch-map-low:    #1e3c3d;
       --ch-land:       #211f18;
 
       --shadow-drawer: -24px 0 60px rgba(0,0,0,.5);
@@ -858,6 +860,7 @@
           <details class="caveat">
             <summary>Splitting an itinerary into countries</summary>
             <p>Itinerary labels are split on "&amp;" and "and" to build the per-country list every chart, filter, and KPI reads from. A short allowlist protects official compound names — Trinidad and Tobago, Bosnia and Herzegovina, Antigua and Barbuda, and similar — so they aren't torn into two countries by that same rule.</p>
+            <p>Each resulting destination is then mapped to one canonical country name, because the registry writes the same country several ways across the years — "USA", "United States of America (USA)", "UAE", "Dubai", "Samarkand". Counts, filters, and the map therefore treat them as one country. The itinerary label itself is always shown exactly as the registry publishes it.</p>
           </details>
           <details class="caveat">
             <summary>How trip duration is counted</summary>
@@ -980,6 +983,30 @@ function protectCompoundCountries(label) {
   return out;
 }
 
+// The registry names the same destination several ways across decades of rows —
+// "USA", "United States of America (USA)", "UAE", "Dubai", "Samarkand, Uzbekistan".
+// Left as-is they split one country into several buckets: the counts fragment, the
+// filter lists duplicates, and the choropleth paints the same polygon two or three
+// times, so the last (lowest-count) layer wins and a much-visited country reads as
+// barely visited. Canonicalising to the name Plotly's country-name lookup uses fixes
+// all of them at the source. City-level rows resolve to their country.
+const COUNTRY_CANON = {
+  'usa': 'United States', 'us': 'United States', 'united states': 'United States',
+  'united states of america': 'United States', 'america': 'United States',
+  'uk': 'United Kingdom', 'britain': 'United Kingdom', 'great britain': 'United Kingdom',
+  'uae': 'United Arab Emirates', 'dubai': 'United Arab Emirates', 'abu dhabi': 'United Arab Emirates',
+  'samarkand': 'Uzbekistan', 'holland': 'Netherlands', 'czechia': 'Czech Republic',
+  'russian federation': 'Russia', 'republic of korea': 'South Korea', 'korea': 'South Korea',
+  'burma': 'Myanmar', 'brunei darussalam': 'Brunei', 'ivory coast': "Cote d'Ivoire",
+  'the netherlands': 'Netherlands', 'vatican': 'Vatican City',
+};
+function canonCountry(name) {
+  // Drop parenthetical aliases — "United Arab Emirates (UAE)" — before matching.
+  const bare = name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+  const key = bare.toLowerCase().replace(/[.]/g, '').trim();
+  return COUNTRY_CANON[key] || bare;
+}
+
 function normalizeTrips(rows, sourceMode='fallback') {
   return rows.map((t, i) => {
     const countries = protectCompoundCountries(t.label)
@@ -987,7 +1014,9 @@ function normalizeTrips(rows, sourceMode='fallback') {
       .replace(/\s*&\s*/g, ', ')
       .split(',')
       .map(s => s.trim().replace(/\u0001/g, ' '))
-      .filter(Boolean);
+      .filter(Boolean)
+      .map(canonCountry)
+      .filter((c, idx, arr) => c && arr.indexOf(c) === idx);
     const start = new Date(t.start + 'T00:00:00');
     const end   = new Date(t.end   + 'T00:00:00');
     const days  = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
@@ -1284,6 +1313,10 @@ async function renderChartsInner(rows) {
     annotations: emptyNote,
     geo: {
       projection: {type: 'natural earth'}, bgcolor: 'rgba(0,0,0,0)',
+      // 50m outlines: the default 110m world has no polygon at all for small island
+      // states (Seychelles, Maldives, Mauritius, Singapore), so visits there were
+      // silently uncoloured.
+      resolution: 50,
       showframe: false, showcoastlines: false,
       showland: true, landcolor: c.land,
       showcountries: true, countrycolor: c.grid,
