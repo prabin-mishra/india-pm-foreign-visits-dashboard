@@ -1586,3 +1586,66 @@ with their original labels intact. Console clean at 1280px and 375px, no horizon
 themes checked. All three fallback tiers share `normalizeTrips`, so none is privileged or altered.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-01 — Clickable country tags in the registry table
+
+**Shipped.** The country pills in the registry's "Countries" column (e.g. "Indonesia", "Australia",
+"New Zealand" on one row) were plain, inert `<span>`s — a reader curious about one destination had
+to reach up to the Country dropdown and re-select it by hand. They're now real `<button>`s: clicking
+one sets the Country filter to that exact value, the same state change the dropdown's own `onchange`
+makes, reusing `writeUrlState()`/`render()` unmodified — no new filter semantics, no new state shape.
+Multi-country rows work per-tag (clicking "New Zealand" filters to New Zealand, not the row's first
+country); the button carries `data-country` read straight from `t.countries`, so no parsing or
+attribute-decoding logic was added. Visually the buttons are byte-for-byte the existing `.tag` pill
+styling with UA button chrome reset off (`font/margin/appearance`) plus a hover/focus-visible tint
+matching the pattern already used for `.drawer-related-link`/`.drawer-chrono-btn`.
+
+Two correctness issues caught and fixed before shipping, not after: (1) the registry's single
+delegated click/keydown listeners on `#tripTable` unconditionally opened the trip drawer for any
+click/Enter inside a `tr[data-trip]` — a nested `<button>` needed an explicit early-return guard in
+*both* handlers (click and keydown) or pressing Enter on a tag would filter *and* open the drawer in
+the same keystroke; (2) `render()` replaces `tbody` wholesale on every filter change, destroying the
+very button a keyboard user just activated — added one line moving focus to the (persistent) Country
+`<select>` afterward, so a keyboard user isn't dropped back to `<body>` with no orientation.
+
+Fresh find: grepped the log for "clickable"/tag-related entries and found only the unrelated 08-25
+drawer cross-links (which navigate between whole trips, not filter by a single field). No prior entry
+proposed turning the registry's own tags into filters. Chosen over the standing thin items
+(`rel="noopener"`, `og:image` dimensions, `robots.txt`/sitemap — all repeatedly logged as real but
+marginal) because this closes an actual passive-vs-interactive gap in the table every visitor already
+scans, costs one clearly-scoped choke point (one template line, two delegated-handler guards, one new
+function), and carries zero non-partisan risk — it changes how a reader *navigates* the data, not what
+any chart or stat says about any PM.
+
+**Runners-up**
+- *`rel="noopener"` on the two `data/visits.json` links* — open since 08-22 (now eleven logs), and
+  already downgraded 08-30 to "cosmetic-only" since both targets are same-origin JSON; the security
+  rationale doesn't actually apply. Left open rather than shipped for its own sake.
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 08-24 every time as "real but
+  minor," same call again; a crawler saves one fetch-and-measure round trip.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a twenty-fourth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Trip-duration histogram (a new way to read the data)* — still a mini-epic per 08-24/08-25: a
+  seventh chart needs the full skeleton/empty-state/data-table/PNG-export infrastructure every
+  existing chart carries.
+- *Preconnect to `cdn.plot.ly`* — marginal now that the script load is already deferred (08-09) and
+  off the critical render path.
+
+**Verification:** `node --check`-equivalent (`new Function`) on both real inline script blocks passes
+(the JSON-LD block fails as always, expected — not JS). Playwright against the served page (Plotly
+stubbed; `cdn.plot.ly` blocked in this sandbox, per every prior log) at 1280px and 375px: country tags
+render as `button.tag`; clicking one sets `#country`'s value to that exact country, pushes `?country=`
+into the URL, moves focus to the select, and updates the live result count ("44 trips" → "3 of 44
+trips"); a multi-country row's second tag filters to *its own* country, not the row's first; focusing
+a tag and pressing Enter filters and leaves the drawer closed (confirms the click/keydown guards both
+work — this was the one genuine risk in the change); clicking elsewhere in the same row still opens
+the drawer as before; combining an active PM filter with a tag click produces no console error;
+search-term `<mark>` still renders correctly nested inside the button; Compact-columns mode still
+shows the Countries column; all 5 KPIs and all 44 registry rows render; no page-level horizontal
+scroll at either width. Full-page screenshots confirm the hover/focus tint reads clearly in light mode
+and the pill styling is unchanged in dark mode and on the 375px horizontally-scrolling table. Console
+clean bar the pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every
+prior log. All three fallback tiers untouched — the change reads only `t.countries`, already produced
+by `normalizeTrips` identically regardless of which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`

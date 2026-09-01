@@ -473,6 +473,13 @@
       padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-2);
       border: 1px solid var(--border);
     }
+    /* Country tags in the registry table double as one-click filters; reset button chrome down
+       to the plain `.tag` look, then add a hover/focus affordance so it still reads as clickable. */
+    button.tag {
+      font: inherit; margin: 0; appearance: none; -webkit-appearance: none; cursor: pointer;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    button.tag:hover, button.tag:focus-visible { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
     mark.hit { background: var(--gold-soft); color: var(--gold-text); border-radius: 2px; padding: 0 1px; font-weight: 700; }
     .type-pill { display: inline-flex; font-size: .74rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
     .t-multi  { background: var(--accent-soft); color: var(--accent); }
@@ -1164,6 +1171,19 @@ function populateFilters() {
   qEl.oninput = e => { state.q = e.target.value.toLowerCase(); writeUrlState(); render(); };
 }
 
+// Clicking a country tag in the registry table sets the Country filter to that value — the
+// same state change the dropdown's own onchange makes, just reachable without opening it first.
+// Re-render replaces the tag button that was clicked, so focus is deliberately moved to the
+// (persistent) Country select rather than left to fall back to <body>.
+function filterByCountry(country) {
+  state.country = country;
+  const sel = document.getElementById('country');
+  sel.value = country;
+  writeUrlState();
+  render();
+  sel.focus();
+}
+
 function resetFilters() {
   state.pm = 'All'; state.year = 'All'; state.country = 'All'; state.visitType = 'All'; state.q = '';
   ['pm', 'year', 'country', 'visitType'].forEach(id => { document.getElementById(id).value = 'All'; });
@@ -1580,7 +1600,7 @@ function renderTable(rows) {
     `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="View details for ${t.label}">
       <td data-col="start"><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
       <td data-col="label" class="itin">${highlightMatch(t.label, state.q)}</td>
-      <td data-col="countries"><span class="tags">${t.countries.map(x => `<span class="tag">${highlightMatch(x, state.q)}</span>`).join('')}</span></td>
+      <td data-col="countries"><span class="tags">${t.countries.map(x => `<button type="button" class="tag" data-country="${esc(x)}" aria-label="Filter registry to trips including ${esc(x)}">${highlightMatch(x, state.q)}</button>`).join('')}</span></td>
       <td data-col="visitType"><span class="type-pill ${t.visitType === 'Multi-country' ? 't-multi' : 't-single'}">${t.visitType === 'Multi-country' ? 'Multi-country' : 'Single'}</span></td>
       <td data-col="days" class="num"><span class="days-cell"><span class="days-bar" style="width:${Math.max(6, Math.round(t.days / maxDays * 44))}px"></span>${t.days}</span></td>
       <td data-col="pm" style="white-space:nowrap">${highlightMatch(t.pm, state.q)}</td>
@@ -2371,6 +2391,8 @@ document.getElementById('colToggle').addEventListener('click', () => {
 
 // Drawer event delegation on static table element
 document.getElementById('tripTable').addEventListener('click', e => {
+  const tagBtn = e.target.closest('button.tag');
+  if (tagBtn) { filterByCountry(tagBtn.dataset.country); return; }
   const sortBtn = e.target.closest('.th-sort');
   if (sortBtn) { handleSortClick(sortBtn.dataset.sort); return; }
   const row = e.target.closest('tr[data-trip]');
@@ -2380,6 +2402,9 @@ document.getElementById('tripTable').addEventListener('click', e => {
 });
 document.getElementById('tripTable').addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
+  // A country tag is its own <button> inside the row; its native Enter activation already
+  // fires the click handler above — don't also let the row-level handler open the drawer.
+  if (e.target.closest('button.tag')) return;
   const row = e.target.closest('tr[data-trip]');
   if (!row) return;
   const trip = trips.find(t => t.slug === row.dataset.trip);
