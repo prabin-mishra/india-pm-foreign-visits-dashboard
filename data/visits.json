@@ -1,11 +1,17 @@
 {
   "meta": {
-    "updated": "2026-09-01",
+    "updated": "2026-09-02",
     "source": "PM India registry (auto-refreshed daily via GitHub Actions)",
     "source_url": "https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/",
-    "count": 44
+    "count": 45
   },
   "trips": [
+    {
+      "label": "Uzbekistan & Kyrgyzstan",
+      "start": "2026-08-29",
+      "end": "2026-09-01",
+      "pm": "Narendra Modi"
+    },
     {
       "label": "Indonesia, Australia & New Zealand",
       "start": "2026-07-06",
