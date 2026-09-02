@@ -239,6 +239,15 @@
     .b-ok   { background: var(--accent-soft); color: var(--accent); }
     .b-warn { background: var(--gold-soft); color: var(--gold-text); }
 
+    /* Per-row "New since your last visit" marker (see computeNewSlugs) — a session-relative
+       freshness signal, so it's deliberately smaller/quieter than the type/status pills and
+       dropped from print, where "since whose visit" would be meaningless on paper. */
+    .badge-new {
+      display: inline-flex; align-items: center; font-size: .62rem; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase; padding: 2px 6px; border-radius: 999px;
+      background: var(--gold-soft); color: var(--gold-text); margin-right: 6px; vertical-align: 1px;
+    }
+
     /* ============ Skeleton loaders ============
        Shown before real content lands: static markup for the KPI strip (replaced wholesale
        the moment renderKpis() sets #kpis.innerHTML), and a class toggled off per-chart in
@@ -656,7 +665,8 @@
 
       /* Interactive-only chrome that means nothing on paper. */
       .skip-link, .site-nav, #themeToggle, .filterbar .field, .filterbar .btn-reset,
-      .btn-download, #newsBlock, #drawer, #drawer-overlay, .sort-icon {
+      .btn-download, #newsBlock, #drawer, #drawer-overlay, .sort-icon,
+      #newSinceNote, .badge-new {
         display: none !important;
       }
 
@@ -713,6 +723,7 @@
         <div class="data-status">
           <span id="statusChips"></span>
           <span id="updateStatus" role="status">Loading visit data…</span>
+          <span id="newSinceNote" aria-live="polite"></span>
         </div>
         <div class="stats" id="kpis" aria-label="Headline statistics">
           <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
@@ -1115,6 +1126,33 @@ function daysSince(isoDate) {
   const d = new Date(isoDate + 'T00:00:00Z');
   if (isNaN(d.getTime())) return null;
   return Math.floor((Date.now() - d.getTime()) / 86400000);
+}
+
+// "New since your last visit" — a session-relative freshness signal built from the same
+// stable `slug` (start date + itinerary, see normalizeTrips) every permalink and CSV row
+// already keys on, so it needs no new data or schema. A first-ever visit (or a browser with
+// storage blocked/unreadable) establishes the baseline silently rather than flagging every
+// trip as new; only a returning visit with the key already present flags real newcomers.
+const SEEN_SLUGS_KEY = 'pmVisits.seenSlugs.v1';
+let newSlugs = new Set();
+
+function computeNewSlugs(allTrips) {
+  const current = allTrips.map(t => t.slug);
+  let stored = null;
+  try {
+    const raw = localStorage.getItem(SEEN_SLUGS_KEY);
+    stored = raw ? new Set(JSON.parse(raw)) : null;
+  } catch (e) { return new Set(); } // corrupted/unreadable storage — behave as if blocked
+  try { localStorage.setItem(SEEN_SLUGS_KEY, JSON.stringify(current)); } catch (e) { /* quota/blocked; diff below still stands for this load */ }
+  if (!stored) return new Set(); // first-ever visit: nothing to compare against yet
+  return new Set(current.filter(s => !stored.has(s)));
+}
+
+function renderNewSinceNote() {
+  const el = document.getElementById('newSinceNote');
+  el.innerHTML = newSlugs.size
+    ? `<span class="badge b-ok">${newSlugs.size} new trip${newSlugs.size === 1 ? '' : 's'} since your last visit</span>`
+    : '';
 }
 
 function setStatus(mode, extra = '') {
@@ -1597,9 +1635,9 @@ function renderTable(rows) {
   table.innerHTML =
     `<caption>India PM foreign trips — ${rows.length} result(s) in current filtered view</caption>` +
     `<thead><tr>${thead}</tr></thead>` +
-    `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="View details for ${t.label}">
+    `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="${newSlugs.has(t.slug) ? 'New — ' : ''}View details for ${t.label}">
       <td data-col="start"><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
-      <td data-col="label" class="itin">${highlightMatch(t.label, state.q)}</td>
+      <td data-col="label" class="itin">${newSlugs.has(t.slug) ? '<span class="badge-new">New</span>' : ''}${highlightMatch(t.label, state.q)}</td>
       <td data-col="countries"><span class="tags">${t.countries.map(x => `<button type="button" class="tag" data-country="${esc(x)}" aria-label="Filter registry to trips including ${esc(x)}">${highlightMatch(x, state.q)}</button>`).join('')}</span></td>
       <td data-col="visitType"><span class="type-pill ${t.visitType === 'Multi-country' ? 't-multi' : 't-single'}">${t.visitType === 'Multi-country' ? 'Multi-country' : 'Single'}</span></td>
       <td data-col="days" class="num"><span class="days-cell"><span class="days-bar" style="width:${Math.max(6, Math.round(t.days / maxDays * 44))}px"></span>${t.days}</span></td>
@@ -2279,6 +2317,8 @@ async function loadTrips() {
     const data = await res.json();
     if (!data.trips || !data.trips.length) throw new Error('Empty visits.json');
     trips = normalizeTrips(data.trips, 'json');
+    newSlugs = computeNewSlugs(trips);
+    renderNewSinceNote();
     const updated = data.meta?.updated;
     const staleDays = daysSince(updated); // null if unparseable — never claim staleness we can't verify
     const isStale = staleDays !== null && staleDays >= 2; // daily 03:00 UTC job; >=2 days means a run was missed
@@ -2299,6 +2339,8 @@ async function loadTrips() {
     const parsed = parseRegistryText(await res.text());
     if (!parsed.length) throw new Error('No rows parsed from Jina mirror');
     trips = normalizeTrips(parsed, 'live');
+    newSlugs = computeNewSlugs(trips);
+    renderNewSinceNote();
     setStatus('live', `${trips.length} rows parsed`);
     populateFilters();
     render();
@@ -2310,6 +2352,8 @@ async function loadTrips() {
 
   // Tier 3: embedded snapshot
   trips = normalizeTrips(FALLBACK_TRIPS, 'fallback');
+  newSlugs = computeNewSlugs(trips);
+  renderNewSinceNote();
   setStatus('fallback');
   populateFilters();
   render();

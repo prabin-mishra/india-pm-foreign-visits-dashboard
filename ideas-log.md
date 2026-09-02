@@ -1649,3 +1649,61 @@ prior log. All three fallback tiers untouched — the change reads only `t.count
 by `normalizeTrips` identically regardless of which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-02 — "New since your last visit" trip badges
+
+**Shipped.** Checked the four candidates the run prompt suggested first — drawer focus trap
+(shipped 08-04, `setBackgroundInert`/`trapDrawerTab`), deferred Plotly (shipped 08-09), accessible
+chart data tables (shipped 08-08), sortable registry columns (shipped 08-11) — all four are already
+live; that hint list is stale. Brainstormed fresh instead.
+
+A returning visitor had no way to tell which of the 44 rows arrived since they last looked, short of
+remembering the table by eye. `computeNewSlugs()` compares the current trips' `slug` (the same
+`start--label` key every permalink/CSV row already uses — no new schema) against a set recorded in
+`localStorage` on the previous load; anything present now but absent from that recording is "new."
+A first-ever visit (or unreadable storage) has no prior recording, so it silently establishes the
+baseline instead of flagging all 44 rows — new only ever means "arrived since a previous real visit."
+Surfaced two ways: a small gold `NEW` pill on the flagged row's itinerary cell (`aria-label` gains a
+"New — " prefix so it's not color-only), and a one-line count next to the existing pipeline-status
+badges ("2 new trips since your last visit") using the same `.badge`/aria-live infrastructure the
+stale-refresh badge (08-28) already established. Read-only against `trips`/`slug`, so it works
+identically whichever of the three fallback tiers populated the data. Hidden in print — a
+session-relative "since whose visit" marker means nothing on paper, same reasoning already applied to
+charts there. `localStorage` reads/writes are each in their own `try`/`catch`; a Safari-private-mode
+style block (methods throw, object exists) degrades to zero badges with no console error, verified
+directly. (A more extreme, synthetic case — the `localStorage` *property accessor itself* throwing —
+crashes the page before any of today's code runs, via the pre-existing unguarded `theme` IIFE at
+load; confirmed via `git stash` that this predates today's change, so left alone as out of scope.)
+
+**Runners-up**
+- *Roving arrow-key navigation between registry rows* — genuine accessibility polish (44 individual
+  Tab stops today), but thinner impact than a feature that makes the "updated daily" claim visibly
+  true to a returning reader.
+- *RSS/Atom feed of new trips* — real discoverability value for journalists, but generating one needs
+  a new build step run by automation, which sits adjacent to the data-refresh guardrail and is a
+  bigger-than-one-day addition; not pursued today.
+- *`forced-colors` (Windows High Contrast Mode) audit* — a genuine, currently-unaddressed
+  accessibility gap, but not something this sandbox can visually verify with confidence; deferred
+  until it can be checked properly rather than shipped on faith.
+- *Mobile filter-bar restructuring* — checked live at 375px first; the existing horizontally-
+  scrollable "tab bar" nav (shipped 08-21) is deliberate and still works, no fresh defect found.
+- *"Countries not yet visited" reverse stat* — needs an external world-country reference list not in
+  the repo, and the framing edges toward reading as a to-do list for the PM; dropped.
+
+**Verification:** `new Function` syntax check on both real inline scripts passes (JSON-LD block
+still expectedly fails — not JS, matches every prior log). Playwright against the served page
+(Plotly stubbed; `cdn.plot.ly` blocked in this sandbox, as in every prior log) at 1280px and 375px:
+fresh browser context shows zero "new" badges and silently records a 44-slug baseline; removing one
+slug from that recording and reloading shows exactly one gold `NEW` pill plus "1 new trip since your
+last visit," with the flagged row's `aria-label` correctly prefixed; reloading again immediately
+(no further change) returns to zero badges, confirming "since last visit" doesn't linger past the
+visit that revealed it. Realistic storage-blocked context (methods throw) renders all 44 rows and 5
+KPIs with zero console errors and zero badges. No page-level horizontal scroll at 375px; the pill
+wraps cleanly under a multi-line itinerary label on mobile. Dark mode reuses the already
+contrast-audited (08-18) `--gold-soft`/`--gold-text` tokens verbatim — no new colors introduced.
+CSV export and full-text search are unaffected (both read trip fields directly, not table markup).
+All three fallback tiers exercised individually (tier 1 JSON, tier 3 embedded snapshot; tier 2's
+live-mirror branch reuses the identical `computeNewSlugs`/`renderNewSinceNote` calls). Console clean
+bar the pre-existing, sandbox-only `cdn.plot.ly` blocks noted in every prior log.
+
+**Files touched:** `index.html`, `ideas-log.md`
