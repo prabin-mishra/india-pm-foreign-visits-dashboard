@@ -634,6 +634,14 @@
          the row (which was dragging the whole page into horizontal scroll). */
       .registry-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; row-gap: var(--sp-2); }
       .registry-actions .sub { flex: 1 0 100%; }
+      /* Same overflow as .registry-actions above, now on the three chart panels whose sub
+         text grew a "click a bar to filter" hint: too long to share a row with the title
+         below 640px, so it drops to its own full-width line (panel-head-right needs a
+         resolved 100% width from the now-wrapping .panel-head before its own .sub text can
+         wrap in turn, same two-level fix as #registry .section-head + .registry-actions). */
+      .panel-head { flex-wrap: wrap; row-gap: var(--sp-1); }
+      .panel-head-right { flex: 1 0 100%; justify-content: flex-end; flex-wrap: wrap; row-gap: var(--sp-1); }
+      .panel-head-right .sub { flex: 1 0 100%; }
       .news-grid { grid-template-columns: 1fr; }
       #drawer { padding: var(--sp-6); }
     }
@@ -793,17 +801,17 @@
             <div id="timelineTableWrap"></div>
           </div>
           <div class="panel wide">
-            <div class="panel-head"><h3>Most visited countries</h3><span class="panel-head-right"><span class="sub">Top 15 in view</span><button class="chart-dl-btn" type="button" data-chart="ranking" data-filename="most-visited-countries" aria-label="Download most visited countries chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div class="panel-head"><h3>Most visited countries</h3><span class="panel-head-right"><span class="sub">Top 15 in view — click a bar to filter</span><button class="chart-dl-btn" type="button" data-chart="ranking" data-filename="most-visited-countries" aria-label="Download most visited countries chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="ranking" class="chart-loading" style="height:360px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
             <div id="rankingTableWrap"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h3>PM comparison</h3><span class="panel-head-right"><span class="sub">Trips vs unique countries</span><button class="chart-dl-btn" type="button" data-chart="pmCompare" data-filename="pm-comparison" aria-label="Download PM comparison chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div class="panel-head"><h3>PM comparison</h3><span class="panel-head-right"><span class="sub">Trips vs unique countries — click a bar to filter</span><button class="chart-dl-btn" type="button" data-chart="pmCompare" data-filename="pm-comparison" aria-label="Download PM comparison chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="pmCompare" class="chart-loading" style="height:320px" role="img" aria-label="Grouped bar chart comparing trips and unique countries per PM"></div>
             <div id="pmCompareTableWrap"></div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h3>Single vs multi-country tours</h3><span class="panel-head-right"><span class="sub">By year</span><button class="chart-dl-btn" type="button" data-chart="yoyChart" data-filename="single-vs-multi-country-tours" aria-label="Download single vs multi-country tours chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div class="panel-head"><h3>Single vs multi-country tours</h3><span class="panel-head-right"><span class="sub">By year — click a bar to filter</span><button class="chart-dl-btn" type="button" data-chart="yoyChart" data-filename="single-vs-multi-country-tours" aria-label="Download single vs multi-country tours chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="yoyChart" class="chart-loading" style="height:320px" role="img" aria-label="Stacked bar chart of trips by year and visit type"></div>
             <div id="yoyTableWrap"></div>
           </div>
@@ -1209,14 +1217,16 @@ function populateFilters() {
   qEl.oninput = e => { state.q = e.target.value.toLowerCase(); writeUrlState(); render(); };
 }
 
-// Clicking a country tag in the registry table sets the Country filter to that value — the
-// same state change the dropdown's own onchange makes, just reachable without opening it first.
-// Re-render replaces the tag button that was clicked, so focus is deliberately moved to the
-// (persistent) Country select rather than left to fall back to <body>.
-function filterByCountry(country) {
-  state.country = country;
-  const sel = document.getElementById('country');
-  sel.value = country;
+// Sets one filter field and syncs its <select> — the same state change that select's own
+// onchange makes, just reachable without opening it first. Shared by the country tags in the
+// registry table and by clicking a bar in the ranking/PM-comparison/year charts below. The
+// element a click originated from (a tag button, a Plotly bar) doesn't survive the re-render
+// it triggers, so focus is deliberately moved to the (persistent) filter select rather than
+// left to fall back to <body>.
+function filterBy(key, value) {
+  state[key] = value;
+  const sel = document.getElementById(key);
+  sel.value = value;
   writeUrlState();
   render();
   sel.focus();
@@ -1331,6 +1341,22 @@ function revealChart(id) {
   if (btn) btn.disabled = false;
 }
 
+// Ranking, PM comparison, and year charts each map one clicked bar onto an existing filter
+// field (country / pm / year) via the same filterBy() the registry's country tags use.
+// Plotly.react() redraws into the same <div> on every render() rather than recreating it, so
+// its event listeners persist across re-renders — wiring each chart's 'plotly_click' once
+// (guarded by this set) avoids stacking a duplicate listener, and duplicate filterBy() calls,
+// on every filter change.
+const chartClickWired = new Set();
+function wireChartClick(id, valueOf) {
+  if (chartClickWired.has(id)) return;
+  chartClickWired.add(id);
+  document.getElementById(id).on('plotly_click', e => {
+    const [key, value] = valueOf(e.points && e.points[0]) || [];
+    if (key && value) filterBy(key, value);
+  });
+}
+
 async function renderCharts(rows) {
   await plotlyReady; // Plotly loads deferred; wait rather than assume it's ready by now.
   try {
@@ -1433,7 +1459,7 @@ async function renderChartsInner(rows) {
     text: ranking.map(r => r[1]).reverse(), textposition: 'outside',
     textfont: {family: 'Inter, system-ui, sans-serif', size: 12, color: c.axis},
     cliponaxis: false,
-    hovertemplate: '%{y}: %{x} visit(s)<extra></extra>',
+    hovertemplate: '%{y}: %{x} visit(s) — click to filter<extra></extra>',
   }], baseLayout(c, {
     margin: {t: 0, l: 150, r: 30, b: 30},
     annotations: emptyNote,
@@ -1442,6 +1468,7 @@ async function renderChartsInner(rows) {
     bargap: .35,
   }), cfg);
   revealChart('ranking');
+  wireChartClick('ranking', p => p && ['country', p.y]);
   renderChartTable('rankingTableWrap', 'Top 15 most-visited countries, current filters',
     ['Country', 'Visits'],
     ranking.map(([country, n]) => [country, fmt(n)]));
@@ -1451,8 +1478,8 @@ async function renderChartsInner(rows) {
   const pmTrips     = pmNames.map(pm => rows.filter(t => t.pm === pm).length);
   const pmCountries = pmNames.map(pm => new Set(rows.filter(t => t.pm === pm).flatMap(t => t.countries)).size);
   Plotly.react('pmCompare', [
-    {type: 'bar', name: 'Total trips',      x: pmNames, y: pmTrips,     marker: {color: c.primary},   hovertemplate: '%{x}<br>Trips: %{y}<extra></extra>'},
-    {type: 'bar', name: 'Unique countries', x: pmNames, y: pmCountries, marker: {color: c.secondary}, hovertemplate: '%{x}<br>Countries: %{y}<extra></extra>'},
+    {type: 'bar', name: 'Total trips',      x: pmNames, y: pmTrips,     marker: {color: c.primary},   hovertemplate: '%{x}<br>Trips: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Unique countries', x: pmNames, y: pmCountries, marker: {color: c.secondary}, hovertemplate: '%{x}<br>Countries: %{y} — click to filter<extra></extra>'},
   ], baseLayout(c, {
     barmode: 'group', bargap: .4,
     margin: {t: 10, l: 34, r: 10, b: 30},
@@ -1462,6 +1489,7 @@ async function renderChartsInner(rows) {
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...pmTrips, ...pmCountries))},
   }), cfg);
   revealChart('pmCompare');
+  wireChartClick('pmCompare', p => p && ['pm', p.x]);
   renderChartTable('pmCompareTableWrap', 'Trips and unique countries by Prime Minister, current filters',
     ['Prime Minister', 'Trips', 'Unique countries'],
     pmNames.map((pm, i) => [pm, fmt(pmTrips[i]), fmt(pmCountries[i])]));
@@ -1471,8 +1499,8 @@ async function renderChartsInner(rows) {
   const single = years.map(yr => rows.filter(t => String(t.year) === yr && t.visitType === 'Single-country').length);
   const multi  = years.map(yr => rows.filter(t => String(t.year) === yr && t.visitType === 'Multi-country').length);
   Plotly.react('yoyChart', [
-    {type: 'bar', name: 'Single-country', x: years, y: single, marker: {color: c.primary},   hovertemplate: '%{x} Single-country: %{y}<extra></extra>'},
-    {type: 'bar', name: 'Multi-country',  x: years, y: multi,  marker: {color: c.secondary}, hovertemplate: '%{x} Multi-country: %{y}<extra></extra>'},
+    {type: 'bar', name: 'Single-country', x: years, y: single, marker: {color: c.primary},   hovertemplate: '%{x} Single-country: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Multi-country',  x: years, y: multi,  marker: {color: c.secondary}, hovertemplate: '%{x} Multi-country: %{y} — click to filter<extra></extra>'},
   ], baseLayout(c, {
     barmode: 'stack', bargap: .45,
     margin: {t: 10, l: 34, r: 10, b: 30},
@@ -1482,6 +1510,7 @@ async function renderChartsInner(rows) {
     yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...years.map((_, i) => single[i] + multi[i])))},
   }), cfg);
   revealChart('yoyChart');
+  wireChartClick('yoyChart', p => p && ['year', p.x]);
   renderChartTable('yoyTableWrap', 'Single- vs multi-country trips by year, current filters',
     ['Year', 'Single-country', 'Multi-country', 'Total'],
     years.map((yr, i) => [yr, fmt(single[i]), fmt(multi[i]), fmt(single[i] + multi[i])]));
@@ -2436,7 +2465,7 @@ document.getElementById('colToggle').addEventListener('click', () => {
 // Drawer event delegation on static table element
 document.getElementById('tripTable').addEventListener('click', e => {
   const tagBtn = e.target.closest('button.tag');
-  if (tagBtn) { filterByCountry(tagBtn.dataset.country); return; }
+  if (tagBtn) { filterBy('country', tagBtn.dataset.country); return; }
   const sortBtn = e.target.closest('.th-sort');
   if (sortBtn) { handleSortClick(sortBtn.dataset.sort); return; }
   const row = e.target.closest('tr[data-trip]');

@@ -1707,3 +1707,68 @@ live-mirror branch reuses the identical `computeNewSlugs`/`renderNewSinceNote` c
 bar the pre-existing, sandbox-only `cdn.plot.ly` blocks noted in every prior log.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-03 — Click a chart bar to filter the page
+
+**Shipped.** The run prompt's four suggested candidates (drawer focus trap, deferred Plotly,
+accessible chart data tables, sortable registry columns) are all already live — confirmed by
+grepping for their implementations (`trapDrawerTab`, `plotlyReady`, `renderChartTable`,
+`SORTABLE_COLUMNS`) before brainstorming fresh, same stale-list finding as 09-02.
+
+The six analysis charts and the filter bar above them were two one-way streets: filters shape
+the charts, but nothing in a chart fed back into the filters — a reader spotting "Italy" as the
+tallest bar in *Most visited countries* had to go retype it into the Country select by hand. The
+registry's own clickable country tags (09-01) proved the pattern works; this extends it to the
+charts themselves. Clicking a bar in *Most visited countries* now sets the Country filter to that
+bar's country, a bar in *PM comparison* sets the PM filter, and a bar in *Single vs multi-country
+tours* sets the Year filter — each via Plotly's `plotly_click` event calling the same `filterBy()`
+that already backs the registry tags (generalized from the old country-only `filterByCountry` to
+take a field name, so the tag click site is one line simpler, not larger). Left the map and the
+two remaining charts (timeline, calendar heatmap) alone: neither has a bar/segment that maps onto
+one existing filter value as directly, and three clean examples make the point without turning one
+day's idea into a six-chart retrofit. Every clicked bar's hover tooltip now ends with "click to
+filter" so the affordance is discoverable without a legend; each panel's sub-heading gained a
+matching "— click a bar to filter" hint for the same reason.
+
+Purely a progressive enhancement for mouse users — screen-reader users already reach identical
+filtering through the Country/PM/Year `<select>` elements, and the charts' `role="img"` +
+accessible data tables (08-08) are untouched, so there's no accessibility regression to reason
+about, only an addition.
+
+**Runners-up**
+- *Map choropleth click-to-filter* — same mechanism as the ranking chart, genuinely tempting to
+  add for completeness, but `plotly_click` on a `type: 'choropleth'` trace returns a different
+  point shape (`location`, not `x`/`y`) that this sandbox's Plotly stub can't validate with real
+  confidence; dropped rather than ship unverified geo-trace behavior.
+- *Trip-duration histogram (a new way to read the data)* — logged as a mini-epic on 08-24, 08-25,
+  and 09-02 for needing the full skeleton/empty-state/table/PNG-export scaffold every existing
+  chart carries; same call again.
+- *`rel="noopener"` on the two `data/visits.json` links* — twelfth log (since 08-22); still
+  cosmetic-only per 08-30's finding that both targets are same-origin JSON.
+- *`og:image:width`/`og:image:height` meta tags* — real but minor every time it's been raised
+  (08-18 through 09-01); no new argument for shipping it today.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a twenty-fifth time, same "marginal
+  payoff for a single-URL site" reasoning as every prior log.
+
+**Verification:** `new Function` syntax check on both real inline script blocks passes (JSON-LD
+block fails as always — not JS). Playwright against the served page (Plotly stubbed — real click
+events dispatched via the stub's own `el.emit('plotly_click', …)`, matching how Plotly wires
+`.on`/`.emit` onto the graph div itself; `cdn.plot.ly` blocked in this sandbox as in every prior
+log): clicking a ranking bar sets `#country`, pushes `?country=…`, moves focus to the select, and
+re-renders; the same for a PM-comparison bar (`?pm=…`) and a year bar (`?year=…`); an active PM
+filter survives an unrelated country-bar click unchanged, confirming chart clicks compose with
+existing filters rather than resetting them; resetting and re-filtering (which re-runs
+`Plotly.react()` and therefore the chart-click wiring code path) still applies exactly one filter
+change per click — the `chartClickWired` guard against re-attaching `plotly_click` on every
+re-render does its job. Caught and fixed one real regression before shipping: the panel sub-text
+hint's added length pushed `.panel-head-right` past the viewport at 375px width (confirmed against
+a pre-change baseline: `document.documentElement.scrollWidth` was equal to `clientWidth` before,
+strictly greater after) — fixed by letting `.panel-head` wrap and `.panel-head-right`'s own sub
+text drop to a full-width second line below 640px, the same two-level flex-wrap technique already
+used for `.registry-actions`. Re-verified clean (no horizontal scroll, no console errors) after the
+fix, at both 1280px and 375px. Full-page screenshots confirm the wrapped panel headers read
+cleanly on mobile and the desktop layout is unchanged. All three fallback tiers untouched — the
+change reads only `rows`/`t.pm`/`t.countries`/`t.year`, already produced by `normalizeTrips`
+identically regardless of which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
