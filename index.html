@@ -1662,7 +1662,7 @@ function renderTable(rows) {
     return `<th data-col="${col.key}" aria-sort="${ariaSort}"><button type="button" class="th-sort" data-sort="${col.key}">${col.label}<span class="sort-icon" aria-hidden="true">${icon}</span></button></th>`;
   }).join('') + '<th data-col="source">Source</th>';
   table.innerHTML =
-    `<caption>India PM foreign trips — ${rows.length} result(s) in current filtered view</caption>` +
+    `<caption>India PM foreign trips — ${rows.length} result(s) in current filtered view. Use the Up and Down arrow keys to move between rows once one is focused.</caption>` +
     `<thead><tr>${thead}</tr></thead>` +
     `<tbody>${rows.map(t => `<tr class="trip-row" data-trip="${t.slug}" tabindex="0" aria-label="${newSlugs.has(t.slug) ? 'New — ' : ''}View details for ${t.label}">
       <td data-col="start"><span class="date" title="${t.start} to ${t.end}">${fmtRange(t.start, t.end)}</span></td>
@@ -1806,7 +1806,14 @@ function openDrawer(trip, {push = true} = {}) {
   overlay.setAttribute('aria-hidden', 'false');
   setBackgroundInert(true);
   lockBodyScroll(true);
-  document.getElementById('drawerClose').focus();
+  // Deferred one tick: opening the drawer is itself often triggered by an Enter keypress (a
+  // registry row, a chrono-nav button, a related-trip link). Focusing a *different* button
+  // synchronously within that same keydown's handling makes the browser re-check which element
+  // is now focused before it finishes processing that Enter press — and fires a second, spurious
+  // click on whatever it lands on. Landing on drawerClose, that click closes the drawer that just
+  // opened, so a keyboard user pressing Enter would see it flash open and vanish. Escaping to the
+  // next tick lets that Enter keystroke finish being handled by its original target first.
+  setTimeout(() => document.getElementById('drawerClose').focus(), 0);
   document.title = `${trip.label}, ${fmtRange(trip.start, trip.end)} · ${DEFAULT_TITLE}`;
   if (push) { state.trip = trip.slug; writeUrlState(); }
 }
@@ -2474,6 +2481,19 @@ document.getElementById('tripTable').addEventListener('click', e => {
   if (trip) { lastFocusedRow = row; openDrawer(trip); }
 });
 document.getElementById('tripTable').addEventListener('keydown', e => {
+  // Row-to-row quick nav: Up/Down/Home/End move focus between trip rows, supplementing (not
+  // replacing) Tab order — a keyboard user reading down the registry no longer has to Tab through
+  // every country-tag button in a row just to reach the next one. Scoped to the row itself having
+  // focus (not a nested tag button) so it never hijacks arrow keys from anything else on the page.
+  if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) {
+    if (e.target.tagName !== 'TR') return;
+    const rows = [...document.querySelectorAll('#tripTable tbody tr[data-trip]')];
+    const idx = rows.indexOf(e.target);
+    if (idx === -1) return;
+    const target = {ArrowDown: rows[idx + 1], ArrowUp: rows[idx - 1], Home: rows[0], End: rows[rows.length - 1]}[e.key];
+    if (target) { e.preventDefault(); target.focus(); }
+    return;
+  }
   if (e.key !== 'Enter') return;
   // A country tag is its own <button> inside the row; its native Enter activation already
   // fires the click handler above — don't also let the row-level handler open the drawer.

@@ -1772,3 +1772,93 @@ change reads only `rows`/`t.pm`/`t.countries`/`t.year`, already produced by `nor
 identically regardless of which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-04 — Arrow-key row navigation in the trip registry
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all four already live, same
+stale-list finding as every recent log. Brainstormed fresh.
+
+Every registry row is its own Tab stop (`tabindex="0"`), but with 45 rows plus a country-tag
+button per destination inside each one, a keyboard user reading down the table has to Tab through
+every tag in a multi-country row just to reach the next one. `#tripTable`'s existing keydown
+listener now also handles ArrowDown/ArrowUp/Home/End: with a `<tr>` itself focused (not a nested
+tag button), Down/Up moves to the next/previous rendered row and Home/End jump to the first/last —
+reading `document.querySelectorAll('#tripTable tbody tr[data-trip]')` live, so it always reflects
+whatever the current filter/sort produced. Deliberately scoped narrower than a full ARIA
+`role="grid"` retrofit: this table's cells hold their own interactive controls (country-tag
+buttons), and giving it real grid semantics would mean redesigning focus management down to the
+gridcell level — a bigger, riskier change than the actual gap (row-to-row movement) needed closing.
+Tab order and the country tags' own keyboard behavior are untouched; this is a pure keyboard-only
+addition (no new visible affordance), so it changes nothing about the three fallback rendering or
+non-partisan framing. Discoverability lives in the table's existing (screen-reader-only)
+`<caption>`, extended with one sentence rather than adding new on-page chrome for a shortcut aimed
+at exactly the audience that already reads captions.
+
+While verifying it, found and fixed a real, unrelated keyboard bug — see the directed-fix entry
+below.
+
+**Runners-up**
+- *Full ARIA `role="grid"` semantics for the registry table* — the textbook-correct version of
+  this idea, but the nested country-tag buttons mean gridcell-level focus management, a
+  bigger-than-one-day redesign for a table that already works via Tab; the lighter supplemental
+  arrow-key nav shipped instead.
+- *Map choropleth click-to-filter* — re-checked; `cdn.plot.ly` is still blocked in this sandbox
+  (confirmed again via direct `curl`, 403 from the proxy), so a choropleth trace's `plotly_click`
+  point shape still can't be verified with real confidence. Same call as 09-03.
+- *`forced-colors` (Windows High Contrast Mode) audit* — flagged 09-02 as a genuine, unaddressed
+  gap; still not something this sandbox can visually verify with confidence, deferred again.
+- *RSS/Atom feed of new trips* — flagged 09-02; still needs a new automated build step adjacent to
+  the data-refresh guardrail, bigger than one day.
+- *KPI mini-sparkline (trend line under a stat card)* — fresh, a genuinely new way to read the
+  data, but thinner than closing a live, confirmed keyboard-navigation gap, and touches the KPI
+  strip's skeleton-loader re-render contract for a purely decorative addition.
+- *Larger tap targets on the six per-chart PNG-download buttons (24×24px)* — fresh mobile-polish
+  find, but 24px already meets WCAG 2.5.8 AA's minimum target size; real gap, lower priority than
+  full AAA-sized targets would be.
+
+**Verification:** `new Function` syntax check on both real inline script blocks passes (JSON-LD
+block fails as always, expected). Playwright against the served page (Plotly stubbed; `cdn.plot.ly`
+confirmed blocked in this sandbox via `curl`) at 1280px and 375px: focusing any row and pressing
+ArrowDown/ArrowUp moves focus to the next/previous row's exact slug; Home/End jump to the first/last
+rendered row; ArrowUp on the first row and ArrowDown on the last are no-ops (focus stays put);
+ArrowDown while a country-tag button (not the row) has focus does not jump rows, confirming the
+scoping guard; all 45 rows, 5 KPIs, and all six charts render with zero console errors; no
+horizontal scroll at either width; the extended `<caption>` text reads correctly. All three
+fallback tiers exercised: tier 1 (`data/visits.json`) and tier 3 (both network sources blocked,
+forcing the embedded snapshot, 43 rows) both show identical arrow-key behavior, since the feature
+reads only the rendered DOM, not which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-04 — Fix the trip drawer closing itself on the same Enter press that opened it (directed fix, not a cycle pick)
+
+**Problem, found while testing today's arrow-key nav, not caused by it.** Focusing a registry row
+and pressing Enter opened the drawer and then, within the same keystroke, closed it again — a
+keyboard-only user could never actually read a trip's details, only see the drawer flash. Pinned
+with a minimal two-element repro outside this codebase before touching anything, to rule out a
+Playwright artifact: a focused non-button element's `keydown` handler that synchronously moves
+focus to a `<button>` causes that same physical Enter press to also fire a native `click` on the
+button it just landed on — real Chromium behavior (default-action target is re-resolved against
+whatever has focus *after* JS listeners run), not a test-harness quirk.
+
+`openDrawer()` hits this exactly: opening is very often itself triggered by an Enter press (a
+registry row, a chrono-nav button, a related-trip link), and it calls
+`document.getElementById('drawerClose').focus()` synchronously in that same handler — landing
+focus on a `<button>` mid-keystroke, which then eats a spurious click and closes what it just
+opened. Fix: defer that one focus call with `setTimeout(fn, 0)`, so the Enter keystroke finishes
+being handled by its original target before focus moves. No visible behavior change — the close
+button still receives focus essentially immediately — only the buggy same-key double-activation
+is gone.
+
+**Verification:** isolated two-element HTML repro (outside the app) confirmed the failure mode and
+confirmed the `setTimeout` fix resolves it, before touching `index.html`. In the app: Enter on a
+registry row now opens the drawer and it stays open, with focus correctly landing on the close
+button; Enter on a chrono-nav ("Earlier"/"Later") button — the other real-world path that
+re-triggers `openDrawer()` while a button is already focused — also stays open; Escape still
+closes and restores focus to the triggering row; mouse-click open/close paths are unaffected (this
+class of bug is specific to keyboard activation). Checked at 1280px and 375px, zero console errors,
+all three fallback tiers unaffected (the change is inside `openDrawer()` only, downstream of
+whichever tier populated `trips`).
+
+**Files touched:** `index.html`, `ideas-log.md`
