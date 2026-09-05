@@ -616,3 +616,37 @@ Stated so the reader does not mistake them for confirmed:
   unreachable).
 - MEA Annual Report contents (PDF not opened).
 - US State Department visa issuance PDFs (403).
+
+## 8. Implementation status
+
+Added 2026-09-05, after the memo was accepted. The data feed for the first-build shortlist and a
+first version of the site surfaces in section 4 now exist.
+
+- `scripts/refresh_outcomes.py` reads `data/visits.json` for the visited-country list and writes
+  `data/outcomes.json` with five sections per country: `documents` (MEA outcome lists matched to a
+  registry trip, with item counts), `trade` (UN Comtrade annual and monthly exports and imports,
+  plus India's world total under `india_total`), `coauthorship` (OpenAlex works per year, plus
+  India's total), `unga` (agreement share per session from the Harvard Dataverse file), and `loc`
+  (EXIM Bank signed and operative lines of credit). Standard library only, no keys.
+- `.github/workflows/refresh-outcomes.yml` runs it daily at 05:30 UTC, separately from the
+  registry refresh, and commits the file when it changes. Each source is fetched independently;
+  a failing source carries the previous run's values forward and is marked `cached` with the
+  error in `meta.sources`, so a bad day never blanks the feed.
+- `scripts/test_outcomes.py` covers the parsers and the visit-matching rule offline.
+- Deviations from section 2: the Comtrade keyless preview endpoint is used instead of a free
+  key, so the feed avoids a repository secret at the cost of one request per period and flow
+  with a five-second pause; the first backfill therefore takes about twenty minutes and later
+  runs refetch only the trailing three months. The UNGA agreement file (145 MB) is re-downloaded
+  only when the Dataverse version changes.
+- `index.html` reads the feed additively (it is not a fourth tier of the registry fallback):
+  the trip drawer gains an "Around this visit" panel with the three bands from section 4.2
+  (on the record, flows around the visit with sparklines and the dyad-versus-India-wide numbers,
+  and the fixed how-to-read text), and the analysis grid gains an "Around the visits" dot plot
+  with the count footer, an indicator selector (goods trade or co-authorship), click-to-open-trip,
+  and a data table. The methodology section documents the sources and the non-causal framing.
+- Deviations from section 4: multi-country trips show stacked country cards rather than tabs;
+  the peer-country baseline is not built, so the panel shows two numbers, not three, and says so;
+  the UN voting row is shown as a before/after level because the feed carries no India-wide
+  voting baseline; the cross-trip view offers only date order.
+- Not yet built: the peer-country baseline, the return-visit indicator (MEA's visits listing
+  is script-rendered), and the FDI, arms, energy, student, tourist and visa sections.

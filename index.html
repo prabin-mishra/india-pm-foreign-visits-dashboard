@@ -593,6 +593,34 @@
     .copy-link.is-copied { color: var(--ok); border-color: var(--ok); }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+    /* ============ Outcome indicators ============ */
+    .oc-status { font-size: .78rem; color: var(--text-3); margin: 0 0 var(--sp-3); }
+    .oc-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: var(--sp-3); }
+    .oc-country { font: 700 1rem/1.3 var(--font-ui); margin: 0 0 var(--sp-2); }
+    .oc-band { font: 600 .72rem/1 var(--font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin: var(--sp-4) 0 var(--sp-2); }
+    .oc-band span { text-transform: none; letter-spacing: 0; font-weight: 500; }
+    .oc-list { margin: 0; padding-left: 18px; font-size: .88rem; line-height: 1.5; }
+    .oc-list li + li { margin-top: 4px; }
+    .oc-row { border-top: 1px solid var(--border); padding: 10px 0; }
+    .oc-row-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .oc-label { font-weight: 600; font-size: .9rem; }
+    .oc-cells { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin: 6px 0 4px; }
+    .oc-num { display: inline-flex; flex-direction: column; }
+    .oc-num b { font: 600 1.05rem/1.2 var(--font-ui); font-variant-numeric: tabular-nums; }
+    .oc-num i { font-style: normal; font-size: .72rem; color: var(--text-3); }
+    .oc-rel, .oc-state { font-size: .82rem; font-weight: 600; color: var(--text-2); }
+    .oc-sentence { font-size: .86rem; line-height: 1.5; margin: 0; }
+    .oc-caveat { font-size: .74rem; color: var(--text-3); margin: 3px 0 0; }
+    .oc-spark { flex: none; }
+    .oc-spark-line { fill: none; stroke: var(--accent); stroke-width: 1.6; }
+    .oc-spark-visit { stroke: var(--text); stroke-width: 1.4; }
+    .oc-spark-other { stroke: var(--border-strong, var(--border)); stroke-width: 1; stroke-dasharray: 2 2; }
+    .oc-how { border-top: 1px solid var(--border); padding-top: var(--sp-3); font-size: .84rem; line-height: 1.5; }
+    .oc-how summary { cursor: pointer; font-weight: 600; }
+    .oc-how p { margin: var(--sp-2) 0 0; color: var(--text-2); }
+    .oc-foot { font-size: .8rem; line-height: 1.5; color: var(--text-3); margin: var(--sp-2) 0 0; }
+    .oc-select { font: inherit; font-size: .82rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 8px; }
+
     /* ============ Responsive ============ */
     @media (max-width: 1023px) {
       .charts { grid-template-columns: 1fr; }
@@ -604,6 +632,8 @@
       .news-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 640px) {
+      .oc-row-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .oc-cells { flex-direction: column; gap: 4px; }
       .wrap { padding: 0 var(--sp-4); }
       .hero { padding: var(--sp-10) 0 var(--sp-8); }
       /* Below 640px there isn't room for the nav at full size next to the wordmark and
@@ -820,6 +850,12 @@
             <div id="calHeatmap" class="chart-loading" style="height:280px" role="img" aria-label="Heatmap of trip density by year and month"></div>
             <div id="calHeatmapTableWrap"></div>
           </div>
+          <div class="panel wide">
+            <div class="panel-head"><h3>Around the visits</h3><span class="panel-head-right"><label class="sub" for="ocIndicator">Change after each visit, relative to India-wide — </label><select id="ocIndicator" class="oc-select" aria-label="Indicator"><option value="trade">Goods trade</option><option value="coauth">Research co-authorship</option></select><button class="chart-dl-btn" type="button" data-chart="outcomesChart" data-filename="around-the-visits" aria-label="Download around-the-visits chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div id="outcomesChart" class="chart-loading" style="min-height:220px" role="img" aria-label="Dot plot of change in the chosen indicator after each visit, relative to India-wide change; click a dot to open that trip"></div>
+            <p class="oc-foot" id="outcomesFoot" aria-live="polite"></p>
+            <div id="outcomesTableWrap"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -900,6 +936,11 @@
             <summary>"Latest coverage" headlines</summary>
             <p>Auto-collected third-party news, not fact-checked by this project and not an endorsement of any characterization in a headline. Article dates are cross-checked across multiple search feeds and only ever adjusted earlier, never later, to keep older coverage from being mis-filed as reporting on a new trip.</p>
           </details>
+          <details class="caveat">
+            <summary>"Around this visit" outcome indicators</summary>
+            <p>Each trip's drawer and the "Around the visits" chart read <code>data/outcomes.json</code>, refreshed daily by a separate workflow from keyless public sources: the Ministry of External Affairs' "List of Outcomes" documents, UN Comtrade monthly goods trade (India as reporter), OpenAlex counts of papers with an author in each country, the Voeten, Bailey and Strezhnev UN General Assembly voting dataset on Harvard Dataverse, and EXIM Bank's lines-of-credit tables.</p>
+            <p>These numbers describe what changed <strong>around</strong> a visit; they never show that a visit caused it. Every flow is shown beside India's overall change over the same fixed window (12 months for trade, three years for co-authorship, three sessions before and two after for UN voting), and a window shortened by a later visit to the same country says so. Rises, falls and no-change results use the same words and the same type. A window that has not yet closed is reported as still open rather than filled with a shorter, noisier one. The design memo behind this, with the sources' licences and the ideas rejected, is in <a href="https://github.com/prabin-mishra/india-pm-foreign-visits-dashboard/blob/main/docs/outcome-indicators.md" target="_blank" rel="noopener">docs/outcome-indicators.md</a>.</p>
+          </details>
         </div>
       </div>
     </section>
@@ -912,6 +953,7 @@
         <a href="https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/" target="_blank" rel="noopener">PM India registry</a>
         <a href="https://www.pmindia.gov.in/en/pm-visits/" target="_blank" rel="noopener">Visits archive</a>
         <a href="data/visits.json" target="_blank">Dataset (JSON)</a>
+        <a href="data/outcomes.json" target="_blank">Outcomes (JSON)</a>
         <a href="https://github.com/prabin-mishra/india-pm-foreign-visits-dashboard" target="_blank" rel="noopener">GitHub</a>
       </span>
     </div>
@@ -1334,7 +1376,7 @@ function renderChartTable(wrapId, caption, headers, bodyRows) {
 
 // Each chart div carries a shimmering .chart-loading placeholder (CSS) until its own
 // Plotly.react() call draws into it, so panels reveal progressively rather than all at once.
-const CHART_IDS = ['map', 'timeline', 'ranking', 'pmCompare', 'yoyChart', 'calHeatmap'];
+const CHART_IDS = ['map', 'timeline', 'ranking', 'pmCompare', 'yoyChart', 'calHeatmap', 'outcomesChart'];
 function revealChart(id) {
   document.getElementById(id).classList.remove('chart-loading');
   const btn = document.querySelector(`.chart-dl-btn[data-chart="${id}"]`);
@@ -1780,6 +1822,7 @@ function openDrawer(trip, {push = true} = {}) {
     </div>
     ${trip.cost ? `<h3 class="drawer-sec">Reported cost</h3><p>${trip.cost}</p>` : ''}
     ${trip.outcomes ? `<h3 class="drawer-sec">Outcomes</h3><p>${trip.outcomes}</p>` : ''}
+    ${outcomePanelHtml(trip)}
     <h3 class="drawer-sec">Countries visited</h3>
     <div class="drawer-tags">${trip.countries.map(x => `<span class="tag">${x}</span>`).join('')}</div>
     ${relatedTripsHtml(trip)}
@@ -2311,11 +2354,368 @@ function renderNews(data) {
   block.hidden = false;
 }
 
+// ============================================================================
+// Outcome indicators — what public statistics did around each visit.
+//
+// Reads data/outcomes.json, a feed produced by scripts/refresh_outcomes.py from keyless
+// public sources (MEA outcome lists, UN Comtrade, OpenAlex, UN General Assembly voting data,
+// EXIM Bank lines of credit). Design rules, from docs/outcome-indicators.md:
+//   - descriptive, never causal: every sentence says what changed *around* a visit, and each
+//     flow is shown beside India's overall change over the same window so movement specific
+//     to one country can be told apart from movement everywhere;
+//   - up, down and flat get the same typography and the same sentence template — no
+//     green-for-good, because whether higher imports are "good" is the reader's call;
+//   - three explicit states per indicator: measured, window still open (with the date it
+//     closes), and not measurable (with the reason). A blank cell is never used for "no change".
+// The feed is additive: if it is unreachable the drawer says so and everything else on the
+// page is unaffected. It is not a fourth tier of the registry's fallback chain.
+// ============================================================================
+let outcomes = null;
+const OUTCOMES_URL = 'data/outcomes.json';
+const OC_FLAT_PP = 5;      // |dyad − India-wide| under this many percentage points reads as "about the same"
+const OC_MIN_POST_MONTHS = 6; // a post window truncated shorter than this by the next visit is not compared
+
+async function loadOutcomes() {
+  try {
+    const res = await fetch(OUTCOMES_URL, {cache: 'no-store'});
+    if (!res.ok) throw new Error('outcomes.json fetch failed: ' + res.status);
+    const data = await res.json();
+    if (!data.countries) throw new Error('outcomes.json has no countries block');
+    outcomes = data;
+  } catch (e) {
+    console.warn('[outcomes]', e);
+    outcomes = null;
+  }
+  if (trips.length) {
+    renderOutcomesChart(filtered());
+    // A drawer opened before the feed arrived gets its panel filled in.
+    const slot = document.getElementById('ocPanel');
+    if (slot && state.trip) {
+      const trip = trips.find(t => t.slug === state.trip);
+      if (trip) slot.outerHTML = outcomePanelHtml(trip);
+    }
+  }
+}
+
+// --- small date helpers (year-month strings, "2024-03") --------------------------------
+function ymOf(iso) { return iso.slice(0, 7); }
+function ymAdd(ym, n) {
+  const [y, m] = ym.split('-').map(Number);
+  const idx = y * 12 + (m - 1) + n;
+  return `${Math.floor(idx / 12)}-${String(idx % 12 + 1).padStart(2, '0')}`;
+}
+function ymDiff(a, b) { // months from a to b
+  const [ay, am] = a.split('-').map(Number), [by, bm] = b.split('-').map(Number);
+  return (by * 12 + bm) - (ay * 12 + am);
+}
+function ymLabel(ym) { const [y, m] = ym.split('-').map(Number); return `${MONTHS_SHORT[m - 1]} ${y}`; }
+function pct(x) { const r = Math.round(x); return `${r > 0 ? '+' : r < 0 ? '−' : ''}${Math.abs(r)}%`; }
+function usdMn(v) {
+  if (v == null) return '';
+  return v >= 1000 ? `USD ${(v / 1000).toFixed(v >= 10000 ? 0 : 1)} bn` : `USD ${Math.round(v)} mn`;
+}
+
+// Other registry visits to the same country, so windows can be truncated at the next visit
+// and marked on the sparkline. Reads the full `trips` list, not the filtered view.
+function visitsTo(country) {
+  return trips.filter(t => t.countries.includes(country)).map(t => ({start: t.start, end: t.end, slug: t.slug}))
+    .sort((a, b) => a.start.localeCompare(b.start));
+}
+function nextVisitAfter(trip, country) {
+  return visitsTo(country).find(v => v.start > trip.end) || null;
+}
+
+// --- trade: monthly exports + imports, 12 months either side of the visit -----------------
+// Compares the *average monthly* value before and after so a post window shortened by the next
+// visit is still comparable. Returns one of three states.
+function tradeWindow(trip, country) {
+  const c = outcomes && outcomes.countries[country];
+  const series = c && c.trade && c.trade.monthly;
+  const india = outcomes && outcomes.india_total && outcomes.india_total.trade && outcomes.india_total.trade.monthly;
+  if (!series || !india || !Object.keys(series).length) {
+    return {state: 'na', reason: c && c.trade ? 'Comtrade reports no monthly trade for this partner' : 'trade feed unavailable'};
+  }
+  // Comtrade omits a flow's row when there was no trade that month, so one flow present and the
+  // other absent means zero for the absent one; both absent means the month is not reported.
+  const tot = s => (s && (s.x != null || s.m != null)) ? (s.x || 0) + (s.m || 0) : null;
+  const preFrom = ymAdd(ymOf(trip.start), -12), preTo = ymAdd(ymOf(trip.start), -1);
+  const postFrom = ymAdd(ymOf(trip.end), 1);
+  let postTo = ymAdd(postFrom, 11), truncated = null;
+  const nxt = nextVisitAfter(trip, country);
+  if (nxt && ymAdd(ymOf(nxt.start), -1) < postTo) { postTo = ymAdd(ymOf(nxt.start), -1); truncated = nxt; }
+  const months = (from, to) => { const out = []; for (let ym = from; ym <= to; ym = ymAdd(ym, 1)) out.push(ym); return out; };
+  const pre = months(preFrom, preTo), post = months(postFrom, postTo);
+  const latest = Object.keys(india).sort().pop();
+  const mean = (list, s) => { const v = list.map(ym => tot(s[ym])).filter(x => x != null); return v.length === list.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const preD = mean(pre, series), preI = mean(pre, india);
+  if (preD == null || preI == null) return {state: 'na', reason: 'trade data before the visit is incomplete for this partner'};
+  if (post.length < OC_MIN_POST_MONTHS) {
+    return {state: 'na', reason: `the next visit to ${country} came ${post.length} month${post.length === 1 ? '' : 's'} later, too soon to compare`};
+  }
+  if (postTo > latest) {
+    return {state: 'open', closes: ymAdd(postTo, 2), have: post.filter(ym => ym <= latest).length, need: post.length, truncated};
+  }
+  const postD = mean(post, series), postI = mean(post, india);
+  if (postD == null || postI == null) return {state: 'na', reason: 'trade data after the visit is incomplete for this partner'};
+  return {state: 'ok', dyad: (postD / preD - 1) * 100, india: (postI / preI - 1) * 100,
+          months: post.length, truncated, preFrom, postTo};
+}
+
+// --- co-authorship: mean annual works, three complete years either side --------------------
+function coauthWindow(trip, country) {
+  const c = outcomes && outcomes.countries[country];
+  const series = c && c.coauthorship;
+  const india = outcomes && outcomes.india_total && outcomes.india_total.coauthorship;
+  if (!series || !india || !Object.keys(series).length) return {state: 'na', reason: 'co-authorship feed unavailable'};
+  const y = trip.year;
+  const lastComplete = new Date().getFullYear() - 1; // the current year's count is still filling in
+  const pre = [y - 3, y - 2, y - 1], post = [y + 1, y + 2, y + 3];
+  const mean = (yrs, s) => { const v = yrs.map(k => s[String(k)]).filter(x => x != null); return v.length === yrs.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const preD = mean(pre, series), preI = mean(pre, india);
+  if (preD == null || preI == null) return {state: 'na', reason: 'publication counts before the visit are incomplete'};
+  if (post[2] > lastComplete) return {state: 'open', closes: `${post[2] + 1}`, have: post.filter(k => k <= lastComplete).length, need: 3};
+  const postD = mean(post, series), postI = mean(post, india);
+  if (postD == null || postI == null) return {state: 'na', reason: 'publication counts after the visit are incomplete'};
+  return {state: 'ok', dyad: (postD / preD - 1) * 100, india: (postI / preI - 1) * 100, preD, postD};
+}
+
+// --- UN General Assembly agreement: three sessions before, two after ----------------------
+// Session n runs September (1945+n) to September (1946+n); a visit in year Y falls in session Y−1945.
+// There is no India-wide baseline for this one (the feed carries only visited-country dyads), so
+// it is shown as a level, labelled as context.
+function ungaWindow(trip, country) {
+  const c = outcomes && outcomes.countries[country];
+  const series = c && c.unga;
+  if (!series || !Object.keys(series).length) return {state: 'na', reason: 'no UN voting record for this partner in the feed'};
+  const s = trip.year - 1945;
+  const maxS = Math.max(...Object.keys(series).map(Number));
+  const pre = [s - 3, s - 2, s - 1], post = [s + 1, s + 2];
+  const mean = list => { const v = list.map(k => series[String(k)] && series[String(k)].agree).filter(x => x != null); return v.length === list.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const preV = mean(pre);
+  if (preV == null) return {state: 'na', reason: 'voting records before the visit are incomplete'};
+  if (post[1] > maxS) return {state: 'open', closes: `mid-${post[1] + 1946}`, have: post.filter(k => k <= maxS).length, need: 2, level: preV * 100};
+  return {state: 'ok', pre: preV * 100, post: mean(post) * 100};
+}
+
+// --- sentences: one template, every direction ------------------------------------------------
+function verbFor(x) { return x > 2 ? 'rose' : x < -2 ? 'fell' : 'was about unchanged'; }
+function tradeSentence(country, w) {
+  const v = verbFor(w.dyad), amt = Math.abs(w.dyad) > 2 ? ` ${Math.abs(Math.round(w.dyad))}%` : ` (${pct(w.dyad)})`;
+  const span = w.truncated ? `${w.months} months` : '12 months';
+  return `Total goods trade with ${country} ${v}${amt} in the ${span} after the visit, against ${pct(w.india)} for India's trade with all countries.`;
+}
+function coauthSentence(country, w) {
+  const v = verbFor(w.dyad), amt = Math.abs(w.dyad) > 2 ? ` ${Math.abs(Math.round(w.dyad))}%` : ` (${pct(w.dyad)})`;
+  return `Research papers co-authored with ${country} ${v}${amt} a year in the three years after the visit, against ${pct(w.india)} for all of India's output.`;
+}
+function ungaSentence(country, w) {
+  const d = w.post - w.pre;
+  const tail = Math.abs(d) < 3 ? 'no detectable change' : `${d > 0 ? 'up' : 'down'} ${Math.abs(Math.round(d))} points`;
+  return `India and ${country} voted the same way in ${Math.round(w.pre)}% of recorded UN General Assembly votes in the three sessions before the visit and ${Math.round(w.post)}% in the two after: ${tail}.`;
+}
+function relativeLabel(w) {
+  const d = w.dyad - w.india;
+  if (Math.abs(d) < OC_FLAT_PP) return 'About the same as India-wide';
+  return d > 0 ? `${Math.round(d)} points above India-wide` : `${Math.abs(Math.round(d))} points below India-wide`;
+}
+
+// --- sparkline: inline SVG, 36 months either side, visit marked, other visits lighter -------
+function sparkline(series, trip, country, {monthly = true} = {}) {
+  const keys = Object.keys(series || {}).sort();
+  if (!keys.length) return '';
+  const val = k => monthly ? ((series[k].x || 0) + (series[k].m || 0)) : series[k];
+  let from, to, pos, others;
+  if (monthly) {
+    from = ymAdd(ymOf(trip.start), -36); to = ymAdd(ymOf(trip.end), 36);
+    pos = k => ymDiff(from, k);
+    others = visitsTo(country).filter(v => v.slug !== trip.slug).map(v => pos(ymOf(v.start)));
+  } else {
+    from = String(trip.year - 4); to = String(trip.year + 4);
+    pos = k => Number(k) - Number(from);
+    others = visitsTo(country).filter(v => v.slug !== trip.slug).map(v => pos(String(v.start.slice(0, 4))));
+  }
+  const pts = keys.filter(k => k >= from && k <= to).map(k => [pos(k), val(k)]);
+  if (pts.length < 3) return '';
+  const W = 160, H = 34, span = monthly ? ymDiff(from, to) : Number(to) - Number(from);
+  const max = Math.max(...pts.map(p => p[1])) || 1;
+  const X = p => (p / span * (W - 2) + 1).toFixed(1), Y = v => (H - 3 - v / max * (H - 6)).toFixed(1);
+  const d = pts.map((p, i) => `${i ? 'L' : 'M'}${X(p[0])} ${Y(p[1])}`).join(' ');
+  const here = monthly ? pos(ymOf(trip.start)) : pos(String(trip.year));
+  const rules = others.filter(o => o >= 0 && o <= span).map(o => `<line x1="${X(o)}" x2="${X(o)}" y1="2" y2="${H - 2}" class="oc-spark-other"/>`).join('');
+  return `<svg class="oc-spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false">
+    ${rules}<line x1="${X(here)}" x2="${X(here)}" y1="2" y2="${H - 2}" class="oc-spark-visit"/>
+    <path d="${d}" class="oc-spark-line"/></svg>`;
+}
+
+// --- one row of the "flows" band ---------------------------------------------------------------
+function flowRow(label, caveat, spark, w, sentence) {
+  let cells, text;
+  if (w.state === 'ok' && w.dyad != null) {
+    cells = `<span class="oc-num"><b>${pct(w.dyad)}</b><i>this country</i></span>
+             <span class="oc-num"><b>${pct(w.india)}</b><i>India-wide</i></span>
+             <span class="oc-rel">${relativeLabel(w)}</span>`;
+    text = sentence;
+  } else if (w.state === 'ok') { // UNGA: levels, no baseline
+    cells = `<span class="oc-num"><b>${Math.round(w.pre)}%</b><i>before</i></span>
+             <span class="oc-num"><b>${Math.round(w.post)}%</b><i>after</i></span>
+             <span class="oc-rel">${Math.abs(w.post - w.pre) < 3 ? 'No detectable change' : `${w.post > w.pre ? 'Up' : 'Down'} ${Math.abs(Math.round(w.post - w.pre))} points`}</span>`;
+    text = sentence;
+  } else if (w.state === 'open') {
+    cells = `<span class="oc-state">Window still open</span>`;
+    text = `${w.have} of ${w.need} ${w.need > 3 ? 'months' : 'periods'} of after-visit data so far; the comparison closes around ${/^\d{4}-\d{2}$/.test(w.closes) ? ymLabel(w.closes) : w.closes}.${w.truncated ? ` The window is shortened by the following visit to this country (${fmtDate(w.truncated.start)}).` : ''}`;
+  } else {
+    cells = `<span class="oc-state">Not measurable</span>`;
+    text = `Not measurable: ${w.reason}.`;
+  }
+  return `<div class="oc-row" role="group" aria-label="${esc(label)}: ${esc(text)}">
+    <div class="oc-row-head"><span class="oc-label">${label}</span>${spark}</div>
+    <div class="oc-cells">${cells}</div>
+    <p class="oc-sentence">${esc(text)}</p>
+    <p class="oc-caveat">${caveat}</p>
+  </div>`;
+}
+
+// --- the per-country card --------------------------------------------------------------------------
+function outcomeCountryHtml(trip, country) {
+  const c = outcomes.countries[country];
+  if (!c) return `<div class="oc-card"><h4 class="oc-country">${esc(country)}</h4><p class="oc-sentence">Not in the outcomes feed yet — it refreshes daily after the registry does.</p></div>`;
+
+  // Band A — on the record
+  const docs = (c.documents || []).filter(d => d.trip_start === trip.start);
+  const docLines = docs.length
+    ? docs.map(d => `<li>${d.items != null ? `<b>${d.items}</b> item${d.items === 1 ? '' : 's'} in ` : ''}MEA's <a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a>${d.items == null ? ' (item count not readable)' : ''}</li>`).join('')
+    : `<li>No "List of Outcomes" found on the MEA site for this visit. MEA usually publishes one for bilateral visits and rarely for summit trips.</li>`;
+  const inWin = (iso, from, to) => iso && iso >= from && iso <= to;
+  const locFrom = shiftISO(trip.start, -14), locTo = shiftISO(trip.end, 45);
+  const signed = ((c.loc && c.loc.signed) || []).filter(l => inWin(l.signed, locFrom, locTo));
+  const operative = (c.loc && c.loc.operative) || [];
+  const opTotal = operative.reduce((a, l) => a + (l.amount_usd_mn || 0), 0);
+  const locLines = signed.map(l => `<li>Line of credit signed ${fmtDate(l.signed)}: <b>${l.amount_usd_mn != null ? usdMn(l.amount_usd_mn) : esc(l.amount_text)}</b>, ${esc(l.purpose)} (EXIM Bank)</li>`).join('')
+    + (operative.length ? `<li>${operative.length} operative line${operative.length === 1 ? '' : 's'} of credit in ${esc(country)}${opTotal ? `, ${usdMn(opTotal)} in total` : ''}; ${operative.filter(l => l.available_for_procurement).length} still open for procurement (EXIM Bank, drawdown not published)</li>` : '');
+
+  // Band B — flows
+  const tw = tradeWindow(trip, country), cw = coauthWindow(trip, country), uw = ungaWindow(trip, country);
+  const rows = [
+    flowRow('Goods trade', 'Monthly customs data (UN Comtrade). Dominated by world prices and a few commodities.',
+            sparkline(c.trade && c.trade.monthly, trip, country), tw, tw.state === 'ok' ? tradeSentence(country, tw) : ''),
+    flowRow('Research co-authorship', 'Papers with an author in each country (OpenAlex). One to two years of publication lag; counts favour large research systems.',
+            sparkline(c.coauthorship, trip, country, {monthly: false}), cw, cw.state === 'ok' ? coauthSentence(country, cw) : ''),
+    flowRow('UN General Assembly voting', 'Context, not an outcome: voting positions are sticky and move with the resolution mix, not with one visit (Harvard Dataverse).',
+            '', uw, uw.state === 'ok' ? ungaSentence(country, uw) : ''),
+  ].join('');
+
+  return `<div class="oc-card">
+    <h4 class="oc-country">${esc(country)}</h4>
+    <h5 class="oc-band">On the record <span>0–12 months</span></h5>
+    <ul class="oc-list">${docLines}${locLines}</ul>
+    <h5 class="oc-band">Flows around the visit <span>each beside India's overall change</span></h5>
+    ${rows}
+  </div>`;
+}
+
+function outcomePanelHtml(trip) {
+  const head = `<h3 class="drawer-sec" id="ocHeading">Around this visit</h3>`;
+  if (!outcomes) {
+    return `<div id="ocPanel">${head}<p class="oc-sentence">Outcome data is unavailable right now. The rest of this page is unaffected.</p></div>`;
+  }
+  const src = outcomes.meta && outcomes.meta.sources || {};
+  const cached = Object.entries(src).filter(([, s]) => s.status === 'cached').map(([k]) => k);
+  const failed = Object.entries(src).filter(([, s]) => s.status !== 'ok' && s.status !== 'cached').map(([k]) => k);
+  const cards = trip.countries.map(cn => outcomeCountryHtml(trip, cn)).join('');
+  return `<div id="ocPanel" aria-labelledby="ocHeading">
+    ${head}
+    <p class="oc-status">Feed refreshed ${esc(outcomes.meta.generated || '')}${cached.length ? ` · ${cached.join(', ')} carried from an earlier run` : ''}${failed.length ? ` · ${failed.join(', ')} unavailable in this refresh` : ''}</p>
+    ${cards}
+    <details class="oc-how" open>
+      <summary>How to read this panel</summary>
+      <p>${esc(outcomes.meta.note || '')} Visits are scheduled when relationships are already moving, and the same months contain prices, sanctions, elections and pandemics. Where a visit was for a multilateral summit, the host country's numbers are incidental to it. A peer-country comparison is not yet available.</p>
+      <p>Windows are fixed per indicator and never tuned per visit: goods trade compares the average month in the 12 months after the visit with the 12 before; co-authorship compares the three complete years either side; UN voting compares the three sessions before with the two after. A window shortened by a later visit to the same country says so. Sources and licences are listed in the <a href="#methodology">methodology</a>.</p>
+    </details>
+  </div>`;
+}
+
+// --- cross-trip view: one dot per visit-country, change relative to India-wide ----------------
+let ocIndicator = 'trade';
+function outcomeRows(rows) {
+  const out = [];
+  rows.slice().sort((a, b) => a.start.localeCompare(b.start)).forEach(trip => {
+    trip.countries.forEach(country => {
+      if (!outcomes || !outcomes.countries[country]) return;
+      const w = ocIndicator === 'trade' ? tradeWindow(trip, country) : coauthWindow(trip, country);
+      out.push({trip, country, w, label: `${trip.start.slice(0, 7)} ${country}`});
+    });
+  });
+  return out;
+}
+function renderOutcomesChart(rows) {
+  const el = document.getElementById('outcomesChart');
+  const foot = document.getElementById('outcomesFoot');
+  if (!el || !window.Plotly) return;
+  if (!outcomes) {
+    el.classList.remove('chart-loading');
+    el.innerHTML = '<p class="oc-sentence" style="padding:16px">Outcome data is unavailable right now.</p>';
+    if (foot) foot.textContent = '';
+    return;
+  }
+  const c = chartTheme();
+  const all = outcomeRows(rows);
+  const measured = all.filter(r => r.w.state === 'ok');
+  const open = all.filter(r => r.w.state === 'open');
+  const na = all.filter(r => r.w.state === 'na');
+  const diffs = measured.map(r => r.w.dyad - r.w.india);
+  const rose = diffs.filter(d => d >= OC_FLAT_PP).length, fell = diffs.filter(d => d <= -OC_FLAT_PP).length;
+  const flat = diffs.length - rose - fell;
+  const name = ocIndicator === 'trade' ? 'goods trade' : 'research co-authorship';
+  const sentence = r => ocIndicator === 'trade' ? tradeSentence(r.country, r.w) : coauthSentence(r.country, r.w);
+  el.innerHTML = '';
+  Plotly.react('outcomesChart', [{
+    type: 'scatter', mode: 'markers', orientation: 'h',
+    x: diffs, y: measured.map(r => r.label),
+    marker: {color: c.primary, size: 10, line: {color: c.surface, width: 1.5}},
+    customdata: measured.map(r => r.trip.slug),
+    text: measured.map(r => sentence(r)),
+    hovertemplate: '%{text}<extra></extra>',
+  }], baseLayout(c, {
+    height: Math.max(220, measured.length * 22 + 90),
+    margin: {l: 150, r: 20, t: 10, b: 44},
+    xaxis: {title: {text: `Change in ${name} after the visit, minus India-wide change (percentage points)`, font: {size: 11}},
+            gridcolor: c.grid, zeroline: true, zerolinecolor: c.axis, zerolinewidth: 1.5, ticksuffix: ' pp'},
+    yaxis: {autorange: 'reversed', gridcolor: c.grid, tickfont: {size: 11}, automargin: true},
+    shapes: [{type: 'rect', xref: 'x', yref: 'paper', x0: -OC_FLAT_PP, x1: OC_FLAT_PP, y0: 0, y1: 1,
+              fillcolor: c.grid, opacity: .35, line: {width: 0}}],
+    hovermode: 'closest', showlegend: false,
+  }), {displayModeBar: false, responsive: true});
+  revealChart('outcomesChart');
+  if (!el._ocWired) {
+    el._ocWired = true;
+    el.on('plotly_click', e => {
+      const slug = e.points && e.points[0] && e.points[0].customdata;
+      const trip = slug && trips.find(t => t.slug === slug);
+      if (trip) openDrawer(trip);
+    });
+  }
+  if (foot) {
+    foot.textContent = `Of ${all.length} visit-country pairs in view: ${rose} above India-wide, ${fell} below, ${flat} about the same, ${open.length} window${open.length === 1 ? '' : 's'} still open, ${na.length} not measurable. Shaded band = within ${OC_FLAT_PP} points of India-wide. Positions describe change relative to India's overall figure, not the effect of a visit; half the dots would sit left of zero even if visits changed nothing.`;
+  }
+  renderChartTable('outcomesTableWrap', `${name} around each visit, relative to India-wide`,
+    ['Visit', 'This country', 'India-wide', 'Difference', 'State'],
+    all.map(r => [r.label,
+      r.w.state === 'ok' ? pct(r.w.dyad) : '—',
+      r.w.state === 'ok' ? pct(r.w.india) : '—',
+      r.w.state === 'ok' ? `${Math.round(r.w.dyad - r.w.india)} pp` : '—',
+      r.w.state === 'ok' ? 'measured' : r.w.state === 'open' ? `window closes ${/^\d{4}-\d{2}$/.test(r.w.closes) ? ymLabel(r.w.closes) : r.w.closes}` : `not measurable: ${r.w.reason}`]));
+}
+document.getElementById('ocIndicator').addEventListener('change', e => {
+  ocIndicator = e.target.value;
+  renderOutcomesChart(filtered());
+});
+
 function render() {
   const rows = filtered();
   renderFacts(rows);
   renderKpis(rows);
   renderCharts(rows);
+  plotlyReady.then(() => renderOutcomesChart(rows));
   renderTable(sortRows(rows));
 }
 
@@ -2346,6 +2746,7 @@ async function loadTrips() {
   readUrlState(); // pre-populate state from URL params on initial load
   setStatus('loading');
   loadNews(); // independent of trip data; fire and forget
+  loadOutcomes(); // likewise; re-renders its own chart and any open drawer panel when it lands
 
   // Tier 1: data/visits.json committed by GitHub Actions
   try {

@@ -1,0 +1,49 @@
+name: Refresh outcome indicators
+
+# Separate from refresh-data.yml on purpose: that workflow owns the registry
+# (data/visits.json) and news; this one only reads visits.json and writes
+# data/outcomes.json from public statistical sources. See docs/outcome-indicators.md.
+on:
+  schedule:
+    - cron: '30 5 * * *'   # daily at 05:30 UTC, offset from the 03:00 registry refresh
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-outcomes
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Stdlib only, no keys. Each source is fetched independently; a source that
+      # fails keeps the previous run's values and is marked "cached" in meta, so a
+      # bad day never blanks the feed. The script exits 0 either way.
+      - name: Refresh outcome indicators
+        run: python3 scripts/refresh_outcomes.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/outcomes.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: refresh outcome indicators [$(date -u +%Y-%m-%d)]"
+            # The registry refresh may have pushed in the meantime; rebase rather than fail.
+            for i in 1 2 3; do
+              git pull --rebase origin main && git push && break
+              sleep 20
+            done
+          fi

@@ -1929,3 +1929,37 @@ all three fallback tiers unaffected (the change is inside `openDrawer()` only, d
 whichever tier populated `trips`).
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-05 — Outcome-indicator data feed (`data/outcomes.json`)
+
+**User-directed, not a brainstormed idea.** Follows the research memo in `docs/outcome-indicators.md`
+(committed the same day). Builds the data side of its first-build shortlist and a first version of
+the site surfaces it describes.
+
+**Shipped:** `scripts/refresh_outcomes.py` + `.github/workflows/refresh-outcomes.yml` (daily 05:30 UTC,
+separate from the registry refresh, which is untouched). Reads `data/visits.json` for the visited
+countries, then writes five sections per country from keyless public sources: MEA "List of
+Outcomes" entries matched to a registry trip by country tag and date with item counts; UN Comtrade
+annual and monthly exports/imports plus India's world total; OpenAlex co-authored works per year
+plus India's total; UNGA agreement share per session (Harvard Dataverse, re-downloaded only when
+the dataset version changes); EXIM Bank signed and operative lines of credit. Stdlib only. Each
+source fails independently and carries the previous values forward marked `cached`.
+
+**Site:** the trip drawer gains an "Around this visit" panel (MEA outcome documents and lines of
+credit on the record; goods trade, co-authorship and UN voting around the visit, each with a
+sparkline, the dyad change beside India's overall change, one sentence template for every
+direction, and explicit "window still open" / "not measurable" states) and the analysis grid gains
+an "Around the visits" dot plot of dyad-minus-India-wide change with a count footer, indicator
+selector, click-to-open-trip and data table. Read additively from `data/outcomes.json`; the
+registry's three-tier fallback is untouched and the page degrades to "unavailable" if the feed is
+missing. New methodology caveat documents sources and the non-causal framing.
+
+**Decisions:** Comtrade's keyless preview endpoint over a free API key (no repository secret; one
+call per period and flow with a 5 s pause, incremental after the first backfill). Item counts on
+MEA lists fall back from table rows to `<li>` to inline "1. 2. 3." numbering and store `null`, never
+zero, when a layout defeats counting. Older 2021–22 list titles ("List of agreements signed…",
+"List of documents…") are scanned alongside "List of Outcomes".
+
+**Files touched:** `index.html`, `scripts/refresh_outcomes.py`, `scripts/test_outcomes.py`,
+`.github/workflows/refresh-outcomes.yml`, `data/outcomes.json`, `docs/outcome-indicators.md`,
+`README.md`, `ideas-log.md`
