@@ -1831,6 +1831,73 @@ reads only the rendered DOM, not which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-09-05 — Map choropleth click-to-filter
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all four already live, same
+stale-list finding as every recent log.
+
+The 09-03 log extended click-to-filter to the ranking, PM-comparison, and year bars but explicitly
+left the choropleth out: `plotly_click` on a `type: 'choropleth'` trace returns a different point
+shape than a bar trace, and that log's Plotly stub couldn't validate it with real confidence, so it
+was dropped rather than shipped unverified — repeated again in 09-04 with the same reasoning. Closed
+that gap today by building the stub around Plotly's actual documented choropleth click-event shape
+(`points[0].location`, matching the string in the trace's own `locations` array) rather than
+guessing, and confirming that shape lines up with this codebase's own data: the map's `locations`
+come from `Object.keys(countryCounts)`, built from `rows.flatMap(t => t.countries)` — the exact same
+canonical-country strings (after the 08-31 canonicalization fix) that populate the Country
+`<select>`'s own `<option>` values. So `p.location` from a real click always matches an existing
+filter option exactly; no parsing, no lookup table, no edge case to handle. The three-line change is
+the same shape as every other chart-click wire-up: `wireChartClick('map', p => p && ['country',
+p.location])` after `revealChart('map')`, a "— click to filter" addition to the existing
+hovertemplate, and a matching sub-heading hint ("— click a country to filter"), reusing the exact
+`.panel-head-right` wrap CSS the 09-03 fix already added for the other three chart hints — no new
+CSS. Screen-reader users already reach identical filtering through the Country `<select>`, and the
+map's `role="img"` + accessible data table (08-08) are untouched — this is a mouse/touch progressive
+enhancement only, no accessibility regression to reason about.
+
+**Runners-up**
+- *`forced-colors` (Windows High Contrast Mode) audit* — re-opened today: confirmed Playwright's
+  `page.emulateMedia({forcedColors:'active'})` actually works in this sandbox (it didn't seem worth
+  trusting when flagged 09-02/09-04, so this is a genuine new finding), and used it to inspect the
+  page. The site holds up better than expected — every focus ring uses `outline` (a forced-colors-safe
+  property), every icon uses `stroke="currentColor"` so it inherits whatever color got forced, and
+  status pills (`.badge`, `.badge-new`) convey their state through text content, not color alone, so
+  losing their background tint under forced colors loses no information. The one place state is
+  color/border-only (`.btn-columns[aria-pressed]`) did show a visibly different border between
+  pressed/unpressed in the emulated run — but Chromium's headless forced-colors emulation is a
+  synthetic approximation, not real Windows HCM, so a genuine "is this defect real" verdict still
+  isn't fully trustworthy here, the same confidence gap 09-02/09-04 named. Re-deferred, not rejected.
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 09-01 every time as "real
+  but minor"; no new argument for shipping it today, sixteenth time passed over.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a twenty-sixth time, same "marginal
+  payoff for a single-URL site" reasoning as every prior log.
+- *KPI mini-sparkline* — flagged 09-04; decorative, and touches the KPI skeleton-loader re-render
+  contract for a purely cosmetic addition — thinner than closing a named, twice-deferred gap.
+- *Trip-duration histogram* — logged as a mini-epic on 08-24, 08-25, 09-02, and 09-03 for needing the
+  full skeleton/empty-state/table/PNG-export scaffold every existing chart carries; same call again.
+
+**Verification:** `node --check` on both real inline script blocks passes (JSON-LD block fails as
+always — not JS). Playwright against the served page at 1280px and 375px, light and dark, with a
+stub reproducing Plotly's real `el.on`/`el.emit` wiring and the documented choropleth click-point
+shape: clicking a country sets `#country` to that exact canonical name, pushes `?country=…` into the
+URL, moves focus to the select, and re-renders (count updates, e.g. "1 of 45 trips"); an active PM
+filter survives an unrelated map click unchanged, confirming map clicks compose with existing filters
+rather than resetting them, same as the three chart types this extends. Re-rendering after a filter
+change (which re-runs `Plotly.react()` on `map`) still applies exactly one filter change per click —
+the existing `chartClickWired` guard, shared unmodified with the other three wired charts, does its
+job here too. All 6 charts initialize, all 5 KPI cards and all 45 registry rows render, no
+page-level horizontal scroll at either width (confirmed via `scrollWidth`/`clientWidth`); the new
+sub-heading hint wraps cleanly onto its own line at 375px, matching the existing pattern from the
+09-03 fix. Confirmed against real (unstubbed) network conditions too: the only console/network
+errors are the pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts blocks and the resulting single
+clean `[charts] ReferenceError: Plotly is not defined` — identical failure signature to every prior
+log, nothing new introduced. All three fallback tiers untouched — the change reads only
+`p.location`/`countryCounts`, already produced identically by `normalizeTrips` regardless of which
+tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-09-04 — Fix the trip drawer closing itself on the same Enter press that opened it (directed fix, not a cycle pick)
 
 **Problem, found while testing today's arrow-key nav, not caused by it.** Focusing a registry row

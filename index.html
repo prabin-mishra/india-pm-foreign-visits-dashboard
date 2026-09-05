@@ -791,7 +791,7 @@
         </div>
         <div class="charts">
           <div class="panel">
-            <div class="panel-head"><h3>Trip frequency map</h3><span class="panel-head-right"><span class="sub">Country touches in view</span><button class="chart-dl-btn" type="button" data-chart="map" data-filename="trip-frequency-map" aria-label="Download trip frequency map as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div class="panel-head"><h3>Trip frequency map</h3><span class="panel-head-right"><span class="sub">Country touches in view — click a country to filter</span><button class="chart-dl-btn" type="button" data-chart="map" data-filename="trip-frequency-map" aria-label="Download trip frequency map as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="map" class="chart-loading" style="height:400px" role="img" aria-label="Choropleth map of PM visit frequency by country"></div>
             <div id="mapTableWrap"></div>
           </div>
@@ -1391,7 +1391,7 @@ async function renderChartsInner(rows) {
     colorscale: [[0, c.mapLow], [1, c.primary]],
     marker: {line: {color: c.bg, width: .5}},
     showscale: false,
-    hovertemplate: '%{location}: %{z} visit(s)<extra></extra>',
+    hovertemplate: '%{location}: %{z} visit(s) — click to filter<extra></extra>',
   }], baseLayout(c, {
     margin: {t: 0, l: 0, r: 0, b: 0},
     annotations: emptyNote,
@@ -1407,6 +1407,7 @@ async function renderChartsInner(rows) {
     },
   }), cfg);
   revealChart('map');
+  wireChartClick('map', p => p && ['country', p.location]);
   renderChartTable('mapTableWrap', 'Visits by country, current filters',
     ['Country', 'Visits'],
     Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).map(([country, n]) => [country, fmt(n)]));
