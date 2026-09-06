@@ -1963,3 +1963,55 @@ zero, when a layout defeats counting. Older 2021–22 list titles ("List of agre
 **Files touched:** `index.html`, `scripts/refresh_outcomes.py`, `scripts/test_outcomes.py`,
 `.github/workflows/refresh-outcomes.yml`, `data/outcomes.json`, `docs/outcome-indicators.md`,
 `README.md`, `ideas-log.md`
+
+## 2026-09-06 — Empty-state message on the "Around the visits" outcomes chart
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log.
+
+The 08-20 log closed exactly this gap on the original six charts: a filter/search combination
+with nothing to plot used to just render bare axes, with no explanation, above a registry table
+that already says "No trips match the current filters." The "Around the visits" dot plot shipped
+09-05, a day after that fix, and never inherited it — confirmed live: filtering to a no-match
+search term left the chart blank while all six other panels correctly explained themselves. This
+chart also has a second blank case the original six don't: filtered trips can exist but have zero
+*measured* windows (e.g. a country whose trade window for a recent visit hasn't closed yet), which
+would render the same bare axes even with an active, real filter. Added one annotation, matching
+the 08-20 pattern exactly for the zero-trips case (identical text, font, and position) and a second
+sentence for the zero-measured-with-rows case naming the actual reason ("No visits in view have a
+measurable goods trade window yet"). One `const` and one layout key; no change to the data, the
+per-trip drawer panel, or the feed-unavailable message, all of which already had their own correct
+empty-state handling.
+
+**Runners-up**
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 09-01 every time as "real
+  but minor"; no new argument today, seventeenth time passed over.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a twenty-seventh time, same "marginal
+  payoff for a single-URL site" reasoning as every prior log.
+- *RSS/Atom feed of new trips* — flagged 09-02/09-04; still needs a new automated build step
+  adjacent to the data-refresh guardrail, bigger than one day.
+- *Trip-duration histogram* — logged as a mini-epic on 08-24, 08-25, 09-02, 09-03, and 09-05 for
+  needing the full skeleton/empty-state/table/PNG-export scaffold every existing chart carries;
+  same call again.
+- *`forced-colors` (Windows High Contrast Mode) audit* — re-deferred 09-05 on the same "synthetic
+  emulation, not real Windows HCM" confidence gap; nothing changed that today.
+
+**Verification:** `node --check` on all three real inline script blocks (the JSON-LD block fails
+as always — not JS). Playwright against the served page (Plotly stubbed with real `el.on`/`el.emit`
+wiring; `cdn.plot.ly` blocked in this sandbox as in every prior log) at 1280px and 375px, light and
+dark: unfiltered baseline — `annotations: []`, no change from before; searching a no-match term —
+`annotations` carries the exact same text/font/position the other six charts use for
+`rows.length === 0`; forcing `measured.length === 0` while `rows.length > 0` (simulated by emptying
+the in-memory `outcomes.countries` map) — the second, distinct sentence naming the active indicator;
+reloading back to the real feed clears the annotation again, confirming the state doesn't stick
+across a real re-render. Map click-to-filter and the outcomes chart's own click-to-open-trip both
+still fire correctly after the change (unrelated code paths, checked because they share the render
+call). All 7 charts initialize, all 5 KPI cards and all 45 registry rows render, no horizontal
+scroll at either width. Dark mode resolves the annotation to the theme's dark axis color
+(`#918c7c`), matching the other six charts' token. Console clean bar the pre-existing, sandbox-only
+Google Fonts network block noted in every prior log. All three fallback tiers untouched — the
+change reads only `rows.length` and the already-computed `measured` array, identically regardless
+of which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`

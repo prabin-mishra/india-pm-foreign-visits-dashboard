@@ -2667,6 +2667,18 @@ function renderOutcomesChart(rows) {
   const flat = diffs.length - rose - fell;
   const name = ocIndicator === 'trade' ? 'goods trade' : 'research co-authorship';
   const sentence = r => ocIndicator === 'trade' ? tradeSentence(r.country, r.w) : coauthSentence(r.country, r.w);
+  // Same gap the 08-20 fix closed on the other six charts — a filter/search combination
+  // with nothing to plot used to just render bare axes with no explanation. This chart
+  // didn't exist yet on 08-20, and it has a second empty case the others don't: filtered
+  // trips can exist but have zero *measured* windows (e.g. a very recent visit whose trade
+  // window hasn't closed), which would otherwise still show blank axes. Text matches the
+  // other charts' wording exactly for the zero-trips case so the page reads consistently.
+  const emptyText = !rows.length ? 'No trips match the current filters'
+    : !measured.length ? `No visits in view have a measurable ${name} window yet` : '';
+  const emptyNote = emptyText ? [{
+    text: emptyText, showarrow: false, x: 0.5, y: 0.5, xref: 'paper', yref: 'paper',
+    font: {family: 'Inter, system-ui, sans-serif', size: 13, color: c.axis},
+  }] : [];
   el.innerHTML = '';
   Plotly.react('outcomesChart', [{
     type: 'scatter', mode: 'markers', orientation: 'h',
@@ -2678,6 +2690,7 @@ function renderOutcomesChart(rows) {
   }], baseLayout(c, {
     height: Math.max(220, measured.length * 22 + 90),
     margin: {l: 150, r: 20, t: 10, b: 44},
+    annotations: emptyNote,
     xaxis: {title: {text: `Change in ${name} after the visit, minus India-wide change (percentage points)`, font: {size: 11}},
             gridcolor: c.grid, zeroline: true, zerolinecolor: c.axis, zerolinewidth: 1.5, ticksuffix: ' pp'},
     yaxis: {autorange: 'reversed', gridcolor: c.grid, tickfont: {size: 11}, automargin: true},
