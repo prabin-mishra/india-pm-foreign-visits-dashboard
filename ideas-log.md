@@ -2015,3 +2015,79 @@ change reads only `rows.length` and the already-computed `measured` array, ident
 of which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-07 — Native share button in the trip drawer
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log.
+
+The trip drawer's two existing actions, "Copy link to this trip" and "Copy citation" (08-07,
+08-12), both end the same way on mobile: copy to clipboard, then manually paste into whatever
+app the reader actually wants to send it through. Most phone browsers already have a faster
+route — the OS-native share sheet — and the drawer had no way to reach it. Added a third
+button, "Share," calling `navigator.share({title, text, url})` with the same permalink
+(`tripPermalink`) the existing copy-link button already produces and a short one-line
+description (trip label + date range). It's feature-detected at render time
+(`typeof navigator.share === 'function'`) and only appears in browsers that actually implement
+it — mainly mobile Safari/Chrome/Android, some desktop browsers too — so it's a pure addition
+next to the two copy buttons, never a replacement; nothing changes anywhere `navigator.share`
+doesn't exist. A user closing the share sheet without picking anything rejects the promise with
+`AbortError`, which is expected and swallowed silently; any other rejection is logged via
+`console.warn` the same way the rest of the page's non-fatal fallbacks report.
+
+Fresh find: grepped the log for "share"/"Web Share" and found no prior entry proposing this —
+the closest relatives (copy-link, copy-citation) both predate the Web Share API becoming
+reasonably ubiquitous on mobile. Chosen over the standing thin backlog (`og:image` dimensions,
+`robots.txt`/sitemap, forced-colors audit, RSS feed, trip-duration histogram — all repeatedly
+logged as real-but-minor, bigger-than-one-day, or blocked on verification confidence) because
+this closes an actual capability gap for the exact audience the site names (journalists,
+researchers, citizens sharing a specific trip), fits the mobile-experience and interactivity
+dimensions at once, reuses 100% existing infrastructure (`tripPermalink`, the `.drawer-link`
+button style, the drawer's delegated click handler), needs zero new CSS, and carries no
+non-partisan risk — it shares a factual permalink and date range, nothing evaluative.
+
+One thing checked and deliberately left alone: the 09-05 log's re-deferred forced-colors
+finding named `.btn-columns[aria-pressed]` as relying on a border-color-only state change.
+Re-inspected it directly today — its visible label text also flips ("Compact columns" ↔ "All
+columns") on every toggle, so the state was never actually color-only; that finding was an
+artifact of the synthetic forced-colors emulation, not a real defect. Nothing to fix there.
+
+**Runners-up**
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 09-06 every time as
+  "real but minor"; eighteenth time passed over.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a twenty-eighth time, same
+  "marginal payoff for a single-URL site" reasoning as every prior log.
+- *Trip-duration histogram* — logged as a mini-epic on 08-24, 08-25, 09-02, 09-03, 09-05, and
+  09-06 for needing the full skeleton/empty-state/table/PNG-export scaffold every existing
+  chart carries; same call again.
+- *`forced-colors` (Windows High Contrast Mode) audit* — re-examined its one open finding
+  directly (see above) and it wasn't real; no remaining open item to re-defer.
+- *RSS/Atom feed of new trips* — flagged 09-02/09-04; still needs a new automated build step
+  adjacent to the data-refresh guardrail, bigger than one day.
+- *"Total distance flown" stat, from the existing `COORDS` country-centroid table* — a
+  genuinely new way to read the data, and the lat/lon table already exists for the flight-globe
+  visual. Dropped: those coordinates are country centroids, not the actual cities visited, so a
+  number like "142,000 km" would carry false precision on a site whose whole trust posture is
+  built on flagging exactly that kind of caveat (08-13 data-caveats panel, 09-05 outcome
+  indicators' non-causal framing). Worth revisiting only alongside real city-level coordinates.
+
+**Verification:** `node --check` on both real inline script blocks passes. Playwright against
+the served page (a stub reproducing Plotly's real `el.on`/`el.emit` wiring; `cdn.plot.ly`
+blocked in this sandbox as in every prior log) at 1280px and 375px, light and dark: with
+`navigator.share` stubbed present, the Share button renders in the drawer, sits correctly in
+tab order between Copy citation and the registry link, and clicking it calls
+`navigator.share` with the exact expected `{title, text, url}` (url matching the same permalink
+`tripPermalink` produces); with `navigator.share` absent (the default in this Chromium build,
+matching most desktop browsers today), the button doesn't render at all and the other two
+buttons are unaffected. Stubbing a share-sheet cancellation (`AbortError`) produces zero console
+errors. 12-tab keyboard walk through an open drawer in both themes confirms focus still cycles
+inside the drawer (the 08-04 focus trap) with the new button included, never escaping to the
+page behind it. Screenshots confirm the button matches the existing `.drawer-link` styling
+byte-for-byte in both light and dark mode — no new CSS was added. All 5 KPI cards and all 45
+registry rows render, no page-level horizontal scroll at either width, console clean bar the
+pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log.
+All three fallback tiers untouched — the change lives entirely inside `openDrawer()`'s template
+and one delegated click-handler branch, downstream of whichever tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`

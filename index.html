@@ -1772,6 +1772,23 @@ async function copyTripCitation(trip, btn) {
   flashCopied(btn, 'Citation copied', 'Copy citation', 'Citation copied to clipboard');
 }
 
+// Native share sheet (WhatsApp, Messages, Mail, …) — only rendered where
+// navigator.share exists (mainly mobile browsers; some desktop browsers too),
+// so this is a pure progressive enhancement alongside the copy buttons above,
+// never a replacement for them. A user cancelling the share sheet rejects with
+// AbortError, which is expected and not logged; any other rejection is.
+async function shareTrip(trip) {
+  try {
+    await navigator.share({
+      title: `${trip.label} — India PM Foreign Visits Tracker`,
+      text: `${trip.label}, ${fmtRange(trip.start, trip.end)}`,
+      url: tripPermalink(trip.slug),
+    });
+  } catch (e) {
+    if (e && e.name !== 'AbortError') console.warn('[share]', e);
+  }
+}
+
 // Other trips sharing at least one destination country — lets a reader following one
 // country's visit history jump straight to the rest of it. `trips` is already sorted
 // newest-first (see the 08-07 log), so the capped slice needs no re-sort.
@@ -1835,6 +1852,10 @@ function openDrawer(trip, {push = true} = {}) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>
         <span class="copy-label">Copy citation</span>
       </button>
+      ${typeof navigator.share === 'function' ? `<button type="button" class="drawer-link" id="drawerShare" data-slug="${trip.slug}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/><path d="M16 8l-4-4-4 4"/><path d="M12 4v13"/></svg>
+        <span>Share</span>
+      </button>` : ''}
       <a href="${REGISTRY_URL}" target="_blank" rel="noopener" class="drawer-link">
         View on the PM India registry
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
@@ -2929,6 +2950,12 @@ document.getElementById('drawer').addEventListener('click', e => {
   if (citeBtn) {
     const trip = trips.find(t => t.slug === citeBtn.dataset.slug);
     if (trip) copyTripCitation(trip, citeBtn);
+    return;
+  }
+  const shareBtn = e.target.closest('#drawerShare');
+  if (shareBtn) {
+    const trip = trips.find(t => t.slug === shareBtn.dataset.slug);
+    if (trip) shareTrip(trip);
     return;
   }
   const relatedBtn = e.target.closest('.drawer-related-link');
