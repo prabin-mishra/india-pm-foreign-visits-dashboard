@@ -955,6 +955,7 @@
         <a href="data/visits.json" target="_blank">Dataset (JSON)</a>
         <a href="data/outcomes.json" target="_blank">Outcomes (JSON)</a>
         <a href="https://github.com/prabin-mishra/india-pm-foreign-visits-dashboard" target="_blank" rel="noopener">GitHub</a>
+        <a id="footerReportIssue" href="https://github.com/prabin-mishra/india-pm-foreign-visits-dashboard/issues/new" target="_blank" rel="noopener">Report a data issue</a>
       </span>
     </div>
   </footer>
@@ -1019,6 +1020,7 @@ const DATA_JSON_URL  = 'data/visits.json';
 const LIVE_TEXT_URL  = 'https://r.jina.ai/http://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/';
 const REGISTRY_URL   = 'https://www.pmindia.gov.in/en/details-of-foreigndomestic-visits/';
 const ARCHIVE_URL    = 'https://www.pmindia.gov.in/en/pm-visits/';
+const REPO_ISSUES_URL = 'https://github.com/prabin-mishra/india-pm-foreign-visits-dashboard/issues/new';
 const DEFAULT_TITLE  = document.title; // restored when the trip drawer closes
 
 let trips = [];
@@ -1733,6 +1735,36 @@ function tripCitation(trip) {
   return `India PM Foreign Visits Tracker, "${trip.label}, ${fmtRange(trip.start, trip.end)}," accessed ${fmtDate(todayISO())}, ${tripPermalink(trip.slug)}. Source data: PM India Foreign/Domestic Visits registry (pmindia.gov.in).`;
 }
 
+// "Report a data issue" — a direct channel to the audience this site names (journalists,
+// researchers, citizens) for flagging something wrong, prefilled with enough context to triage
+// without back-and-forth. Pure link-building over data already in memory: no submission, no new
+// dependency, no data-provenance touch. `trip` is null for the generic footer entry point and a
+// specific trip object for the drawer's per-trip entry point.
+function reportIssueUrl(trip) {
+  const title = trip ? `Data issue: ${trip.label} (${trip.start})` : 'Data issue: ';
+  const body = (trip ? [
+    `**Trip:** ${trip.label}, ${fmtRange(trip.start, trip.end)}`,
+    `**Permalink:** ${tripPermalink(trip.slug)}`,
+    '',
+    '**What looks wrong?**',
+    '',
+    '',
+    "**What should it say instead, and what source did you check it against?**",
+    '',
+  ] : [
+    `**Page:** ${location.href}`,
+    '',
+    '**What looks wrong?**',
+    '',
+    '',
+    '**Which trip, chart, or number is affected, and what source did you check it against?**',
+    '',
+    '',
+    '_If this is about one specific trip, that trip’s own detail panel has a "Report an issue with this trip" link that fills in its permalink automatically._',
+  ]).join('\n');
+  return `${REPO_ISSUES_URL}?${new URLSearchParams({title, body}).toString()}`;
+}
+
 async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
@@ -1859,6 +1891,10 @@ function openDrawer(trip, {push = true} = {}) {
       <a href="${REGISTRY_URL}" target="_blank" rel="noopener" class="drawer-link">
         View on the PM India registry
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
+      </a>
+      <a href="${reportIssueUrl(trip)}" target="_blank" rel="noopener" class="drawer-link">
+        Report an issue with this trip
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="4"/></svg>
       </a>
     </div>
     <span class="sr-only" id="drawerCopyStatus" aria-live="polite"></span>
@@ -3015,6 +3051,11 @@ window.addEventListener('popstate', () => {
     priorOpenState = null;
   });
 })();
+
+// Upgrade the footer's generic "Report a data issue" link with a prefilled title/body once
+// JS has run; the static href above (bare issues/new, no query string) keeps the link working
+// even if this line never executes.
+document.getElementById('footerReportIssue').href = reportIssueUrl(null);
 
 loadTrips();
 </script>

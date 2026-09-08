@@ -2016,6 +2016,87 @@ of which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-09-08 — "Report a data issue" link (trip drawer + footer)
+
+**Shipped.** Checked the run prompt's four suggested candidates (focus trap, deferred Plotly,
+accessible chart data tables, sortable columns) — all four already live, same stale-list finding
+as recent logs. Brainstormed fresh instead, spanning a new hero fact, a font-loading perf fix, a
+mobile touch-target pass, and this — see Runners-up.
+
+The site had five separate trust-building features already (data-caveats panel 08-13, citations
+08-12, permalinks 08-07, outcome-indicator caveats 09-05) but no channel back the other way: a
+reader who actually spots a wrong date, a misattributed country, or a parsing error (the kind of
+bug the 08-10 compound-country fix caught) had no path to report it short of finding the GitHub
+repo themselves and figuring out how to file an issue. Added two entry points, both building the
+same kind of link — a prefilled GitHub "new issue" URL, `title`/`body` query params built with
+`URLSearchParams` so encoding is never hand-rolled:
+
+- **Trip drawer:** a fourth action, "Report an issue with this trip," alongside Copy link/Copy
+  citation/View on registry — the drawer already has the specific trip's label, dates, and
+  permalink in memory, so the prefilled issue body carries all three plus two guided prompts
+  ("What looks wrong?" / "What should it say instead, and what source did you check it against?").
+- **Footer:** a general "Report a data issue" link for anything not tied to one trip (a chart, a
+  KPI, a filter). Its markup ships with a plain fallback href (bare `issues/new`, no query string)
+  so the link works even if JS never runs; one line at the bottom of the init script upgrades it
+  to the prefilled version, cross-referencing the drawer's per-trip link for anyone who lands here
+  about a specific trip.
+
+Both are plain `<a target="_blank" rel="noopener">` elements — no clipboard API, no confirmation
+state, no new CSS; the drawer link reuses `.drawer-link` byte-for-byte (proven safe: "View on the
+PM India registry" already uses the same class as an anchor) and the footer link sits inline with
+the existing footer links. Pure read-side link-building over data already in memory (`trip.label`,
+`fmtRange`, `tripPermalink`) — no submission happens on this site, filing the issue is GitHub's own
+flow. Zero non-partisan risk: the link's content is a request for the reader to describe what they
+found, never a claim by the site.
+
+Fresh find, not a repeat: grepped the log for "report"/"issue"/"correction" and found nothing.
+Picked over the day's other candidates because it's the dimension with no open item left otherwise
+(a11y, mobile, perf, interactivity, SEO have each had 15-30 rejections logged; trust/credibility's
+last new feature was 09 days ago) and it's the natural next step after 08-13's caveats panel:
+documenting known parsing rules is only half a trust loop without a way to flag what those rules
+don't yet catch.
+
+**Runners-up**
+- *Defer the render-blocking Google Fonts `<link rel="stylesheet">`* — real perf idea (same family
+  as the 08-09 deferred-Plotly fix), genuinely fresh (checked: never proposed, only ever noted as
+  "sandbox-only network block" in verification sections). Passed over only because the trust gap
+  was the more clearly unaddressed dimension today; strong candidate for tomorrow.
+- *Fourth hero fact: "Most common month for departure"* — a genuinely new way to read the data
+  (seasonality, not yet shown by the existing per-month timeline or year×month heatmap, which are
+  both chronological rather than aggregated-by-calendar-month), same lightweight `.fact` pattern as
+  the existing three. Safe and small; lost only on the trust-loop reasoning above.
+- *Multi-select PM/Country filters* — real interactivity upside, but changes the filter state
+  shape used by URL sync, CSV export, and every render() call; riskier than a one-day slot should
+  carry without its own dedicated cycle.
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 09-07 every time as "real
+  but minor"; nineteenth time passed over.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a twenty-ninth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Trip-duration histogram* — still a mini-epic (08-24 through 09-07): a seventh chart needs the
+  full skeleton/empty-state/data-table/PNG-export scaffold every existing chart carries.
+
+**Verification:** `node --check` on all three extracted script blocks (`script_0`/`_1` — the
+JSON-LD block, `_2` — the two real inline scripts, split by the extraction regex) passes cleanly.
+Playwright against the served page (a stub wiring `el.on`/`el.emit` the way `wireChartClick`
+expects, per the 09-07 log's note; `cdn.plot.ly` blocked in this sandbox as in every prior log) at
+1280px and 375px: opening any trip's drawer shows all four actions in order (Copy link, Copy
+citation, View on registry, Report an issue), the new link's `href` decodes to a title containing
+the exact trip label + start date and a body containing the trip's label, formatted date range,
+and its own `tripPermalink()`-produced permalink, `target="_blank"`/`rel="noopener"` set correctly;
+the footer link's `href` upgrades from the bare fallback to a body containing `location.href` and
+the cross-reference note. A 14-Tab keyboard walk through an open drawer confirms the new link sits
+between "View on the PM India registry" and the close button, the full cycle (10 stops) wraps
+correctly with the new link included, and focus never escapes to the page behind (08-04's trap
+intact). Screenshots confirm the flag icon and button styling are visually identical to the other
+three drawer actions in both light and dark mode, and the footer link reads cleanly alongside the
+existing four footer links in dark mode. All 5 KPI cards and all 45 registry rows render, no
+horizontal scroll at 375px, console clean bar the pre-existing, sandbox-only `cdn.plot.ly`/Google
+Fonts network blocks noted in every prior log. All three fallback tiers untouched — the change
+reads only `trip.label`/`trip.start`/`trip.end`/`trip.slug` (already normalized identically by
+every tier) and `location.href`; `loadTrips()` itself is untouched.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-09-07 — Native share button in the trip drawer
 
 **Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
