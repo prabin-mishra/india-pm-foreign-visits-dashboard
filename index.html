@@ -67,7 +67,13 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Loaded non-blocking, same family as the Plotly defer above: preload fetches the CSS
+       without holding up first paint, then onload promotes the link to a real stylesheet
+       once it lands. The URL's own display=swap means text renders immediately in the
+       fallback stack (--font-ui/--font-display already list system-ui/Georgia) and swaps to
+       the webfont when ready — never invisible text. <noscript> covers JS-disabled browsers. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"></noscript>
   <style>
     /* ============ Design tokens ============ */
     :root {

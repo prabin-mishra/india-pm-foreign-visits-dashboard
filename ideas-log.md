@@ -2016,6 +2016,61 @@ of which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-09-09 — Defer the render-blocking Google Fonts stylesheet
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log.
+
+The `<head>` loaded Google Fonts (Fraunces + Inter) via a plain `<link rel="stylesheet">` —
+a genuinely render-blocking resource sitting right next to the already-deferred, ~3.5MB Plotly
+script (08-09). Flagged fresh in the 09-08 log as "real perf idea (same family as the 08-09
+deferred-Plotly fix)... strong candidate for tomorrow" — today was that day. Fixed with the
+standard preload-and-swap pattern: `<link rel="preload" as="style" ... onload="this.onload=null;
+this.rel='stylesheet'">` plus a `<noscript>` fallback for JS-disabled browsers. The font URL
+already carries `display=swap`, and `--font-ui`/`--font-display` already list `system-ui`/
+`Georgia` as fallbacks, so text was never at risk of going invisible — this only removes the
+CSSOM-blocking wait before first paint, it doesn't change what a user sees once fonts load.
+Two lines changed at one choke point, exactly the same shape as the 08-09 fix: no chart or
+layout code touched, no new dependency.
+
+**Runners-up**
+- *Fourth hero fact: "Most common month for departure"* — flagged fresh 09-08 as "safe and
+  small," but this sandbox can't verify webfont network behavior at all without deferring the
+  font load first (both items touch `<head>` loading order), so the perf fix earned the slot
+  it was explicitly named for. Still open.
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 09-08 every time as
+  "real but minor"; twentieth time passed over.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a thirtieth time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Trip-duration histogram* — still a mini-epic (08-24 through 09-06): a seventh chart needs
+  the full skeleton/empty-state/data-table/PNG-export scaffold every existing chart carries.
+- *RSS/Atom feed of new trips* — flagged 09-02/09-04; still needs a new automated build step
+  adjacent to the data-refresh guardrail, bigger than one day.
+- *Multi-select PM/Country filters* — flagged 09-08; changes the filter-state shape used by
+  URL sync, CSV export, and every `render()` call — riskier than a one-day slot should carry.
+
+**Verification:** `node --check` on both real inline script blocks passes. Confirmed via
+Playwright against the served page (Plotly CDN routed to abort, matching this sandbox's
+standing `cdn.plot.ly` block noted in every prior log) at 1280px and 375px: the font `<link>`
+carries `rel="preload" as="style"` with an `onload` handler (not a blocking `rel="stylesheet"`)
+immediately after navigation; `DOMContentLoaded` fires in ~100–160ms with the hero, KPIs, and
+facts already in the DOM, proving the page no longer waits on the font request. Direct request
+tracing shows the actual `fonts.googleapis.com` request fires (proving the preload isn't a
+no-op) and fails with `net::ERR_CONNECTION_RESET` — the exact same pre-existing, sandbox-only
+Google Fonts network block already documented by name in the 08-09, 08-17, and half a dozen
+other prior logs, not a regression from today's change; the `<link>` correctly stays at
+`rel="preload"` rather than crashing or throwing when that happens. All 5 KPI cards, all 3 hero
+facts, all 8 chart containers, and all 45 registry rows render; `h1`'s computed `font-family`
+correctly resolves through the fallback stack (`Fraunces, Georgia, serif`) with no invisible-text
+gap. No horizontal scroll at either width (screenshots confirm clean layout, light mode, at both
+viewports). Console clean bar the two pre-existing, sandbox-only errors every recent log carries
+(`Plotly is not defined` from the blocked CDN; the aborted-request log line) — no new console
+errors introduced. All three fallback tiers untouched — this is a static `<head>` resource-
+loading change, entirely independent of which tier populates `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-09-08 — "Report a data issue" link (trip drawer + footer)
 
 **Shipped.** Checked the run prompt's four suggested candidates (focus trap, deferred Plotly,
