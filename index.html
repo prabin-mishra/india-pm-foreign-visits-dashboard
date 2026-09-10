@@ -1156,6 +1156,7 @@ function parseRegistryText(text) {
 function uniq(arr) { return ['All', ...Array.from(new Set(arr)).sort()]; }
 function fmt(n)    { return Number(n).toLocaleString('en-IN'); }
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmtDate(iso) {
   const [y, m, d] = iso.split('-');
   return `${Number(d)} ${MONTHS_SHORT[Number(m) - 1]} ${y}`;
@@ -1308,10 +1309,24 @@ function renderFacts(rows) {
       if (span > (gap ? gap.days : 0)) gap = {days: span, from: sorted[i - 1].end, to: sorted[i].start};
     }
   }
+  // Calendar month (Jan–Dec, irrespective of year) each trip in view departed in — a seasonality
+  // read the six charts don't show, since the timeline and year×month heatmap are both
+  // chronological rather than aggregated across years. Ties keep the earlier month in the
+  // calendar (indexOf returns the first max), the same deterministic tie-break the gap fact
+  // above uses. Suppressed below a count of 2: at 1-per-month every filtered view would "have"
+  // a most-common month, which isn't a fact worth stating.
+  let commonMonth = null;
+  if (rows.length > 1) {
+    const counts = new Array(12).fill(0);
+    rows.forEach(t => counts[Number(t.month.slice(5, 7)) - 1]++);
+    const max = Math.max(...counts);
+    if (max > 1) commonMonth = {name: MONTHS_FULL[counts.indexOf(max)], count: max};
+  }
   document.getElementById('facts').innerHTML = [
     top     ? `<span class="fact">Most visited · <strong>${top[0]}</strong> (${top[1]}×)</span>` : '',
     longest ? `<span class="fact">Longest trip · <strong>${longest.label}</strong>, ${longest.days} days</span>` : '',
     gap     ? `<span class="fact" title="Days between the end of one trip in view and the start of the next, within the current filters">Longest gap without a trip · <strong>${fmt(gap.days)} days</strong> (${fmtDate(gap.from)} – ${fmtDate(gap.to)})</span>` : '',
+    commonMonth ? `<span class="fact" title="Calendar month, across all years in view, that shows up as a trip's departure month most often">Most common departure month · <strong>${commonMonth.name}</strong> (${commonMonth.count} trips)</span>` : '',
   ].filter(Boolean).join('');
 }
 

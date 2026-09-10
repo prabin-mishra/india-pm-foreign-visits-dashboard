@@ -2226,4 +2226,61 @@ pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in ev
 All three fallback tiers untouched — the change lives entirely inside `openDrawer()`'s template
 and one delegated click-handler branch, downstream of whichever tier populated `trips`.
 
+## 2026-09-10 — Fourth hero fact: "Most common departure month"
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log.
+
+The hero's `facts` row had three computed facts (Most visited, Longest trip, Longest gap without
+a trip) but nothing aggregating by calendar month — the closest existing views, the per-month
+timeline and the year×month heatmap, are both chronological (a specific month of a specific
+year), not "which calendar month, across every year in view, comes up most." Flagged fresh in
+09-08 ("a genuinely new way to read the data... safe and small") and again in 09-09 ("still
+open"), passed over both times only because that day's perf fix was explicitly named as the
+priority. Nothing fresher in today's brainstorm outranked it, so it got its slot.
+
+Counts trips in `rows` (the already-filtered view every other fact reads) into 12 calendar-month
+buckets from `t.month`, takes the max, and — like the 08-15 gap fact — breaks ties toward the
+earlier calendar month deterministically (`indexOf` on the max value returns the first match).
+Suppressed when the top count is 1: at one trip per month, every filtered view would technically
+"have" a most-common month, which isn't a fact worth stating (verified live: a 2-trip Bhutan
+search, one trip per month, correctly shows no fourth fact). Reuses the existing `.fact` CSS
+class and the `facts` container's `flex-wrap`, so a fourth item needs no new CSS. Pure
+display-layer computation over data already normalized in memory; no data-provenance touch, no
+new dependency, and the fact only counts trips by month, never by PM, so it carries no
+partisan-scoring risk.
+
+**Runners-up**
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 09-09 every time as
+  "real but minor"; twenty-first time passed over.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a thirty-first time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *`forced-colors` (Windows High Contrast Mode) audit* — re-deferred again on the same "sandbox
+  can't emulate real Windows HCM with confidence" grounds as 09-02 through 09-04.
+- *KPI mini-sparkline (trend line under a stat card)* — flagged 09-04; a genuinely new way to
+  read the data, but touches the KPI strip's skeleton-loader re-render contract for a purely
+  decorative addition — bigger than the plain-text hero fact today.
+- *Sync table-sort state to the URL alongside the existing filter params* — fresh idea (sort
+  currently resets to default on a fresh load of a shared link); real but thin next to a new
+  analytical fact, and the sort backlog itself was already cleared 08-11.
+- *Trip-duration histogram* — still a mini-epic (08-24 through 09-09): a seventh/eighth chart
+  needs the full skeleton/empty-state/data-table/PNG-export scaffold every existing chart
+  carries.
+
+**Verification:** `node --check` on both real inline script blocks (the JSON-LD block fails as
+always, expected). Playwright against the served page (a stub wiring `el.on`/`el.emit` the way
+`wireChartClick` expects; `cdn.plot.ly` blocked in this sandbox as in every prior log) at 1280px
+and 375px, light and dark: unfiltered baseline shows all four facts, the new one reading "Most
+common departure month · June (6 trips)"; searching "Bhutan" (2 trips, different months) reduces
+to three facts — the new one correctly absent, confirming the `max > 1` suppression; clicking
+Reset restores all four facts with byte-identical text to the original baseline; toggling dark
+mode leaves fact text unchanged. All 7 charts initialize (`Plotly.react` called once per chart
+container), all 5 KPI cards and all registry rows render, no horizontal scroll at either width.
+Console clean bar the pre-existing, sandbox-only Google Fonts network block noted in every prior
+log. All three fallback tiers untouched — the change reads only `rows` and the pre-existing
+`t.month` field, identically regardless of which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 **Files touched:** `index.html`, `ideas-log.md`
