@@ -657,6 +657,14 @@
       }
       .site-nav::-webkit-scrollbar { display: none; }
       .site-nav a { padding: 6px 7px; font-size: .78rem; }
+      /* The hidden scrollbar above means this "tab bar" has zero visible affordance that
+         Methodology/Data sit off-screen to the right — updateNavFade() (see script) measures
+         actual scroll position and sets data-fade, faded edge(s) masked out via mask-image
+         (not a background overlay, so it needs no knowledge of the header's own blurred,
+         color-mixed background) to hint there's more to scroll toward. */
+      .site-nav[data-fade="right"] { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent 100%); mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent 100%); }
+      .site-nav[data-fade="left"]  { -webkit-mask-image: linear-gradient(to left,  #000 calc(100% - 20px), transparent 100%); mask-image: linear-gradient(to left,  #000 calc(100% - 20px), transparent 100%); }
+      .site-nav[data-fade="both"]  { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); }
       .stats { grid-template-columns: 1fr 1fr; }
       .stat + .stat, .stat:nth-child(3n+1) { border-left: 0; padding-left: 0; }
       .stat:nth-child(2n) { border-left: 1px solid var(--border); padding-left: var(--sp-5); }
@@ -2917,6 +2925,26 @@ document.getElementById('themeToggle').onclick = () => {
 
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
 document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
+
+// Mobile nav ("tab bar") scroll-position hint: below 640px the four section links scroll
+// horizontally with their scrollbar hidden (see .site-nav CSS), so nothing on screen shows
+// there's more to reveal. data-fade drives the edge mask defined in that same media query;
+// left/right/both/none cover every scroll position, and it's pure CSS + this scroll math —
+// no dependency on trips/filters, so it behaves identically regardless of which fallback
+// tier populated the page. No-ops harmlessly above 640px, where the nav never overflows.
+function updateNavFade() {
+  const nav = document.querySelector('.site-nav');
+  if (!nav) return;
+  const canScrollRight = nav.scrollWidth - nav.clientWidth - nav.scrollLeft > 2;
+  const canScrollLeft = nav.scrollLeft > 2;
+  nav.dataset.fade = canScrollLeft && canScrollRight ? 'both' : canScrollRight ? 'right' : canScrollLeft ? 'left' : 'none';
+}
+const navEl = document.querySelector('.site-nav');
+if (navEl) {
+  updateNavFade();
+  navEl.addEventListener('scroll', updateNavFade, {passive: true});
+  window.addEventListener('resize', updateNavFade);
+}
 
 // "/" jumps straight to the registry search field from anywhere on the page — the standard
 // site-search shortcut (GitHub, Slack, etc.). Ignored while the user is already typing

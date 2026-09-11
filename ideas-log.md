@@ -2283,4 +2283,62 @@ log. All three fallback tiers untouched — the change reads only `rows` and the
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-09-11 — Scroll-position hint on the mobile nav "tab bar"
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log. Brainstormed fresh, including a Playwright
+screenshot pass at 375px to look at the real page rather than just the CSS.
+
+Below 640px, `.site-nav` (Analysis/Registry/Methodology/Data) becomes a horizontally-scrollable
+strip with its native scrollbar deliberately hidden (`scrollbar-width: none`, the 08-21 "tab bar"
+fix). That means zero visible cue that Methodology and Data sit off-screen — the 375px screenshot
+showed "Registry" hard-clipped mid-word at the edge, with nothing suggesting a swipe would reveal
+more. Fixed with a scroll-position–driven edge fade: `updateNavFade()` reads the nav's own
+`scrollWidth`/`clientWidth`/`scrollLeft` and sets `data-fade` to `right`/`left`/`both`/`none`,
+which a CSS `mask-image` (not a background overlay) fades correspondingly — masking the nav's
+own content needs no knowledge of the header's translucent, blurred, `color-mix()` background,
+so it reads correctly in both themes for free. Wired to the nav's `scroll` event and window
+`resize`; a no-op above 640px, where the nav never overflows in the first place.
+
+**Runners-up**
+- *`og:image:width`/`og:image:height` meta tags* — flagged 08-18 through 09-10 every time as
+  "real but minor"; twenty-second time passed over, this fix being equally small but closing an
+  actual navigation gap rather than a social-preview nicety.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a thirty-second time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Trip-duration histogram* — still a mini-epic (08-24 through 09-10): a seventh/eighth chart
+  needs the full skeleton/empty-state/data-table/PNG-export scaffold every existing chart
+  carries.
+- *Timeline / calendar-heatmap click-to-filter* — the two charts 09-03 deliberately left alone
+  when the other four got click-to-filter; re-examined today and the reason still holds — neither
+  chart's clicked element (a month-point, a year×month cell) maps onto an existing filter field as
+  directly as a country/PM/year bar does, and there's no "month" filter to add it to without
+  growing today's slot into a new filter dimension.
+- *Per-chart CSV export (alongside the existing per-chart PNG button and data table)* — a real
+  trust/data-access gain, but close enough in spirit to the already-shipped registry CSV export
+  (2026-08-02) that it read as a near-repeat of yesterday's-class idea rather than something
+  distinctly new; the nav fix closes a sharper, unaddressed gap.
+- *"Site changelog" link surfacing recent improvements from this log* — a fresh trust-signal
+  idea, but keeping it in sync would quietly add a new step to every future day's cycle
+  (updating a second, hand-maintained list alongside this log) — more of an ongoing commitment
+  than a one-day idea.
+
+**Verification:** `node --check` on both real inline script blocks passes (JSON-LD block fails as
+always, expected — it's JSON, not JS). Playwright against the served page (Plotly CDN blocked and
+stubbed as in every prior log, `el.on`/`el.emit` wired the way `wireChartClick` expects) at 1280px
+and 375px, light and dark: at 375px the nav starts at `data-fade="right"` (matches
+`scrollWidth=293` vs `clientWidth=110`, i.e. genuinely overflowing); scrolling to the end flips it
+to `left`; the midpoint gives `both`; scrolling back gives `right` again — the computed
+`mask-image` matches the expected gradient at each state. At 1280px the nav never overflows and
+`data-fade="none"` with `mask-image: none`, confirmed byte-identical to the pre-change desktop
+screenshot. Clicking a nav link (`#registry`) still scrolls to the correct section under the
+sticky header at both widths — the mask is a rendering effect only, not a hit-test change. All 7
+charts initialize, all 5 KPI cards, all 45 registry rows, and all 4 hero facts render at both
+widths; no page-level horizontal scroll at either width; console clean bar the pre-existing,
+sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log. All three
+fallback tiers untouched — the change lives entirely in one mobile-only CSS block plus a
+self-contained script reading only the nav element's own scroll geometry, never `trips` or any
+data-dependent state.
+
 **Files touched:** `index.html`, `ideas-log.md`
