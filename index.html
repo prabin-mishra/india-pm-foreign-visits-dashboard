@@ -458,6 +458,18 @@
     .chart-data table { font-size: .78rem; }
     .chart-data th, .chart-data td { padding: 7px 12px; }
     .chart-data caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    /* Row header becomes a button wherever a chart's data table row maps onto the same
+       filter its bar/point already applies on click (see renderChartTable's filterKey
+       param) — the only way a keyboard or screen-reader user can reach that filter, since
+       Plotly's canvas-rendered marks take no keyboard input of their own. Reset to look
+       like plain text; an underline + accent color on hover/focus is the only tell it's
+       interactive, matching .th-sort's understated column-header buttons above. */
+    .row-filter {
+      font: inherit; color: inherit; text-align: inherit; background: none; border: none;
+      padding: 0; margin: 0; cursor: pointer; text-decoration: underline; text-decoration-color: transparent;
+      transition: color .15s ease, text-decoration-color .15s ease;
+    }
+    .row-filter:hover, .row-filter:focus-visible { color: var(--accent); text-decoration-color: currentColor; }
 
     /* ============ Table ============ */
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
@@ -1383,15 +1395,24 @@ function intDtick(max) { return max <= 6 ? 1 : Math.ceil(max / 6); }
 // Accessible data table behind a chart, for screen readers and anyone who'd rather read
 // numbers than a plot. Collapsed by default; open/closed state survives re-renders on
 // filter change so toggling a table open doesn't get undone by the next keystroke.
-function renderChartTable(wrapId, caption, headers, bodyRows) {
+//
+// filterKey, when given, names the same state field the chart's own wireChartClick()
+// already filters on (see the four call sites below) — the row header then renders as a
+// .row-filter button for that value instead of plain text, so the filter a mouse user
+// reaches by clicking a bar is also reachable by keyboard or screen reader.
+function renderChartTable(wrapId, caption, headers, bodyRows, filterKey) {
   const wrap = document.getElementById(wrapId);
   if (!wrap) return;
   if (!bodyRows.length) { wrap.innerHTML = ''; return; }
   const wasOpen = !!wrap.querySelector('details[open]');
   const thead = `<tr>${headers.map(h => `<th scope="col">${esc(h)}</th>`).join('')}</tr>`;
-  const tbody = bodyRows.map(r =>
-    `<tr><th scope="row">${esc(String(r[0]))}</th>${r.slice(1).map(v => `<td class="num">${esc(String(v))}</td>`).join('')}</tr>`
-  ).join('');
+  const tbody = bodyRows.map(r => {
+    const label = String(r[0]);
+    const rowHead = filterKey
+      ? `<button type="button" class="row-filter" data-key="${filterKey}" data-value="${esc(label)}" aria-label="Filter to ${esc(label)}">${esc(label)}</button>`
+      : esc(label);
+    return `<tr><th scope="row">${rowHead}</th>${r.slice(1).map(v => `<td class="num">${esc(String(v))}</td>`).join('')}</tr>`;
+  }).join('');
   wrap.innerHTML = `
     <details class="chart-data"${wasOpen ? ' open' : ''}>
       <summary>View data table (${bodyRows.length} row${bodyRows.length === 1 ? '' : 's'})</summary>
@@ -1483,7 +1504,7 @@ async function renderChartsInner(rows) {
   wireChartClick('map', p => p && ['country', p.location]);
   renderChartTable('mapTableWrap', 'Visits by country, current filters',
     ['Country', 'Visits'],
-    Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).map(([country, n]) => [country, fmt(n)]));
+    Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).map(([country, n]) => [country, fmt(n)]), 'country');
 
   // Trips and unique countries per month
   const mTrips = {}, mCountries = {};
@@ -1545,7 +1566,7 @@ async function renderChartsInner(rows) {
   wireChartClick('ranking', p => p && ['country', p.y]);
   renderChartTable('rankingTableWrap', 'Top 15 most-visited countries, current filters',
     ['Country', 'Visits'],
-    ranking.map(([country, n]) => [country, fmt(n)]));
+    ranking.map(([country, n]) => [country, fmt(n)]), 'country');
 
   // PM comparison — grouped bar: trips and unique countries per PM
   const pmNames     = [...new Set(rows.map(t => t.pm))].sort();
@@ -1566,7 +1587,7 @@ async function renderChartsInner(rows) {
   wireChartClick('pmCompare', p => p && ['pm', p.x]);
   renderChartTable('pmCompareTableWrap', 'Trips and unique countries by Prime Minister, current filters',
     ['Prime Minister', 'Trips', 'Unique countries'],
-    pmNames.map((pm, i) => [pm, fmt(pmTrips[i]), fmt(pmCountries[i])]));
+    pmNames.map((pm, i) => [pm, fmt(pmTrips[i]), fmt(pmCountries[i])]), 'pm');
 
   // Year-over-year stacked bar — by visitType
   const years  = [...new Set(rows.map(t => String(t.year)))].sort();
@@ -1587,7 +1608,7 @@ async function renderChartsInner(rows) {
   wireChartClick('yoyChart', p => p && ['year', p.x]);
   renderChartTable('yoyTableWrap', 'Single- vs multi-country trips by year, current filters',
     ['Year', 'Single-country', 'Multi-country', 'Total'],
-    years.map((yr, i) => [yr, fmt(single[i]), fmt(multi[i]), fmt(single[i] + multi[i])]));
+    years.map((yr, i) => [yr, fmt(single[i]), fmt(multi[i]), fmt(single[i] + multi[i])]), 'year');
 
   // Calendar heatmap — months on X, years on Y, trip count as Z
   const allYears = [...new Set(rows.map(t => t.year))].sort((a, b) => a - b);
@@ -3054,6 +3075,14 @@ document.getElementById('drawer').addEventListener('click', e => {
     const trip = trips.find(t => t.slug === chronoBtn.dataset.slug);
     if (trip) openDrawer(trip);
   }
+});
+
+// .row-filter buttons live inside four different chart data tables, each rebuilt on every
+// render() — delegating on document (rather than re-binding per table on every rebuild)
+// wires the keyboard/screen-reader path to filterBy() once, for good.
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.row-filter');
+  if (btn) filterBy(btn.dataset.key, btn.dataset.value);
 });
 
 // If the URL names a trip (a shared permalink), open its drawer once data is loaded.

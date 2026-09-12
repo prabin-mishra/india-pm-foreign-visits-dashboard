@@ -2342,3 +2342,67 @@ self-contained script reading only the nav element's own scroll geometry, never 
 data-dependent state.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-12 — Keyboard/screen-reader access to chart click-to-filter
+
+**Shipped.** Checked the run prompt's four suggested candidates first — the drawer's focus trap
+(`trapDrawerTab` + `inert` on the background), the deferred Plotly script, accessible chart data
+tables, and sortable registry columns are all already live, the same stale-list finding as every
+recent log. Brainstormed fresh across all seven dimensions: a fifth hero fact (e.g. average trip
+length — new way to read the data), a scroll-fade affordance on the registry table's horizontal
+overflow (mobile), `og:image` width/height meta tags (SEO), `robots.txt`/`sitemap.xml` (SEO),
+lazy-rendering off-screen charts via `IntersectionObserver` (performance), linking the freshness
+badge to the actual GitHub Actions run for full audit trail (trust), and syncing table-sort state
+to the URL (interactivity).
+
+Landed on a real, previously-unnoticed accessibility gap instead: four charts (map, ranking,
+PM comparison, year-over-year) let a mouse user click a bar/point to apply the matching filter
+(`wireChartClick`, shipped 2026-09-03), but that interaction had no keyboard or screen-reader
+equivalent — Plotly's canvas-rendered marks take no keyboard input of their own, so the feature
+was mouse-only from day one. Each of those four charts already carries an accessible data table
+(2026-08-08) whose rows list the exact same values `wireChartClick` filters on. `renderChartTable`
+now takes an optional `filterKey` param; when given, each row's `<th scope="row">` renders as a
+`.row-filter` button (`data-key`/`data-value` matching what the chart click already sends to
+`filterBy()`) instead of plain text — reset to look like text, with an underline + accent color
+on hover/focus as the only tell it's interactive, matching the existing `.th-sort` column-header
+button convention. One delegated `click` listener on `document` (the four tables are rebuilt on
+every `render()`, so binding once beats re-binding per rebuild) reuses the same `filterBy()` the
+mouse path and the registry's country tags already call. The timeline, calendar heatmap, and
+outcomes tables are untouched (no `filterKey` passed) — those three don't have a click-to-filter
+mapping to begin with, per the 2026-09-03 decision.
+
+**Runners-up**
+- *Fifth hero fact* — real, but the facts row already grew by one four times this month
+  (08-15, 09-10, plus two earlier); a fifth "just another stat" read as thinner than closing an
+  actual keyboard-access gap in a shipped interactive feature.
+- *Registry table scroll-fade* — same masking technique as 09-11's nav fix, applied to a
+  different element; close enough to yesterday's mechanism to read as a rerun, and the table's
+  existing "Compact columns" toggle already gives users a way to shrink it to fit.
+- *`og:image` width/height meta tags* — flagged 08-18 through 09-11 every time as "real but
+  minor"; twenty-third time passed over for something with clearer impact.
+- *`robots.txt` + `sitemap.xml` + canonical link* — rejected a thirty-third time on the same
+  "marginal payoff for a single-URL site" grounds as every prior log.
+- *Lazy-render off-screen charts via `IntersectionObserver`* — the CDN is already deferred and
+  each panel already reveals progressively via skeleton loaders; retrofitting a visibility
+  observer onto seven canvases that already re-render on every filter change risked more
+  complexity than the (unmeasured, likely small) payoff.
+- *Link the freshness badge to the actual GitHub Actions run* — a real trust upgrade, but
+  `data/visits.json`'s `meta` only carries a date and source URL, not a run ID or commit SHA;
+  doing this properly needs the pipeline to emit that, which is out of scope for a display-only
+  change today.
+
+**Verification:** `node --check` on both inline script blocks passes (the JSON-LD block isn't
+JS, as always). Playwright against the served page (Plotly stubbed with a `react`/`on`/`emit`
+shim, `cdn.plot.ly` and the Google Fonts stylesheet blocked, same as every prior log) at 1280px
+and 375px: all 7 charts initialize; `.row-filter` buttons appear only in the four expected data
+tables (map: 55, ranking: 15, PM comparison: 1, year: 6 — matching each chart's own row count)
+and are absent from the timeline, calendar-heatmap, and outcomes tables (0 in each); opening the
+ranking table and clicking its top row's button sets the country `<select>` to that country and
+moves focus there — byte-identical to what clicking the equivalent bar already does via
+`filterBy()`. No page-level horizontal scroll at either width. Console clean bar the
+pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log.
+All three fallback tiers untouched — the diff touches only `renderChartTable`, its four
+call sites, one new CSS rule, and one new delegated listener; nothing in the fetch/mirror/
+fallback chain.
+
+**Files touched:** `index.html`, `ideas-log.md`
