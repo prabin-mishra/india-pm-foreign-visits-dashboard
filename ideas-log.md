@@ -2406,3 +2406,60 @@ call sites, one new CSS rule, and one new delegated listener; nothing in the fet
 fallback chain.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-13 — Trip length distribution chart
+
+**Shipped.** The four candidates named in the run prompt (drawer focus trap, deferred Plotly,
+accessible chart tables, sortable registry columns) are all already live — the same stale list
+noted in every recent log. Brainstormed fresh across all seven dimensions: this trip-length
+chart (new way to read the data), a sticky "back to top" affordance for the now-long scroll depth
+(mobile), FAQ schema for the dataset (SEO), a per-source freshness readout splitting visits vs.
+outcomes vs. news currency instead of one combined status line (trust), persisting registry sort
+state and column-visibility choice to `localStorage` (interactivity), `og:image` width/height
+meta tags (SEO), and `robots.txt`/`sitemap.xml`/canonical link (SEO).
+
+Landed on a genuinely missing analytical view: none of the existing seven charts show how long
+trips actually last — map, timeline, ranking, and calendar are all about *where* and *when*;
+PM comparison and year-over-year are about volume and country count. "Trip length" buckets every
+trip in view by its inclusive day count (1 day · 2–3 · 4–7 · 8–14 · 15+) into a bar chart, answering
+"are these mostly quick hops or long tours?" — a real, previously unaddressed reading of the data,
+using the same `days` field and inclusive-count rule already documented under "How trip duration
+is counted" in Methodology, so no new derivation or caveat was needed. Built as a full-width panel
+following the established pattern exactly (`Plotly.react` bar chart, skeleton reveal via
+`revealChart`, accessible data table via `renderChartTable`, PNG download button, the shared
+empty-filter annotation); no click-to-filter, since trip length isn't one of the existing filter
+fields (pm/year/country/visitType) — same precedent as the click-filter-free timeline and calendar
+heatmap. Placed after "Around the visits" as a `.wide` panel so the grid's existing gap-free
+pattern (non-wide pairs alternating with full-width singles) holds without adjusting anything
+upstream of it.
+
+**Runners-up**
+- *Sticky "back to top" button* — real mobile polish given how long the page has grown, but
+  thinner than closing an actual gap in the analysis surface, and the sticky header + in-page nav
+  already give a way back up.
+- *FAQ schema* — a plausible SEO add, but marginal payoff for a single-page dataset site, same
+  shape of objection that's sunk robots.txt/sitemap 33 times running.
+- *Per-source freshness readout* — a real trust upgrade, but splitting one status line into three
+  risked more UI complexity than a one-day slot should carry for an unmeasured payoff; worth its
+  own cycle with a mockup first.
+- *Persist registry sort/column state* — genuine, but low-stakes convenience against a dataset
+  where the default sort (newest first) already matches what most visitors want.
+- *`og:image` width/height* and *`robots.txt`/`sitemap.xml`* — rejected on the same grounds as
+  every prior log (24th and 34th times respectively).
+
+**Verification:** `new Function()` syntax-checked all three inline `<script>` blocks — clean.
+Playwright against the served page (Plotly stubbed with a `react`/`on`/`emit` shim, `cdn.plot.ly`
+and the Google Fonts stylesheet blocked, same as every prior log) at 1280px and 375px: all 8
+charts (the new `durationChart` included) initialize and clear their skeleton state; the new
+data table renders its 5 bucket rows with the bucket total (45) matching the registry's row count
+exactly, confirming every trip lands in exactly one bucket; its PNG download button enables with
+the correct label; filtering to zero results shows the same "No trips match" annotation and empty
+bars every other chart shows. No page-level horizontal scroll at either width. Console clean bar
+the pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log.
+Screenshots at both widths confirm the new full-width panel sits cleanly after "Around the
+visits" with no layout gap. All three fallback tiers untouched — the diff is additive only:
+one new panel in the `.charts` grid, one new entry in `CHART_IDS`, one new `DURATION_BUCKETS`
+constant, and one new block inside `renderChartsInner`; nothing in the fetch/mirror/fallback
+chain, filter state, or URL sync.
+
+**Files touched:** `index.html`, `ideas-log.md`
