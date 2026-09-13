@@ -882,6 +882,11 @@
             <p class="oc-foot" id="outcomesFoot" aria-live="polite"></p>
             <div id="outcomesTableWrap"></div>
           </div>
+          <div class="panel wide">
+            <div class="panel-head"><h3>Trip length</h3><span class="panel-head-right"><span class="sub">Nights away, bucketed — current filters</span><button class="chart-dl-btn" type="button" data-chart="durationChart" data-filename="trip-length-distribution" aria-label="Download trip length chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div id="durationChart" class="chart-loading" style="height:300px" role="img" aria-label="Bar chart of trip count by length of stay, current filters"></div>
+            <div id="durationTableWrap"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -1428,7 +1433,17 @@ function renderChartTable(wrapId, caption, headers, bodyRows, filterKey) {
 
 // Each chart div carries a shimmering .chart-loading placeholder (CSS) until its own
 // Plotly.react() call draws into it, so panels reveal progressively rather than all at once.
-const CHART_IDS = ['map', 'timeline', 'ranking', 'pmCompare', 'yoyChart', 'calHeatmap', 'outcomesChart'];
+const CHART_IDS = ['map', 'timeline', 'ranking', 'pmCompare', 'yoyChart', 'calHeatmap', 'outcomesChart', 'durationChart'];
+
+// Buckets for the trip-length chart. "Days" is the same inclusive count documented under
+// "How trip duration is counted" in Methodology — no new derivation, just grouped.
+const DURATION_BUCKETS = [
+  {label: '1 day',     test: d => d === 1},
+  {label: '2–3 days',  test: d => d >= 2 && d <= 3},
+  {label: '4–7 days',  test: d => d >= 4 && d <= 7},
+  {label: '8–14 days', test: d => d >= 8 && d <= 14},
+  {label: '15+ days',  test: d => d >= 15},
+];
 function revealChart(id) {
   document.getElementById(id).classList.remove('chart-loading');
   const btn = document.querySelector(`.chart-dl-btn[data-chart="${id}"]`);
@@ -1635,6 +1650,30 @@ async function renderChartsInner(rows) {
   renderChartTable('calHeatmapTableWrap', 'Trip count by year and month, current filters',
     ['Year', ...MONTHS_SHORT],
     allYears.map((yr, i) => [String(yr), ...heatZ[i].map(fmt)]));
+
+  // Trip length distribution — how many trips are quick one-country hops vs. long tours.
+  // No click-to-filter here: unlike map/ranking/pmCompare/yoyChart, duration isn't one of
+  // the existing filter fields (pm/year/country/visitType), so there's no target to filter to.
+  const durationCounts = DURATION_BUCKETS.map(b => rows.filter(t => b.test(t.days)).length);
+  Plotly.react('durationChart', [{
+    type: 'bar',
+    x: DURATION_BUCKETS.map(b => b.label), y: durationCounts,
+    marker: {color: c.primary},
+    text: durationCounts, textposition: 'outside',
+    textfont: {family: 'Inter, system-ui, sans-serif', size: 12, color: c.axis},
+    cliponaxis: false,
+    hovertemplate: '%{x}: %{y} trip(s)<extra></extra>',
+  }], baseLayout(c, {
+    margin: {t: 10, l: 34, r: 10, b: 30},
+    annotations: emptyNote,
+    xaxis: {type: 'category', gridcolor: 'rgba(0,0,0,0)'},
+    yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...durationCounts))},
+    bargap: .35,
+  }), cfg);
+  revealChart('durationChart');
+  renderChartTable('durationTableWrap', 'Trip count by length of stay, current filters',
+    ['Length of stay', 'Trips'],
+    DURATION_BUCKETS.map((b, i) => [b.label, fmt(durationCounts[i])]));
 }
 
 // CSV export of the current filtered view — the same rows the table shows.
