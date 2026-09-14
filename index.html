@@ -611,6 +611,37 @@
     .copy-link.is-copied { color: var(--ok); border-color: var(--ok); }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+    /* ============ Shortcuts modal ============
+       A small, centered dialog (not a side drawer, since its content is a short static list)
+       listing keyboard shortcuts that already exist elsewhere on the page (registry search
+       jump, row navigation, drawer close) but had no in-page discovery beyond stumbling on
+       them. Reuses the drawer's overlay/inert/focus-trap pattern for the same reason the
+       drawer needs it: without it, Tab would leak into the page behind this dialog too. */
+    #shortcutsOverlay {
+      position: fixed; inset: 0; background: var(--scrim); z-index: 99;
+      opacity: 0; pointer-events: none; transition: opacity .2s ease;
+    }
+    #shortcutsOverlay.open { opacity: 1; pointer-events: auto; }
+    #shortcutsModal {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -48%); z-index: 100;
+      width: min(420px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow-y: auto;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-drawer); padding: var(--sp-6) var(--sp-8);
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    #shortcutsModal.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, -50%); }
+    .shortcuts-title { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; margin: 0 0 var(--sp-5); }
+    .shortcuts-list { display: flex; flex-direction: column; gap: var(--sp-3); margin: 0; }
+    .shortcuts-list > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4); }
+    .shortcuts-list dt { display: flex; gap: 4px; flex: none; }
+    .shortcuts-list dd { margin: 0; color: var(--text-2); font-size: .88rem; text-align: right; }
+    .kbd {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 1.7em;
+      font: 600 .74rem/1 var(--font-ui); color: var(--text-2);
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 4px 6px;
+    }
+
     /* ============ Outcome indicators ============ */
     .oc-status { font-size: .78rem; color: var(--text-3); margin: 0 0 var(--sp-3); }
     .oc-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: var(--sp-3); }
@@ -728,8 +759,8 @@
       }
 
       /* Interactive-only chrome that means nothing on paper. */
-      .skip-link, .site-nav, #themeToggle, .filterbar .field, .filterbar .btn-reset,
-      .btn-download, #newsBlock, #drawer, #drawer-overlay, .sort-icon,
+      .skip-link, .site-nav, #themeToggle, #shortcutsHelp, .filterbar .field, .filterbar .btn-reset,
+      .btn-download, #newsBlock, #drawer, #drawer-overlay, #shortcutsModal, #shortcutsOverlay, .sort-icon,
       #newSinceNote, .badge-new {
         display: none !important;
       }
@@ -764,6 +795,9 @@
         <a href="#methodology">Methodology</a>
         <a href="data/visits.json" target="_blank" rel="noopener">Data</a>
       </nav>
+      <button id="shortcutsHelp" class="icon-btn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 13h6"/></svg>
+      </button>
       <button id="themeToggle" class="icon-btn" aria-label="Toggle dark mode" aria-pressed="false">
         <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/></svg>
@@ -999,6 +1033,24 @@
     </button>
     <div id="drawerContent"></div>
   </aside>
+
+  <!-- Keyboard shortcuts help -->
+  <div id="shortcutsOverlay" aria-hidden="true"></div>
+  <div id="shortcutsModal" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle" aria-hidden="true">
+    <button class="icon-btn drawer-close" id="shortcutsClose" aria-label="Close keyboard shortcuts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2 id="shortcutsTitle" class="shortcuts-title">Keyboard shortcuts</h2>
+    <dl class="shortcuts-list">
+      <div><dt><kbd class="kbd">/</kbd></dt><dd>Jump to registry search</dd></div>
+      <div><dt><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd></dt><dd>Move between registry rows</dd></div>
+      <div><dt><kbd class="kbd">Home</kbd> <kbd class="kbd">End</kbd></dt><dd>Jump to first / last registry row</dd></div>
+      <div><dt><kbd class="kbd">Enter</kbd></dt><dd>Open the focused trip's details</dd></div>
+      <div><dt><kbd class="kbd">Esc</kbd></dt><dd>Close an open trip's details or this dialog</dd></div>
+      <div><dt><kbd class="kbd">Tab</kbd></dt><dd>Cycle through an open dialog's controls</dd></div>
+      <div><dt><kbd class="kbd">?</kbd></dt><dd>Open this shortcuts list</dd></div>
+    </dl>
+  </div>
 
 <script>
 const FALLBACK_TRIPS = [
@@ -2026,11 +2078,10 @@ function closeDrawer({push = true} = {}) {
 
 // The drawer declares aria-modal, so the rest of the page must actually be
 // unreachable — by pointer, by Tab, and in the accessibility tree.
-function setBackgroundInert(on) {
-  const drawer  = document.getElementById('drawer');
-  const overlay = document.getElementById('drawer-overlay');
+function setBackgroundInert(on, keepEls) {
+  const keep = keepEls || [document.getElementById('drawer'), document.getElementById('drawer-overlay')];
   for (const el of document.body.children) {
-    if (el === drawer || el === overlay || el.tagName === 'SCRIPT') continue;
+    if (keep.includes(el) || el.tagName === 'SCRIPT') continue;
     if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
   }
 }
@@ -2055,6 +2106,49 @@ function trapDrawerTab(e) {
   const drawer = document.getElementById('drawer');
   if (!drawer.classList.contains('open')) return;
   const items = [...drawer.querySelectorAll(FOCUSABLE_SELECTOR)].filter(el => el.offsetParent !== null);
+  if (!items.length) return;
+  const first = items[0], last = items[items.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+
+// Keyboard-shortcuts help dialog: a short, static list, so it gets its own lightweight
+// open/close/trap trio rather than sharing the drawer's (drawer-specific) versions above —
+// same inert-background + focus-trap treatment for the same reason, on far less markup.
+let shortcutsLastFocus = null;
+function openShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  const overlay = document.getElementById('shortcutsOverlay');
+  if (modal.classList.contains('open')) return;
+  shortcutsLastFocus = document.activeElement;
+  modal.classList.add('open');
+  overlay.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  overlay.setAttribute('aria-hidden', 'false');
+  setBackgroundInert(true, [modal, overlay]);
+  lockBodyScroll(true);
+  setTimeout(() => document.getElementById('shortcutsClose').focus(), 0);
+}
+function closeShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  const overlay = document.getElementById('shortcutsOverlay');
+  if (!modal.classList.contains('open')) return;
+  modal.classList.remove('open');
+  overlay.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  overlay.setAttribute('aria-hidden', 'true');
+  // Same [modal, overlay] set passed to the matching setBackgroundInert(true, ...) above —
+  // asymmetric keep-lists would leave `inert` stuck on whatever the open call inert-ed but
+  // this default skips (the drawer itself, which isn't in either list otherwise).
+  setBackgroundInert(false, [modal, overlay]);
+  lockBodyScroll(false);
+  if (shortcutsLastFocus && document.contains(shortcutsLastFocus)) shortcutsLastFocus.focus();
+}
+function trapShortcutsTab(e) {
+  if (e.key !== 'Tab') return;
+  const modal = document.getElementById('shortcutsModal');
+  if (!modal.classList.contains('open')) return;
+  const items = [...modal.querySelectorAll(FOCUSABLE_SELECTOR)].filter(el => el.offsetParent !== null);
   if (!items.length) return;
   const first = items[0], last = items[items.length - 1];
   if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -3088,6 +3182,24 @@ document.getElementById('drawer').addEventListener('keydown', trapDrawerTab);
 document.getElementById('drawerClose').addEventListener('click', closeDrawer);
 document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+document.getElementById('shortcutsHelp').addEventListener('click', openShortcutsModal);
+document.getElementById('shortcutsClose').addEventListener('click', closeShortcutsModal);
+document.getElementById('shortcutsOverlay').addEventListener('click', closeShortcutsModal);
+document.getElementById('shortcutsModal').addEventListener('keydown', trapShortcutsTab);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeShortcutsModal(); });
+// "?" opens the shortcuts help from anywhere, mirroring the existing "/" search-jump shortcut:
+// ignored while typing, with a modifier held, or while the trip drawer already owns the
+// background-inert state (opening a second dialog on top of it would double-inert the page).
+document.addEventListener('keydown', e => {
+  if (e.key !== '?' || e.ctrlKey || e.metaKey || e.altKey) return;
+  const ae = document.activeElement;
+  const typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable);
+  if (typing) return;
+  if (document.getElementById('drawer').classList.contains('open')) return;
+  e.preventDefault();
+  openShortcutsModal();
+});
 document.getElementById('drawer').addEventListener('click', e => {
   const linkBtn = e.target.closest('#drawerCopyLink');
   if (linkBtn) { copyTripLink(linkBtn.dataset.slug, linkBtn); return; }

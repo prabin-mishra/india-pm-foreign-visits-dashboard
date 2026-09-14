@@ -2463,3 +2463,73 @@ constant, and one new block inside `renderChartsInner`; nothing in the fetch/mir
 chain, filter state, or URL sync.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-14 — Keyboard shortcuts help dialog
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log. Brainstormed fresh: a registry-table
+scroll-fade for horizontal overflow (mobile), a `forced-colors` (Windows High Contrast Mode)
+audit (trust/accessibility), `og:image` width/height meta tags and `robots.txt`/`sitemap.xml`
+(SEO), an RSS/Atom feed of new trips (discoverability), and a per-trip data-completeness badge
+(trust).
+
+Landed on a real, previously-unnoticed gap: the page has accumulated five keyboard shortcuts
+over the past month — "/" to jump to search (08-29), Up/Down/Home/End to move between registry
+rows (09-04), Enter to open a row's drawer, Escape to close it, and Tab-trapping inside an open
+dialog (08-04) — with zero in-page way to discover any of them beyond stumbling on the one hint
+visible next to the search field. A small centered dialog, opened via a new header icon button
+or the conventional "?" key, lists all five. Built as its own lightweight open/close/focus-trap
+trio rather than reusing the drawer's versions (which hardcode the drawer/overlay elements) —
+same inert-background treatment for the same reason (an `aria-modal` dialog that leaks Tab into
+the page is exactly the 08-04 bug), just sized to a 7-line static list instead of drawer markup.
+`setBackgroundInert` gained an optional second parameter (the set of elements to exempt from
+`inert`, defaulting to the drawer pair) so both dialogs share the one implementation rather than
+duplicating it a third time.
+
+Caught two bugs in testing before shipping: first, an asymmetric `keepEls` between the open and
+close calls would have left `inert` stuck on the drawer forever after the first time anyone used
+the shortcuts dialog — fixed by passing the identical `[modal, overlay]` set to both. Second,
+including `visibility` in the modal's CSS `transition` list (unlike the drawer, which only
+transitions `transform`) meant the browser didn't treat the dialog as focusable until an actual
+paint had happened, so the close-button `focus()` call — issued on the very next tick, same
+pattern the drawer uses — silently landed on `<body>` instead; dropping `visibility` from the
+transition list (it still toggles instantly via the class, just without an animated fade) fixed
+it. Both would have been invisible to a quick look and only surfaced under a real focus-tracing
+test.
+
+**Runners-up**
+- *Registry table horizontal-scroll fade* — same masking technique 09-11 used for the mobile
+  nav; flagged 09-12 as "too close to yesterday's mechanism" and the table's existing "Compact
+  columns" toggle already gives an escape hatch, so still thinner than closing a real discovery
+  gap.
+- *`forced-colors` (Windows High Contrast Mode) audit* — re-deferred yet again on the same
+  "sandbox can't emulate real Windows HCM with confidence" grounds as every prior log since
+  09-02.
+- *`og:image` width/height meta tags* and *`robots.txt`/`sitemap.xml`/canonical* — rejected for
+  the umpteenth time on the same "real but marginal for a single-URL site" grounds as every
+  prior log.
+- *RSS/Atom feed of new trips* — flagged repeatedly since 09-02; still needs a new automated
+  build step adjacent to the data pipeline, out of scope for a display-only change.
+- *Per-trip data-completeness badge* (e.g. flagging whether cost/outcomes fields are populated)
+  — a genuine trust idea, but underspecified enough (what counts as "complete," how it reads
+  next to the existing caveats panel) to want its own day with a mockup first, not a same-day
+  build.
+
+**Verification:** `node --check` on both real inline script blocks — clean. Playwright against
+the served page (`el.on`/`el.emit` stubbed for `wireChartClick`, `cdn.plot.ly` and Google Fonts
+blocked, same as every prior log) at 1280px and 375px, light and dark: all 8 charts initialize;
+clicking the new header button opens the dialog, focus lands on its close button, 0 elements
+behind it remain focusable (full `inert` coverage), Tab/Shift+Tab both loop on the single close
+button; Escape, an overlay click, and the close button itself all close it and correctly return
+focus to the triggering header button; the "?" key opens it from anywhere (ignored while typing
+in the search field, and ignored while the trip drawer is already open, so the two dialogs never
+stack); after closing the shortcuts dialog, opening a trip's drawer via keyboard still works and
+lands focus on `drawerClose` with no leftover `inert` — confirming the keepEls fix. `@media
+print` hides the new button/dialog/overlay. No horizontal scroll at either width. Console clean
+bar the pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every
+prior log. All three fallback tiers untouched — the diff is additive (one CSS block, one header
+button, one dialog's markup, three new functions, one widened function signature, one delegated
+listener group) and touches no fetch/mirror/fallback logic.
+
+**Files touched:** `index.html`, `ideas-log.md`
