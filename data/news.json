@@ -1,50 +1,34 @@
 {
-  "generated": "2026-09-14T08:43:59Z",
+  "generated": "2026-09-15T08:31:50Z",
   "status": "reported",
   "reported": {
     "countries": [
       "Russia",
-      "Iran",
       "China"
     ],
     "primary": "China",
-    "asOf": "2026-09-13",
-    "sourceCount": 16
+    "asOf": "2026-09-15",
+    "sourceCount": 8
   },
   "trip": {
-    "label": "Russia, Iran & China",
+    "label": "Russia & China",
     "start": null,
     "end": null,
     "countries": [
       "Russia",
-      "Iran",
       "China"
     ]
   },
   "window": {
-    "from": "2026-09-07",
-    "to": "2026-09-17"
+    "from": "2026-09-09",
+    "to": "2026-09-19"
   },
   "articles": [
     {
-      "title": "\"What happened between the 2 sides?\": Congress' Salman Khurshid demands transparency on India-China bilateral talks after Jairam Ramesh poses 4 questions to PM Modi",
-      "source": "ANI News",
-      "url": "https://news.google.com/rss/articles/CBMixgJBVV95cUxNajlyTzRXTnNzZlliU3doTmRQMVQyOVZzSnJ1bGF0Rjh6SE5pZ1pHcU1qSmt2UnVxdkRfczI4Y1RCTjcwNGU2NWNCWEVaUnROSlVDRTdxV3dmMUxPcG9pd2hmcVhDX1FlYjZmMVJaQ3VzUE5pdUhCMHRQSXJfMmE3YVpMOHZiYnREdVRIZEtNeXdPVHdBMTg2Y1lLZnc3NkJhQ1NMWUpyU1dPcEEteFBFQ2oyYU5taUNCWlFoRFVWcF9fekUwaVh6TnNVRGlpcmdVUGFpbkE2dHRhOGdXRi1lZU1NelNOY2RsUXNYbk1rcUhRU2p6N3BRaFdVNjF3dDJZWURfVk04cFZYWldCLU5wb0ZKV0ZDcWxaaDJzSk9LeFRQaVl1Yk5oU1VUUWdXZUFfX1BxcHVhZmRJVGhnRllnb2pDZnNadw?oc=5",
-      "date": "2026-09-13",
-      "dateSource": "rss"
-    },
-    {
-      "title": "India's Modi and China's Xi seek to reset ties on BRICS sidelines",
-      "source": "ABC News - Breaking News, Latest News and Videos",
-      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPUFJZRktxVnNzbmdtakhaWXFFTUZiS1pjbUljS0wtRjdmcmVDcHFhOEdPXzNIQWRFeVJRVzI2MS1nOHBDVFlZbFloNjdRaFNyVzA5YTAyMGZTM192SV9EWnpQcXpuZC1NaXBkQUFsX3Y0U3R4RW1XeEh5MHFhVTdkalppRVpxaXgxOVEyZWxJX3hmMWZjN2hRLVdtNWRUZ9IBowFBVV95cUxPdXk5U3dOOFlBamxDT1o0T0s0VldCWm10LWhVbDk5bEhwcVBKOUNQVDViclpMTXJiZ2ppaVQ2NEVaRXd2S3FOWkJvSUpVckFqYUN4UG5WelJxQ3g5NTYxVFdLU1EzRlhsYy1LckkzajZBcExGRGNCX2FZemFvT2l4Tjh2NWVZbUNVNjUwc2dXZFhFV3ZxZXJ3ZGdsT2ItN0dxWE0w?oc=5",
-      "date": "2026-09-12",
-      "dateSource": "rss"
-    },
-    {
-      "title": "Modi and Xi seek to reset India-China ties on BRICS sidelines",
-      "source": "Al Jazeera",
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOaW1hdmpKRHlLcUJ6dVFoRE9xMEJOWlNpdEQ4VlEwN1RkTUlSa05JOG5Sal9CV3d2WFkyaHZWTl80S2lBNzJQSkJMRzhiV2wweHFXbk9QUU40SGt4bDlrZl9OOXVab2ZfVVFncHBXV0cydnVqUmc1LVNDR1dHcjIzelNkNk9NLS1SRmJyZVd5bENIenQtbDNveUVpdjdkeWtvMF9aWEhB0gGrAUFVX3lxTE9JendtdDYzMlpwZ09rS0lycS1fMnlmT0pZbkRfQllUclhyWW1wRlBnejgtMFVtM3I1ZmhuTS13Z3lGTGdMbExacTVIeVRFS3R4bkw3QlVjdzhCSGUySGFvdC04Q19DRmVwZ0xxblRnOXNQbWg3MzZpYjVxMU5QZDY4cEtrVDNpd1Y5VHVHUmJWVGtkRzR1YTQ0UUxUdEV0dndJR2dZSzc0WjZUVQ?oc=5",
-      "date": "2026-09-12",
+      "title": "China says Modi-Xi reached \"most important consensus\" at BRICS Summit",
+      "source": "PGurus",
+      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOa0Y1MWVxX3FQMXB1OWFMVTdmZnJWUWpoWFNRMEJyZXNhekhLd1hISU1IRk9sTWpONnBRczM0TG9tLVZ2TmVEZzZhenFxUEM0eDZ3WFZiX1VFT0UyX0RmMlNpXzYwTm1yWnhwc1JqYUhlM1BDOTFTVGlXMHB2QXA2dXVRUjdDZGs0dTRxRzNMZGVZWkNxTWZqTw?oc=5",
+      "date": "2026-09-15",
       "dateSource": "rss"
     },
     {
@@ -55,21 +39,43 @@
       "dateSource": "rss"
     },
     {
-      "title": "PM Modi, Xi Jinping Hold India-China Bilateral Talks On Border, Trade And Investment",
-      "source": "NDTV Profit",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNWkFfcE1odVF6aXo2dy1fV0NKVUs5azRxRU1FT0trNXVWNmdvZEt1UlduYWhIZkJVMkJmTTJxdFctT0dYbmVvRmstSVY4Nk5jMk1VVjJoWDNIV2o2U3ViNnlnTXNCR0FJalhJa0R1U0RnX3psWVBqcnVna29wbFNIRGYwVm5sMEIyM2ZTeDF0TW9xR25TeURYQVhISzhTS0QwYzZndU9MSWlTRkRnejUyb3NsTWRTLUZBU1lMdUlJSDN3TFpK0gHMAUFVX3lxTE83UXl4TU9VSFZfM2RzS3llbEVkTmlYYkVEWnE2enJMX21ZamdFYk9XM1FqTzZYZkktbWRjaGZ6TjhGSDhtdGk5Yk9FR3FOdEZfb2k5elAwcWQ4OHlYX0Z2XzBjVFdVVjh5bU9FMHN4akd2MzBHYTRVZ09HaWJRNEhRenFuankyMWNIeDB3YXhmX0l2clJpdG1GeHRPX3J6NW9ZS1FYbXZtN0UwZjhRR3c4Y3JJcnoxSTh3QmhlYjIyTVlOOUM3My1qeW1SWQ?oc=5",
-      "date": "2026-09-12",
-      "dateSource": "rss"
-    },
-    {
       "title": "“PM Modi must ask China to return our land,” says Shiv Sena UBT MP Sanjay Raut",
       "source": "ANI News",
       "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxQT3g0WnNjQWZuaEsxMWtUXzlvaFN0NVREazdyc1VIcHRNU1lUNHAzV09kRUh4cHlMYWhjbmFQdjFTWTRDdTZVZE1hQU1fMHlwamFmYlFFdWk3NUhyaHlIU3pITHoxRzV6Ym1XOTl5eW5pUTRTVnZrQThXemxsSzg1VHl1SFZtZlBfV29DcnJRQnhkeE5LcFl0el9ZcFU0RUdhNmxUcmZBNVRtYnZKTGFzamc0YVNfM3lONFU1d2xDWUtxQ09SYmsxUk0ya3VnT0o4SmZyVlA5WXQ1aHc?oc=5",
       "date": "2026-09-12",
       "dateSource": "rss"
+    },
+    {
+      "title": "Xi Arrives For BRICS, China Says Will \"Properly Handle Differences\" With India",
+      "source": "NDTV",
+      "url": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOS0tlSGdqT1FnVGZNYTI0WURyWDItdGR2WnEwd0dra2RMSzc0SXF1aU9NZXFwVWFScVVqS2Fydi1nV2VkcHAzdTNLRllRZGFsSkZqckgzY0t0d1RfYmZrQTlBaUpkaGtnUHpkVDNpcUdiX250c3RieEsxYzM0N0UtazhDVkpuYVF2OUc5OUJWZlN1RTQ5U1RXUGxJWW5sZV94eUJsakY5WHNLOXNfcjQyUnRWTXJUMElfQmp3OGFFZmFuZUJmMmdULVJYR3lWbUNlajNrSDNMc0FpWVkxbkFKOE1zc3fSAewBQVVfeXFMUGpUTjV3WmotSmwyM2x5UHVxdVdSU2o4WlpOSUo4WDJacXNwTURaUzlPcWczYTJJZEFvY0x2WjZ3T0JfN3NSZHFsQnJYYmJBQm1oYm0tYkpQc1MzRm02TlVfcVdXNHM3VWo0NWpybzhpM2NERThEN1NwcTBDTjNRYlBUeVU0OS03LWpKRDN2dzdhNVNiMFZSVXA1OVRJVU5qRmJPYm1lTjVCWTN6MzJTVzVqbUFORkZHRGNuZXF1UVdmaTdZYlVCXzh4dGJzMDVJbmlnREFXMndHR0ZMaF9XOFhfM3ZLR2ZwZElOU2U?oc=5",
+      "date": "2026-09-12",
+      "dateSource": "rss"
+    },
+    {
+      "title": "BRICS Summit 2026: China's Xi to meet Modi today",
+      "source": "dw.com",
+      "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOaVRSTExYanBlekM1UlVuUWNLM05OdVZFVFpoeEhFV2M0TjNpWF9Rckl2NDdPbnNvY1VfMXU2TkM0V1FLbzVHTkdhYlM1dk9nNGpHckZNa21sRFlINGQ3UW14c1VvRjdVdHNOTURIczZDSG1IU0ZRN2xBdFNPOFNmNGtGdE1EMlo5Z2c?oc=5",
+      "date": "2026-09-11",
+      "dateSource": "rss"
+    },
+    {
+      "title": "India-Russia Bilateral Talks, BRICS Summit Agenda, and Modi-Putin Diplomacy in Delhi - India Today",
+      "source": "India Today",
+      "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxPamF1NWxRVTRub1dSR281VUhZd0gyckdVUEplbHZTMjZkdElnc3hDVUx3WThiVlpzNFV1emlJZlV2Z1Npc2lMTk02OWRLdVdsYjNvUkhsVUg3TzViM2xxMzhXYTR0OEczRFpvSzhFaF9qRDNVRmZRT0lqM1BVcVd4bko1Nk5QVi1pUk1LRGlkNUdmTGpJNVZ6UlhoVlRkai1FQUtmekZUazY3WGNDRkVsNjA2dGstMTJBVXZtdkFVMVYxS3pydkFOQUljbTR3OTJLbFkzSjFIVDFNNHNl0gHiAUFVX3lxTE0wYXRIWVNTeVFhZnM5ZE9pbFd6WFRGTHB0N3JWV1RRNDdhZ2E3MDFlaUN1N09VV1RHV0hBY3VTNHJBc3JXbnVyMkNGNUFacVBFaGh2Zk56RW14eGsxZ3p4UVhfMU12QWUtY2xmbUdsT1NNT2VLSkpJQ1VMTzREMFoyYzR1VmZXZEdmR3duOXdLYVE3X0dJYVRaeFo5ZTR0NkZURlY4MTF3ZUFGQ05EcEhpVHV3TmFMcHZiS0UxUDJoTjR2QUQ1dXFXZ01SUEdMLWd2eGNBR2tjQmVBN1lfLWFzZ1E?oc=5",
+      "date": "2026-09-11",
+      "dateSource": "rss"
     }
   ],
   "seen": {
+    "fd39c04f1f5f": "2026-09-15",
+    "086b286bf6e0": "2026-09-15",
+    "591dca4868a0": "2026-09-15",
+    "efed189c1634": "2026-09-15",
+    "6a9b42c5f7f9": "2026-09-15",
+    "a061ae6e566a": "2026-09-15",
+    "92edbf0c5a17": "2026-09-15",
+    "7774e14a677a": "2026-09-15",
     "b560d0b3ca50": "2026-09-14",
     "7ecb2ba862ba": "2026-09-14",
     "228d5062d1c1": "2026-09-14",
@@ -80,6 +86,18 @@
     "c5bc9002ba40": "2026-09-14",
     "afb31b915725": "2026-09-14",
     "80aa6ae3a229": "2026-09-14",
+    "b3aae3eefd65": "2026-09-14",
+    "7723a3917acc": "2026-09-14",
+    "595d47b272df": "2026-09-14",
+    "ee5a54fc5d55": "2026-09-14",
+    "c488f42ba6d6": "2026-09-14",
+    "6937799e0e30": "2026-09-14",
+    "ecd0884d878a": "2026-09-14",
+    "df5cc6d050e5": "2026-09-14",
+    "e9c73e041ad1": "2026-09-14",
+    "e97f59697fc5": "2026-09-14",
+    "4add0510b5d0": "2026-09-14",
+    "05f5135e2e03": "2026-09-14",
     "11a11d8a4496": "2026-09-13",
     "7f561b2d843f": "2026-09-13",
     "db98121a5b59": "2026-09-13",
@@ -166,6 +184,15 @@
     "90b2aa01445d": "2026-09-13",
     "70eb56452d8a": "2026-09-13",
     "f033a55b994c": "2026-09-13",
+    "299b0ae73f56": "2026-09-13",
+    "bf57c1105257": "2026-09-13",
+    "8dc7a9c3233b": "2026-09-13",
+    "fa81f12677c8": "2026-09-13",
+    "4448842dfd8b": "2026-09-13",
+    "28c5adfa7feb": "2026-09-13",
+    "fe5ae6bb5161": "2026-09-13",
+    "da5a917eb01e": "2026-09-13",
+    "761006027ae9": "2026-09-13",
     "905948665cdf": "2026-09-12",
     "9df38ce24c8a": "2026-09-12",
     "fafa68233566": "2026-09-12",
@@ -337,6 +364,11 @@
     "cc31997ce278": "2026-09-12",
     "37ddb53a52c1": "2026-09-12",
     "966b1842b984": "2026-09-12",
+    "561d8565082f": "2026-09-12",
+    "c59f062fe525": "2026-09-12",
+    "b1aeee4da6cb": "2026-09-12",
+    "436e55e0c735": "2026-09-12",
+    "2e14b5decfae": "2026-09-12",
     "9c6d7740f12b": "2026-09-11",
     "c2a566fae942": "2026-09-11",
     "f04619666990": "2026-09-11",
@@ -488,6 +520,12 @@
     "4f70047ab69b": "2026-09-11",
     "c5d5720efd2f": "2026-09-11",
     "2e1b3923758e": "2026-09-11",
+    "2d8cf9332fa1": "2026-09-11",
+    "0cf00d5f86b8": "2026-09-11",
+    "16c1d889cbe1": "2026-09-11",
+    "9720bd277897": "2026-09-11",
+    "9f9f2f85a4e5": "2026-09-11",
+    "7f7948fa04fa": "2026-09-11",
     "b1241f06bba7": "2026-09-10",
     "f585d3db5e48": "2026-09-10",
     "8e857a9f341f": "2026-09-10",
@@ -829,46 +867,6 @@
     "88a106080363": "2026-09-03",
     "13136575adc4": "2026-09-03",
     "5ecb5c9d339b": "2026-09-03",
-    "38f253587486": "2026-09-03",
-    "c41c7421efb3": "2026-09-03",
-    "d638c6b30907": "2026-09-03",
-    "8a521099527b": "2026-09-03",
-    "543886aac564": "2026-09-03",
-    "96fbd91584d2": "2026-09-03",
-    "a1170fdf3b57": "2026-09-03",
-    "0eacd0afaa2e": "2026-09-03",
-    "3c82e98c5e97": "2026-09-03",
-    "4d2c2c940b89": "2026-09-03",
-    "6cdf00708cd1": "2026-09-03",
-    "42b2e56d803a": "2026-09-03",
-    "1c8f2bc0de4b": "2026-09-03",
-    "9abd8aaf7394": "2026-09-03",
-    "4f5b33f70b7d": "2026-09-03",
-    "c5594e768cd4": "2026-09-03",
-    "acdcd2600fa8": "2026-09-03",
-    "bdd97e9ed2cb": "2026-09-03",
-    "d77f63384bca": "2026-09-03",
-    "f865b6c77d8c": "2026-09-02",
-    "6b108721c256": "2026-09-02",
-    "b492816ab825": "2026-09-02",
-    "e4a8e3c781f4": "2026-09-02",
-    "df39e6694edf": "2026-09-02",
-    "7055e627fd84": "2026-09-02",
-    "cfc893282632": "2026-09-02",
-    "fe1871f8cbe0": "2026-09-02",
-    "266d386dce3f": "2026-09-02",
-    "6610ee43e923": "2026-09-02",
-    "8b9f49934201": "2026-09-02",
-    "8b0d74232aed": "2026-09-02",
-    "7823bc8972e8": "2026-09-02",
-    "82c3d834ac14": "2026-09-02",
-    "883ac96298d5": "2026-09-02",
-    "b73aa4407d0e": "2026-09-02",
-    "980ef82f7b30": "2026-09-02",
-    "fb2778b19154": "2026-09-02",
-    "146f1e268b46": "2026-09-02",
-    "20bf79e4a216": "2026-09-02",
-    "01de35d428c9": "2026-09-02",
-    "463168b14d87": "2026-09-02"
+    "38f253587486": "2026-09-03"
   }
 }
