@@ -2533,3 +2533,65 @@ button, one dialog's markup, three new functions, one widened function signature
 listener group) and touches no fetch/mirror/fallback logic.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-15 — Visible freshness line on the "Latest coverage" news feed
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all four already live, same
+stale-list finding as every recent log. Brainstormed fresh across all seven dimensions: this
+freshness gap (trust), a sticky "back to top" button (mobile, open since 09-13), persisting
+registry sort/column-visibility to `localStorage` (interactivity, open since 09-13), a KPI
+mini-sparkline (new way to read the data, open since 09-04), a `forced-colors` audit (a11y, open
+since 09-02 — the sandbox still can't emulate real Windows HCM with confidence), `og:image`
+width/height meta tags and `robots.txt`/`sitemap.xml`/canonical (SEO, rejected dozens of times on
+"marginal payoff for a single-URL site" grounds, unchanged today).
+
+Found a real, previously-unnoticed asymmetry: the page pulls three independently-refreshing feeds
+(`data/visits.json`, `data/outcomes.json`, `data/news.json`, each its own GitHub Actions schedule),
+and two of the three already say when they were last refreshed — the header status badge for
+visits, the "Feed refreshed …" line (09-05) inside the drawer's outcomes panel. The news block had
+no equivalent at all: `data.generated` was fetched and used only inside a `console.groupCollapsed`
+block no reader ever opens. A user reading "Latest coverage" articles had no way to tell whether
+that feed itself ran an hour ago or a week ago, unlike every other data surface on the page.
+
+Added one line, `Coverage feed refreshed 14 Sep 2026`, under the "Latest coverage" heading —
+same wording pattern and `text-3`/`.78rem` styling as the outcomes panel's line, built from the
+already-fetched `data.generated` timestamp (validated via the existing `isValidISODate` guard
+before formatting, hidden entirely if missing or malformed — never guesses a date it can't stand
+behind, matching the site's standing "no confident guess" rule from the 08-11 news-dating fix).
+Pure display-layer read of a field already in memory; no new fetch, no data-provenance touch, no
+new dependency, and a publication timestamp carries no partisan-framing risk.
+
+This is narrower than the "per-source freshness readout" idea logged as a runner-up on 09-13 and
+deliberately so — that idea proposed splitting the *main* status pill into three, which was passed
+over as "more UI complexity than a one-day slot should carry." Today's fix leaves that pill alone
+entirely and only closes the one feed missing its own signal, using a pattern (the outcomes line)
+the site already ships and already trusts.
+
+**Runners-up**
+- *Sticky "back to top" button* — real mobile polish, open since 09-13; the sticky header and
+  in-page nav already give a way back up, so still thinner than a genuine trust gap.
+- *Persist registry sort/column-visibility to `localStorage`* — open since 09-13; low-stakes
+  convenience against a dataset where the default (newest-first) already matches most visitors.
+- *KPI mini-sparkline* — flagged 09-04; touches the KPI strip's skeleton-loader re-render contract
+  for a purely decorative addition, bigger than today's one-line fix.
+- *`forced-colors` (Windows High Contrast Mode) audit* — re-deferred again; sandbox still can't
+  emulate real Windows HCM with confidence, same call as every prior log since 09-02.
+- *`og:image` width/height meta tags* and *`robots.txt`/`sitemap.xml`/canonical* — rejected for the
+  umpteenth time on the same "real but marginal for a single-URL site" grounds as every prior log.
+
+**Verification:** `node --check` on both real inline script blocks (the JSON-LD block fails as
+always — it's JSON, not JS). Playwright against the served page (a `Plotly.react`/`el.on`/`el.emit`
+stub, `cdn.plot.ly` and the Google Fonts stylesheet routed to abort, same as every prior log) at
+1280px and 375px, light and dark: `#newsStatus` renders `Coverage feed refreshed 14 Sep 2026`,
+matching `data/news.json`'s real `generated` field; dark mode resolves it to the same `--text-3`
+token (`rgb(144, 139, 124)`) the rest of the page's secondary text uses. Simulated a `news.json`
+missing `generated` entirely, and one with a garbage value (`"not-a-date"`) — both leave
+`#newsStatus` correctly `hidden`, zero console errors, no fallback guess printed. All 8 charts
+initialize, all 5 KPI cards and all 45 registry rows render, no horizontal scroll at either width,
+console clean bar the pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in
+every prior log. All three fallback tiers untouched — the change lives entirely inside `renderNews`
+and reads only `data.generated`, already fetched by `loadNews()` regardless of which tier populated
+the registry's own `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
