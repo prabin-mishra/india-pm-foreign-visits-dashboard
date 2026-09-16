@@ -739,6 +739,20 @@
       *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
 
+    /* ============ Forced colors (Windows High Contrast Mode) ============
+       Everything on the page that carries meaning through text, a border, or a native
+       control (buttons, links, focus outlines, the sort/disclosure carets) already adapts
+       correctly — verified live under `forced-colors: active`. The two exceptions are shapes
+       whose only signal is a solid author background with no border: the registry's per-row
+       "days" bar and the live-status pulse dot both get force-mapped to Canvas-on-Canvas and
+       vanish entirely, even though nothing else on the page changes. Giving each a 1px
+       CanvasText border keeps the shape visible in whatever palette the user's OS theme sets,
+       without overriding their chosen colors. */
+    @media (forced-colors: active) {
+      .days-bar { border: 1px solid CanvasText; }
+      .live-dot { border: 1px solid CanvasText; }
+    }
+
     /* ============ Print ============
        Registry + methodology are the citable core; charts are replaced by their existing
        accessible data tables (opened for print, see beforeprint/afterprint below) rather than

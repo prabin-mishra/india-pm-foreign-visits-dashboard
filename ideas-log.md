@@ -2595,3 +2595,68 @@ and reads only `data.generated`, already fetched by `loadNews()` regardless of w
 the registry's own `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-16 — Fix two shapes that vanish under forced-colors (Windows High Contrast Mode)
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log. Brainstormed fresh across all seven
+dimensions: this forced-colors gap (accessibility), a sticky "back to top" button (mobile,
+open since 09-13), persisting registry sort/column-visibility to `localStorage` (interactivity,
+open since 09-13), a KPI mini-sparkline (new way to read the data, open since 09-04), `og:image`
+width/height meta tags and `robots.txt`/`sitemap.xml`/canonical (SEO, rejected dozens of times on
+"marginal payoff for a single-URL site" grounds), and an RSS/Atom feed of new trips
+(discoverability, needs a new pipeline build step, out of scope for a display-only change).
+
+The `forced-colors` (Windows High Contrast Mode) audit has been named and deferred on the same
+"sandbox can't emulate real HCM with confidence" grounds in every log since 09-02 — checked that
+premise directly today rather than taking it on faith, and it no longer holds: Playwright's
+`page.emulateMedia({forcedColors: 'active'})` against this Chromium build genuinely substitutes
+system colors (verified with a throwaway HTML fixture — a custom teal/gold/purple card had its
+background, text, and border all overridden to real HCM-style black/white/blue, exactly as
+Windows' actual forced-colors mode would). That's the real thing, not a fake — worth re-opening
+the item.
+
+Audited every author-styled color surface on the page under `forced-colors: active` (buttons,
+links, focus outlines, disclosure carets, filter chips, status pills, the registry sort/column
+controls) — all of them already degrade correctly, because they're native elements or carry
+visible borders/text alongside their color. Found exactly two that don't: `.days-bar` (the
+registry's per-row proportional "days" indicator) and `.live-dot` (the pulsing dot next to
+"In transit"/"Reported" status), both a solid `background-color` with no border and no text
+alternative of their own. Measured directly: under forced-colors both compute to
+`background: white` (Canvas) with `border-width: 0`, on a white page — genuinely invisible, not
+just muted. Fixed with a 4-line `@media (forced-colors: active)` block giving each a 1px
+`CanvasText` border, so the shape stays visible in whatever palette the user's OS theme sets,
+without overriding their chosen colors or touching the two elements' normal-mode styling at all
+(confirmed `border-width: 0px` outside the media query, unchanged). `.badge-new` ("New" pill) has
+the same no-border pattern but wasn't touched — its label text stays fully legible without the
+pill shape, a real difference from the other two where the shape *was* the entire signal.
+
+**Runners-up**
+- *Sticky "back to top" button* — open since 09-13; the sticky header and in-page nav already
+  give a way back up, so still thinner than a confirmed, measured accessibility defect.
+- *Persist registry sort/column-visibility to `localStorage`* — open since 09-13; low-stakes
+  convenience against a dataset where the default (newest-first) already matches most visitors.
+- *KPI mini-sparkline* — flagged 09-04; touches the KPI strip's skeleton-loader re-render
+  contract for a purely decorative addition, bigger than today's targeted CSS fix.
+- *`og:image` width/height meta tags* and *`robots.txt`/`sitemap.xml`/canonical* — rejected for
+  the umpteenth time on the same "real but marginal for a single-URL site" grounds as every
+  prior log.
+- *RSS/Atom feed of new trips* — flagged repeatedly since 09-02; still needs a new automated
+  build step adjacent to the data pipeline, out of scope for a display-only change.
+
+**Verification:** `new Function()` syntax-checked both real inline `<script>` blocks — clean
+(the JSON-LD block correctly fails, it's JSON not JS). Confirmed the forced-colors emulation
+itself is genuine before trusting any result from it, using a standalone HTML fixture with known
+custom colors. Playwright against the served page (Plotly stubbed, `cdn.plot.ly` and Google
+Fonts blocked, same as every prior log) at 1280px and 375px, light and dark: before the fix,
+`.days-bar`/`.live-dot` computed to `background: rgb(255,255,255)` / `border-width: 0px` under
+`forced-colors: active` — invisible; after the fix, both compute `border-width: 1px` /
+`border-color: rgb(0,0,0)` (CanvasText) under forced-colors in both themes, and `border-width:
+0px` outside it, confirming zero effect on normal rendering. All 8 charts initialize, all 5 KPI
+cards and all 45 registry rows render, no horizontal scroll at either width, console fully clean
+(no pre-existing sandbox-network-block caveat needed this time — the stub routed both blocked
+hosts cleanly). All three fallback tiers untouched — the entire diff is one CSS-only `@media`
+block; nothing in the fetch/mirror/fallback chain, JS logic, or markup changed.
+
+**Files touched:** `index.html`, `ideas-log.md`
