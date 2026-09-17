@@ -212,6 +212,19 @@
     }
     .icon-btn:hover { background: var(--surface-2); color: var(--text); }
     .icon-btn svg { width: 17px; height: 17px; }
+
+    /* ============ Back to top ============ */
+    .back-to-top {
+      position: fixed; right: var(--sp-6); bottom: var(--sp-6); z-index: 30;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border-radius: 50%; flex: none;
+      border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-2);
+      cursor: pointer; box-shadow: 0 6px 18px rgba(20,17,10,.16);
+      transition: background .18s ease, color .18s ease, opacity .18s ease;
+    }
+    .back-to-top:hover { background: var(--surface-2); color: var(--text); }
+    .back-to-top svg { width: 20px; height: 20px; }
+    @media (max-width: 640px) { .back-to-top { right: var(--sp-4); bottom: var(--sp-4); } }
     .panel-head-right { display: flex; align-items: center; gap: var(--sp-2); flex: none; }
     .chart-dl-btn {
       display: inline-flex; align-items: center; justify-content: center;
@@ -776,7 +789,7 @@
       /* Interactive-only chrome that means nothing on paper. */
       .skip-link, .site-nav, #themeToggle, #shortcutsHelp, .filterbar .field, .filterbar .btn-reset,
       .btn-download, #newsBlock, #drawer, #drawer-overlay, #shortcutsModal, #shortcutsOverlay, .sort-icon,
-      #newSinceNote, .badge-new {
+      #newSinceNote, .badge-new, #backToTop {
         display: none !important;
       }
 
@@ -1040,6 +1053,15 @@
       </span>
     </div>
   </footer>
+
+  <!-- Back to top: shown once the page has scrolled past roughly one viewport, so it's
+       available on the now-long scroll depth (hero → 8 charts → registry → methodology)
+       without cluttering the initial view. A direct child of <body> so it automatically
+       gets `inert`-ed alongside every other body child while the drawer or shortcuts
+       dialog is open (see setBackgroundInert), with no extra wiring needed. -->
+  <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6m0 0-6 6m6-6 6 6"/></svg>
+  </button>
 
   <!-- Trip detail drawer -->
   <div id="drawer-overlay" aria-hidden="true"></div>
@@ -3127,6 +3149,31 @@ if (navEl) {
   navEl.addEventListener('scroll', updateNavFade, {passive: true});
   window.addEventListener('resize', updateNavFade);
 }
+
+// Back to top: appears once the page has scrolled past roughly one viewport, since below
+// that the header/in-page nav are already the faster way up. `shown` guards against writing
+// the `hidden` attribute on every scroll tick (fires far more often than the state actually
+// changes). Scrolls instantly rather than smoothly under prefers-reduced-motion, matching the
+// same check already used for the flight-globe animation and the drawer's motion.
+const backToTopBtn = document.getElementById('backToTop');
+let backToTopShown = false;
+function updateBackToTop() {
+  const show = window.scrollY > window.innerHeight * 0.75;
+  if (show === backToTopShown) return;
+  backToTopShown = show;
+  backToTopBtn.hidden = !show;
+}
+updateBackToTop();
+window.addEventListener('scroll', updateBackToTop, {passive: true});
+window.addEventListener('resize', updateBackToTop);
+backToTopBtn.addEventListener('click', () => {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({top: 0, behavior: reduce ? 'auto' : 'smooth'});
+  // preventScroll: focus()'s own implicit scroll-into-view otherwise fights the smooth
+  // scroll just started above and can leave it stuck mid-animation (verified: without it,
+  // the page settled around scrollY 1400-1500 instead of reaching 0).
+  document.querySelector('.wordmark').focus({preventScroll: true});
+});
 
 // "/" jumps straight to the registry search field from anywhere on the page — the standard
 // site-search shortcut (GitHub, Slack, etc.). Ignored while the user is already typing

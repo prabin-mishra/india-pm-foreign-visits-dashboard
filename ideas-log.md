@@ -2660,3 +2660,73 @@ hosts cleanly). All three fallback tiers untouched — the entire diff is one CS
 block; nothing in the fetch/mirror/fallback chain, JS logic, or markup changed.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-17 — Sticky "back to top" button
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four already
+live, same stale-list finding as every recent log. Brainstormed fresh across all seven
+dimensions: this back-to-top gap (mobile, open since 09-13), persisting registry
+sort/column-visibility to `localStorage` (interactivity, open since 09-13 — checked the code
+today and found column visibility already persists via `regCompactCols`; only sort order
+doesn't), a KPI mini-sparkline (new way to read the data, open since 09-04), `og:image`
+width/height meta tags and `robots.txt`/`sitemap.xml`/canonical (SEO, rejected dozens of times
+on "marginal payoff for a single-URL site" grounds), and an RSS/Atom feed of new trips
+(discoverability, needs a new pipeline build step, out of scope for a display-only change).
+
+A round fixed button, bottom-right, appears once the page has scrolled past roughly one
+viewport (`scrollY > innerHeight * 0.75`) — below that threshold the sticky header and in-page
+nav are already faster. Clicking it scrolls to top (instantly under
+`prefers-reduced-motion: reduce`, smoothly otherwise) and moves focus to the wordmark link, so a
+keyboard user lands back at a sensible, already-focusable point instead of the button itself
+vanishing from under their cursor. Placed as a direct child of `<body>`, after the footer and
+before the drawer markup, so it automatically gets `inert`-ed by the existing
+`setBackgroundInert()` sweep whenever the drawer or shortcuts dialog opens — verified live, no
+extra wiring needed. Added to the existing print-hidden chrome list (screen-only affordance,
+meaningless on paper).
+
+This is the oldest standing item in the log that has never actually been rejected on its own
+merits — just repeatedly outranked by a correctness bug, an a11y defect, or a fresher find,
+four cycles running (09-13 through 09-16). Nothing in today's brainstorm beat it a fifth time,
+so it got its slot.
+
+**Bug caught in verification, fixed before shipping:** the first cut called
+`document.querySelector('.wordmark').focus()` immediately after `window.scrollTo({behavior:
+'smooth'})`. `focus()`'s own implicit scroll-into-view fought the smooth-scroll animation
+already in flight — measured directly: the page consistently stalled around `scrollY` 1400–1500
+instead of reaching 0. `.focus({preventScroll: true})` fixed it (confirmed `scrollY: 0` after);
+our own explicit `scrollTo` is already handling the scroll, so the browser's redundant one only
+needed suppressing, not sequencing.
+
+**Runners-up**
+- *Persist registry sort order to `localStorage`* — real, and the narrower half of what 09-13's
+  "persist sort/column-visibility" runner-up actually described (column visibility already
+  ships this via `regCompactCols`); still lower-stakes than a mobile-navigation gap open for
+  four straight cycles.
+- *KPI mini-sparkline* — flagged 09-04; touches the KPI strip's skeleton-loader re-render
+  contract for a purely decorative addition, bigger than today's slot.
+- *`og:image` width/height meta tags* and *`robots.txt`/`sitemap.xml`/canonical* — rejected for
+  the umpteenth time on the same "real but marginal for a single-URL site" grounds as every
+  prior log. (Re-examined whether the 08-07 `?trip=` permalinks changed the canonical calculus —
+  they don't meaningfully: query-parameter URLs on the same path aren't a duplicate-content risk
+  search engines handle poorly, so the original "marginal payoff" reasoning still holds.)
+- *RSS/Atom feed of new trips* — flagged repeatedly since 09-02; still needs a new automated
+  build step adjacent to the data pipeline, out of scope for a display-only change.
+
+**Verification:** `node --check` on all three real inline script blocks — clean (the JSON-LD
+block fails as always, expected — it's JSON, not JS). Playwright against the served page (a
+`Plotly.react`/`el.on`/`el.emit` stub; `cdn.plot.ly` and the Google Fonts stylesheet blocked,
+same as every prior log) at 1280px and 375px, light and dark: button starts `hidden`; scrolling
+past the threshold reveals it on both widths; clicking it returns `scrollY` to exactly 0,
+re-hides the button, and lands focus on the wordmark link; opening the trip drawer while
+scrolled down correctly makes the button `inert` (confirmed `hasAttribute('inert')` true) and
+removes `inert` again on close; button stays fully inside the viewport at 375px with no overlap
+on the footer's links (screenshot-verified in both themes); dark mode renders it with the same
+surface/border tokens as the rest of the page's chrome; `emulateMedia('print')` reports
+`display: none`. All 8 charts initialize, all 5 KPI cards and all 45 registry rows render, no
+horizontal scroll at either width. Console clean bar the pre-existing, sandbox-only Google Fonts
+network block noted in every prior log. All three fallback tiers untouched — the entire change
+is one fixed-position button reading only `window.scrollY`/`innerHeight`, independent of `trips`
+or which tier populated it.
+
+**Files touched:** `index.html`, `ideas-log.md`
