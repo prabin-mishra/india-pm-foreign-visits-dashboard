@@ -77,9 +77,9 @@ pool = [art(BANGLADESH[0], d(1), "b1"), art(BANGLADESH[1], d(2), "b2"),
         art(BANGLADESH[2], d(4), "b3")]
 check("no live band from inbound/cancelled coverage", R.detect_reported_trip(pool), None)
 
-pool = [art("Shalom Modi: PM Modi arrives in Israel for two-day visit", d(1), "i1"),
-        art("PM Modi concludes landmark Israel visit, Netanyahu sees him off", d(1), "i2"),
-        art("PM Modi’s visit to Israel marks a significant milestone", d(3), "i3")]
+pool = [art("Shalom Modi: PM Modi arrives in Israel for two-day visit", d(1), "i1", "A"),
+        art("PM Modi concludes landmark Israel visit, Netanyahu sees him off", d(1), "i2", "B"),
+        art("PM Modi’s visit to Israel marks a significant milestone", d(3), "i3", "C")]
 got = R.detect_reported_trip(pool)
 check("genuine trip still detected", got and got["countries"], ["Israel"])
 check("corroboration counted", got and got["sourceCount"], 3)
@@ -89,6 +89,44 @@ pool = [art("PM Modi’s Israel visit marks a milestone, says envoy", d(1), "s1"
         art("PM Modi Israel visit signals deeper defence ties", d(2), "s2"),
         art("PM Modi Israel visit reshapes West Asia policy", d(3), "s3")]
 check("talked about is not the same as there", R.detect_reported_trip(pool), None)
+
+# --- India as host: the 2026-09-17 "Russia & China" band --------------------
+# India hosted the BRICS Summit in New Delhi; Xi came to him. Putin sent birthday
+# wishes. Nine such headlines raised "Reportedly abroad now — Russia & China".
+HOSTED = [
+    ("Prez Putin extends birthday wishes to PM Modi; lauds his contribution to "
+     "strengthening India-Russia ties", "Shillong Times"),
+    ("President Putin extends birthday wishes to PM Modi, lauds contribution to "
+     "India-Russia ties", "DD News"),
+    ('"Impossible to overstate your personal contribution": Putin wishes PM Modi on '
+     "birthday; highlights role in strengthening", "ANI"),
+    ('China says Modi-Xi reached "most important consensus" at BRICS Summit', "PGurus"),
+    ("Can a 20-second Modi-Xi handshake at the BRICS summit break years of India-China ice?",
+     "Asia News Network"),
+    ("BRICS Summit 2026 Highlights: Xi Says India-China Ties On Path Of Steady "
+     "Improvement In Meeting With PM Modi", "News18"),
+    ("Modi at BRICS 2026: Between US Ties and China’s Rise", "Mint"),
+    ("PM Modi holds bilateral with Uganda Vice President Jessica Alupo on BRICS "
+     "sidelines in New Delhi", "PIB"),
+]
+for t, _ in HOSTED[:2]:
+    check(f"bilateral pair is not a place | {t[:44]}", R.destination_countries(t), [])
+check("country as speaker is not a place", R.destination_countries(HOSTED[3][0]), [])
+check("summit in New Delhi is at home", R.destination_countries(HOSTED[7][0]), [])
+check("reached a consensus is not arrival", bool(R.ON_GROUND_RE.search(HOSTED[3][0])), False)
+check("reached a city still is", bool(R.ON_GROUND_RE.search("PM Modi reached Tokyo late on Friday")), True)
+check("someone else on the ground is not the PM",
+      R.destination_countries("EAM Jaishankar arrives in Bhutan, holds talks with counterpart") == ["Bhutan"]
+      and not R.PM_SUBJECT_RE.search("EAM Jaishankar arrives in Bhutan, holds talks with counterpart"), True)
+
+pool = [art(t, d(i % 5), f"h{i}", src) for i, (t, src) in enumerate(HOSTED)]
+check("no live band while India hosts", R.detect_reported_trip(pool), None)
+
+# A lone stale "arrives" headline is not enough to call a live trip.
+pool = [art("PM Modi Arrives in Seychelles for Three-Day State Visit", d(1), "y1", "A"),
+        art("PM Modi Seychelles visit to deepen maritime ties", d(1), "y2", "B"),
+        art("PM Modi Seychelles visit: what’s on the agenda", d(2), "y3", "C")]
+check("one on-the-ground source is not corroboration", R.detect_reported_trip(pool), None)
 
 if FAILS:
     print(f"FAILED {len(FAILS)} check(s):", file=sys.stderr)

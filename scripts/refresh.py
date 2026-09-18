@@ -414,8 +414,12 @@ def find_countries(text):
 # Travel/destination cues. A country only counts as a trip leg when one of these
 # sits near it in the headline — so "arrives in Australia" credits Australia, but
 # "counter China" / "amid China rivalry" (framing, not a destination) does not.
+# "reached a consensus/deal" is an outcome, not arrival somewhere.
+_REACH = r"\breach(?:es|ed)?\b(?!\s+(?:a |an |the )?(?:\"|'|‘|“)?(?:most |an? )?(?:important |key |broad )?" \
+         r"(?:consensus|agreement|deal|understanding|pact|accord|milestone|out|record|new)\b)"
+
 DEST_CUE_RE = re.compile(
-    r"arriv|\bland(?:s|ed|ing)?\b|reach(?:es|ed)?|\bvisit|\btour|welcom|receiv|\bhost|"
+    r"arriv|\bland(?:s|ed|ing)?\b|" + _REACH + r"|\bvisit|\btour|welcom|receiv|\bhost|"
     r"greet|bilateral|\bsummit|\bties\b|new chapter|upgrade|state visit|three-nation|two-nation|"
     r"nation (?:trip|tour|visit)|touches down|\ben route", re.I)
 
@@ -433,7 +437,8 @@ DEST_CUE_RE = re.compile(
 LEADER_TITLE_RE = re.compile(
     r"^(?:['’]s)?\s+(?:PM\b|Prime Minister|President|King\b|Queen\b|Chancellor|Premier|"
     r"Emir\b|Sultan|Crown Prince|Foreign Minister|Foreign Secretary|Ambassador|Envoy|"
-    r"Minister|Delegation|Government|Govt\b|Cabinet|Counterpart|Leader\b)", re.I)
+    r"Minister|Delegation|Government|Govt\b|Cabinet|Counterpart|Leader\b|"
+    r"says\b|said\b|slams|urges|hails|warns|calls\b)", re.I)
 
 # …unless that leader is receiving the PM — "Israel President welcomes Modi"
 # still places him in Israel.
@@ -447,7 +452,24 @@ INBOUND_INDIA_RE = re.compile(
     r"\b(?:arriv|land|reach|head|travel|fly|flies|com)\w*\s+(?:in|to)\s+India\b", re.I)
 
 
+# The event is happening in India (India hosting a summit, a leader visiting
+# Delhi) or he is already back — the PM is at home, whatever countries appear.
+HOME_VENUE_RE = re.compile(
+    r"\b(?:in|at|to) (?:New )?Delhi\b|\bin India\b|\bIndia (?:hosts?|hosted|hosting)\b|"
+    r"\bhosted by India\b|\bIndia['’]s (?:BRICS|G20|SCO|Quad) (?:presidency|chairship|summit)|"
+    r"\breturns? (?:home|to India|to Delhi)\b|\bback (?:home|in India)\b", re.I)
+
+# "India-Russia ties", "Modi-Xi", "Philippines-India" name a relationship, not a place.
+_PAIR_BEFORE = re.compile(r"(?:India|Delhi|Modi)\s*[-–—]\s*$", re.I)
+_PAIR_AFTER = re.compile(r"^\s*[-–—]\s*(?:India|Delhi|Modi)\b", re.I)
+
+# Hard presence evidence has to be about *the* PM, not the EAM or a foreign leader.
+PM_SUBJECT_RE = re.compile(r"\bModi\b|\bPM\b|Prime Minister", re.I)
+
+
 def destination_countries(title):
+    if HOME_VENUE_RE.search(title):
+        return []
     low = title.lower()
     inbound = INBOUND_INDIA_RE.search(title)
     pm_is_guest = PM_AS_GUEST_RE.search(title)
@@ -460,6 +482,9 @@ def destination_countries(title):
             if inbound:
                 return []  # that leader is travelling to India — not the PM's trip
             continue       # a person, not a place; other mentions may still count
+        if _PAIR_BEFORE.search(title[max(0, m.start() - 8):m.start()]) or \
+                _PAIR_AFTER.match(title[m.end():m.end() + 8]):
+            continue       # bilateral framing, not a destination
         window = low[max(0, m.start() - 34): m.end() + 34]
         if DEST_CUE_RE.search(window):
             out.append(canon)
@@ -481,7 +506,7 @@ SPECULATIVE_RE = re.compile(
 
 # Hard evidence of the PM on the ground, as opposed to a trip being discussed.
 ON_GROUND_RE = re.compile(
-    r"\barriv\w+|\bland(?:s|ed|ing)\b|\breach(?:es|ed)\b|touch(?:es|ed)? down|\bis in\b|"
+    r"\barriv\w+|\bland(?:s|ed|ing)\b|" + _REACH + r"|touch(?:es|ed)? down|\bis in\b|"
     r"\bbegins?\b|\bkick(?:s|ed)? off|\bconclude\w*|\bwrap(?:s|ped)? up|\bholds? talks\b|"
     r"\bwelcomed\b|\breceiv\w+ (?:a )?(?:ceremonial|guard|red[- ]carpet|grand|warm) welcome|"
     r"\bstate visit to\b|\bon (?:a )?(?:two|three|four|five|six|seven)[- ]day\b", re.I)
@@ -513,7 +538,7 @@ REPORTED_QUERIES = ["Narendra Modi arrives", "PM Modi visit", "Narendra Modi lan
                     "PM Modi foreign visit", "Modi bilateral summit"]
 
 
-def detect_reported_trip(pool, min_sources=3, recency_days=3):
+def detect_reported_trip(pool, min_sources=3, recency_days=3, min_ground=2):
     """A trip credible news corroborates but the registry hasn't published yet.
 
     A country is only treated as a trip leg when it appears with a destination
@@ -569,13 +594,22 @@ def detect_reported_trip(pool, min_sources=3, recency_days=3):
     if not cand:
         return None
 
+    # Corroboration by count is not enough: a country is only a leg if reports
+    # place the PM himself on the ground there — "India-Russia ties" chatter or
+    # a summit India hosted can clear the count without him leaving home.
+    grounded = lambda it: bool(ON_GROUND_RE.search(it["title"]) and PM_SUBJECT_RE.search(it["title"]))
+    for c in list(cand):
+        if not any(grounded(x) for x in cand[c]):
+            print(f"[news] no on-the-ground report for {c} — dropping leg", file=sys.stderr)
+            del cand[c]
+    if not cand:
+        return None
     countries = sorted(cand, key=lambda c: min(x["dt"] for x in cand[c]))  # tour order
     primary = countries[-1]  # most recently begun leg = current location
-    # Corroboration by count is not enough: at least one report must place him on
-    # the ground there, not merely discuss the leg.
-    if not any(ON_GROUND_RE.search(x["title"]) for x in cand[primary]):
-        print(f"[news] no on-the-ground report for {primary} — not claiming a live trip",
-              file=sys.stderr)
+    # The leg he is on *now* needs two independent on-the-ground reports.
+    if len({x["source"] for x in cand[primary] if grounded(x)}) < min_ground:
+        print(f"[news] fewer than {min_ground} on-the-ground sources for {primary} — "
+              f"not claiming a live trip", file=sys.stderr)
         return None
     as_of = freshest.date().isoformat()
     window = trip_window(None, None, as_of)

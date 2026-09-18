@@ -2809,3 +2809,16 @@ is one fixed-position button reading only `window.scrollY`/`innerHeight`, indepe
 or which tier populated it.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-18 — Fix: false "Reportedly abroad now — Russia & China" band (user-requested)
+
+Not a daily idea — a bug fix requested by the maintainer. The PM was in India (India hosted the
+BRICS Summit in New Delhi; Putin sent birthday wishes), but the detector read "India-Russia
+ties", "Modi-Xi *reached* consensus at BRICS Summit" and "China says…" as travel, and treated
+"reached consensus" as proof he was on the ground. Now: bilateral pairs (India-X, Modi-Xi) and a
+country as speaker are not destinations; headlines placing the event in Delhi/India are home;
+"reached a consensus/deal" is not arrival; every listed country needs an on-the-ground headline
+naming the PM, and the current leg needs two independent outlets. Regression tests use the
+real 17 Sep headlines.
+
+**Files touched:** `scripts/refresh.py`, `scripts/test_headline_claims.py`, `ideas-log.md`
