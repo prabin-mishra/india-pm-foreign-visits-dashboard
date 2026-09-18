@@ -1587,6 +1587,85 @@ themes checked. All three fallback tiers share `normalizeTrips`, so none is priv
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-09-18 — KPI mini-sparklines: a by-year trend under each headline stat
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all four already live, same
+stale-list finding as every recent log. Brainstormed fresh across all seven dimensions: this KPI
+trend (new way to read the data), a registry-table horizontal-scroll fade (mobile — rejected twice
+already, 09-12/09-14, as too close to the nav's own fade mechanism and lower-urgency than the
+table's existing "Compact columns" escape hatch), persisting registry sort order to `localStorage`
+(interactivity, open since 09-13), `og:image` width/height meta tags and `robots.txt`/`sitemap.xml`
+(SEO, rejected on marginal-payoff grounds too many times to keep counting), and an RSS/Atom feed of
+new trips (discoverability, needs a new pipeline build step, out of scope for a display-only day).
+
+Each of the five headline stats (Trips, Country touches, Unique countries, Days abroad,
+Multi-country tours) has only ever shown a single number — "45 trips," with no way to tell from the
+KPI strip alone whether that reflects a rising, falling, or flat pattern year to year. The six
+analysis charts below answer *where* and *when*; nothing on the page answered "is this number
+trending" at the glance a KPI card is designed for. This is the single most-repeated open "new way
+to read the data" item in the log — flagged 09-04 and passed over in the 09-05, 09-10, 09-15,
+09-16, and 09-17 runner-up lists, each time as "thinner" than that day's pick or as touching "the
+KPI strip's skeleton-loader re-render contract." Checked that stated risk directly before writing
+any code: `renderKpis()` already replaces `#kpis.innerHTML` wholesale on every call, built fresh
+from `cards`, so the pre-JS skeleton markup (five static placeholder `.stat` divs in the initial
+HTML) never needs to know about a sparkline at all — it's fully replaced the instant real data
+renders, same as the numbers themselves. The often-cited risk didn't actually hold up under
+inspection; nothing fresher in today's brainstorm beat the item on its own merits either.
+
+Each card buckets the *already-filtered* `rows` by `t.year` (so PM/year/country/search scope is
+whatever the user's own filters already show, the same "no new filter semantics" contract the
+08-15 gap fact and 09-10 month fact both rely on) and draws a 56×18 inline SVG polyline — one
+point per year, values matching exactly what that card's own number aggregates (trip count,
+summed country touches, per-year unique-country count, summed days, multi-country count). No
+Plotly, no new dependency: a hand-rolled path string in the same style the outcome-indicator
+drawer's existing `sparkline()` helper already established (08-05/09-05), scoped down to a plain
+year-bucketed trend instead of that helper's month-aligned, visit-marked variant. Suppressed below
+3 distinct years — 2 points reduce to a meaningless "up" or "down" with no real shape, and a
+single-year filter (or an empty result set) has no trend to show at all; verified both cases
+correctly hide the sparkline while leaving the number itself untouched. The SVG is
+`aria-hidden="true"`; the identical by-year numbers it draws from are always spelled out in an
+adjacent `.sr-only` span ("By year: 2021: 3, 2022: 7, …"), so a screen-reader user gets the same
+information a sighted user reads off the shape — the same "shape is a bonus, the numbers are the
+source of truth" contract the 08-08 accessible chart tables already established, just at KPI-card
+scale instead of full-chart scale. Stroke color is `currentColor` (inheriting `--accent` in normal
+mode), not a hardcoded value — verified under `forced-colors: active` that the line resolves to
+whatever color the OS forces (confirmed `CanvasText`-equivalent black-on-white in this sandbox's
+emulation) rather than vanishing the way `.days-bar`/`.live-dot` did before the 09-16 fix.
+
+**Runners-up**
+- *Registry table horizontal-scroll fade* — the same masking technique 09-11 used for the mobile
+  nav, applied to the registry table; still rejected on the same grounds as 09-12/09-14 (too close
+  to an already-shipped mechanism, and "Compact columns" already gives an escape hatch).
+- *Persist registry sort order to `localStorage`* — open since 09-13/09-17; real, but lower-stakes
+  than closing the single most-repeated open item in the log.
+- *`og:image` width/height meta tags* and *`robots.txt`/`sitemap.xml`/canonical* — rejected for the
+  umpteenth time on the same "real but marginal for a single-URL site" grounds as every prior log.
+- *RSS/Atom feed of new trips* — flagged repeatedly since 09-02; still needs a new automated build
+  step adjacent to the data pipeline, out of scope for a display-only change.
+
+**Verification:** `new Function()` syntax-checked both real inline `<script>` blocks — clean (the
+JSON-LD block fails as always, expected — it's JSON, not JS). Playwright against the served page (a
+`Plotly.react`/`el.on`/`el.emit` stub, `cdn.plot.ly` and the Google Fonts stylesheet routed to
+abort, same as every prior log) at 1280px and 375px, light and dark: all 5 KPI cards render a
+`.kpi-spark` with an adjacent `.sr-only` span whose by-year text matches the card's own real
+`data/visits.json` totals exactly (spot-checked "Trips" — `2021: 3, 2022: 7, 2023: 6, 2024: 11,
+2025: 11, 2026: 7` — against the registry's own year filter counts); searching to a zero-match term
+correctly shows "0" with zero sparklines; filtering to a single year correctly suppresses all five
+sparklines (only one data point) while the numbers themselves still render; clicking Reset restores
+all five; toggling dark mode leaves all five rendered with the same `currentColor`-derived stroke.
+Under `forced-colors: active`, the sparkline path resolves to the forced foreground color and stays
+visible (screenshot-confirmed), not the invisible-shape failure the 09-16 log fixed for two other
+elements. Under `@media print` the SVGs remain part of the flow (no special-casing needed, since
+they inherit the same print-overridden CSS variables as everything else). All 8 charts initialize,
+all 45 registry rows render, no page-level horizontal scroll at either width. Console clean bar the
+pre-existing, sandbox-only Google Fonts network block noted in every prior log. All three fallback
+tiers untouched — the change lives entirely inside `kpiSpark()` and `renderKpis()`, reading only
+`rows`/`t.year`/`t.countries`/`t.days`/`t.visitType`, already normalized identically regardless of
+which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-09-01 — Clickable country tags in the registry table
 
 **Shipped.** The country pills in the registry's "Countries" column (e.g. "Indonesia", "Australia",

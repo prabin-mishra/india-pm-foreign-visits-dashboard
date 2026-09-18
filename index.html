@@ -302,6 +302,14 @@
     }
     .stat .l { font-size: .8rem; font-weight: 600; color: var(--text-2); margin-top: 6px; }
     .stat .s { font-size: .76rem; color: var(--text-3); margin-top: 2px; }
+    /* Per-year trend beneath each KPI's headline number. Decorative SVG only — the same
+       by-year numbers are always available to assistive tech via the adjacent .sr-only text,
+       so nothing is lost if the shape itself doesn't render (e.g. under forced-colors, where
+       stroke: currentColor already tracks whatever color the OS forces, same as this page's
+       other currentColor icons). */
+    .kpi-spark-wrap { margin-top: 8px; line-height: 0; color: var(--accent); }
+    .kpi-spark-line { fill: none; stroke: currentColor; stroke-width: 1.4; }
+    .kpi-spark-dot { fill: currentColor; }
 
     /* ============ Filter bar ============ */
     .filterbar {
@@ -1445,20 +1453,47 @@ function renderFacts(rows) {
   ].filter(Boolean).join('');
 }
 
+// Tiny inline-SVG trend line for one KPI, one point per year currently in view. Suppressed
+// below 3 years — a 2-point line reduces to "up" or "down" with no real shape, and 1 year (or
+// a single-year filter) has no trend at all. Purely decorative (aria-hidden): the same by-year
+// numbers this draws from are always spelled out in the adjacent .sr-only text, so nothing is
+// lost for a screen-reader user, same "shape is a bonus, numbers are the source of truth"
+// contract the accessible chart data tables (08-08) already established.
+function kpiSpark(byYear, valueFn) {
+  const years = Object.keys(byYear).sort();
+  if (years.length < 3) return null;
+  const pts = years.map(y => valueFn(byYear[y]));
+  const max = Math.max(...pts), min = Math.min(...pts);
+  const W = 56, H = 18;
+  const X = i => (i / (years.length - 1) * (W - 2) + 1).toFixed(1);
+  const Y = v => max === min ? (H / 2).toFixed(1) : (H - 2 - (v - min) / (max - min) * (H - 4)).toFixed(1);
+  const d = pts.map((v, i) => `${i ? 'L' : 'M'}${X(i)} ${Y(v)}`).join(' ');
+  const desc = years.map((y, i) => `${y}: ${fmt(pts[i])}`).join(', ');
+  return {
+    svg: `<svg class="kpi-spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false">` +
+         `<path d="${d}" class="kpi-spark-line"/>` +
+         `<circle cx="${X(pts.length - 1)}" cy="${Y(pts[pts.length - 1])}" r="1.7" class="kpi-spark-dot"/></svg>`,
+    desc,
+  };
+}
+
 function renderKpis(rows) {
   const countryTouches  = rows.reduce((s, t) => s + t.countries.length, 0);
   const multi           = rows.filter(t => t.visitType === 'Multi-country').length;
   const totalDays       = rows.reduce((s, t) => s + t.days, 0);
   const uniqueCountries = new Set(rows.flatMap(t => t.countries)).size;
+  const byYear = rows.reduce((m, t) => ((m[t.year] = m[t.year] || []).push(t), m), {});
   const cards = [
-    ['Trips', fmt(rows.length), 'In current view'],
-    ['Country touches', fmt(countryTouches), 'Incl. multi-country stops'],
-    ['Unique countries', fmt(uniqueCountries), 'Distinct nations visited'],
-    ['Days abroad', fmt(totalDays), 'Total trip duration'],
-    ['Multi-country tours', fmt(multi), 'Trips with 2+ destinations'],
+    ['Trips', fmt(rows.length), 'In current view', kpiSpark(byYear, arr => arr.length)],
+    ['Country touches', fmt(countryTouches), 'Incl. multi-country stops', kpiSpark(byYear, arr => arr.reduce((s, t) => s + t.countries.length, 0))],
+    ['Unique countries', fmt(uniqueCountries), 'Distinct nations visited', kpiSpark(byYear, arr => new Set(arr.flatMap(t => t.countries)).size)],
+    ['Days abroad', fmt(totalDays), 'Total trip duration', kpiSpark(byYear, arr => arr.reduce((s, t) => s + t.days, 0))],
+    ['Multi-country tours', fmt(multi), 'Trips with 2+ destinations', kpiSpark(byYear, arr => arr.filter(t => t.visitType === 'Multi-country').length)],
   ];
-  document.getElementById('kpis').innerHTML = cards.map(([l, v, s]) =>
-    `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${s}</div></div>`
+  document.getElementById('kpis').innerHTML = cards.map(([l, v, s, sp]) =>
+    `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${s}</div>` +
+    (sp ? `<div class="kpi-spark-wrap">${sp.svg}<span class="sr-only">By year: ${esc(sp.desc)}</span></div>` : '') +
+    `</div>`
   ).join('');
 }
 
