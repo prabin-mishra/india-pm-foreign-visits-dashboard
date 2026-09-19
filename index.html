@@ -1867,6 +1867,21 @@ const SORT_GETTERS = {
   pm:        t => t.pm.toLowerCase(),
 };
 const SORT_DESC_FIRST = new Set(['start', 'countries', 'days']);
+const SORT_STATE_KEY = 'regSort';
+
+// Restores a sort chosen on a prior visit, the same persisted-UI-preference pattern
+// `regCompactCols` already uses. Validated against the real column/direction sets so a
+// malformed or stale value (an old key from a future column rename, hand-edited storage)
+// silently falls back to the built-in default instead of breaking sortRows/renderTable.
+(function restoreSortState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SORT_STATE_KEY) || 'null');
+    if (saved && SORT_GETTERS[saved.key] && (saved.dir === 'asc' || saved.dir === 'desc')) {
+      state.sortKey = saved.key;
+      state.sortDir = saved.dir;
+    }
+  } catch (e) { /* quota/blocked/malformed JSON; keep the built-in default */ }
+})();
 
 function sortRows(rows) {
   const get = SORT_GETTERS[state.sortKey];
@@ -1886,6 +1901,7 @@ function handleSortClick(key) {
     state.sortKey = key;
     state.sortDir = SORT_DESC_FIRST.has(key) ? 'desc' : 'asc';
   }
+  try { localStorage.setItem(SORT_STATE_KEY, JSON.stringify({key: state.sortKey, dir: state.sortDir})); } catch (e) { /* quota/blocked; sort still applies for this session */ }
   renderTable(sortRows(filtered()));
 }
 

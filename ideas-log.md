@@ -2822,3 +2822,61 @@ naming the PM, and the current leg needs two independent outlets. Regression tes
 real 17 Sep headlines.
 
 **Files touched:** `scripts/refresh.py`, `scripts/test_headline_claims.py`, `ideas-log.md`
+
+## 2026-09-19 — Persist registry sort order to `localStorage`
+
+**Shipped.** Checked the run prompt's four suggested candidates first (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all four already live, same
+stale-list finding as every recent log. Brainstormed fresh across all seven dimensions: this sort
+gap (interactivity, open since 09-13), a registry horizontal-scroll fade for mobile (rejected twice
+already, 09-12/09-14, as too close to the nav's own fade mechanism), `og:image` width/height meta
+tags and `robots.txt`/`sitemap.xml`/canonical (SEO, rejected on marginal-payoff grounds well over
+thirty times running), an RSS/Atom feed of new trips (discoverability, needs a new pipeline build
+step, out of scope for a display-only day), and a per-trip data-completeness badge (trust, flagged
+09-14, still underspecified enough to want a mockup first).
+
+Confirmed the gap directly in code before picking it: `regCompactCols` (column-visibility) already
+persists across visits, but `state.sortKey`/`state.sortDir` only ever lived in memory, reset to the
+default (Dates, newest-first) on every fresh page load. This is the single most-repeated open
+"interactivity" item in the log — named a real gap and passed over as lower-stakes five cycles
+running (09-13 through 09-18) without ever being rejected on its own merits. Nothing fresher in
+today's brainstorm beat it, so it finally got its slot.
+
+Implementation mirrors the existing `regCompactCols` pattern exactly: `handleSortClick` writes
+`{key, dir}` to `localStorage['regSort']` after every click, and a one-time IIFE placed right after
+`SORT_GETTERS`/`SORT_DESC_FIRST` are defined restores it into `state` before the first render —
+validated against the real `SORT_GETTERS` key set and the `'asc'|'desc'` pair, so a malformed,
+stale, or hand-edited value (e.g. a column key from a future rename) silently falls back to the
+built-in default instead of breaking `sortRows`. "Reset filters" still leaves the active sort
+untouched, matching the 08-11 contract (filters and sort are independent controls) — confirmed the
+persisted value survives a Reset click too. Pure client-side UI-preference storage: no new
+dependency, no data-provenance touch, no URL/state-sync change.
+
+**Runners-up**
+- *Registry table horizontal-scroll fade* — rejected a third time on the same "too close to the
+  nav's own fade mechanism, and Compact columns already gives an escape hatch" grounds as
+  09-12/09-14.
+- *`og:image` width/height meta tags* and *`robots.txt`/`sitemap.xml`/canonical* — rejected for the
+  umpteenth time on the same "real but marginal for a single-URL site" grounds as every prior log.
+- *RSS/Atom feed of new trips* — flagged repeatedly since 09-02; still needs a new automated build
+  step adjacent to the data pipeline, out of scope for a display-only change.
+- *Per-trip data-completeness badge* — flagged 09-14; still underspecified (what counts as
+  "complete," how it reads next to the existing caveats panel) to want its own day with a mockup
+  first, not a same-day build.
+
+**Verification:** `node --check` on both real inline script blocks — clean. Playwright against the
+served page (a `Plotly.react`/`newPlot` stub returning an element with `.on`/`.emit`, `cdn.plot.ly`
+and the Google Fonts stylesheet routed to fail, same as every prior log) at 1280px and 375px:
+default load sorts Dates/descending as before; clicking "Days" sorts descending first and writes
+`{"key":"days","dir":"desc"}` to `localStorage`; a second click flips to ascending and persists
+that too; clicking "Reset filters" leaves the Days/ascending sort untouched (`aria-sort` unchanged)
+while still clearing filters, matching the existing 08-11 contract; reloading the page restores
+Days/ascending exactly (`Dates` column's `aria-sort` correctly reads `none`); seeding `localStorage`
+with invalid JSON, and separately with a well-formed but unknown column key, both fall back safely
+to the built-in Dates/descending default with no console error. All 8 charts initialize, all 5 KPI
+cards and all 45 registry rows render, no horizontal scroll at 375px. Console clean bar the
+pre-existing, sandbox-only Google Fonts network block noted in every prior log. All three fallback
+tiers untouched — the change is scoped to `state.sortKey`/`state.sortDir` and two `localStorage`
+calls; nothing in the fetch/mirror/fallback chain, filter logic, or markup changed.
+
+**Files touched:** `index.html`, `ideas-log.md`
