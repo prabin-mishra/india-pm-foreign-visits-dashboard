@@ -236,6 +236,15 @@
     .chart-dl-btn:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
     .chart-dl-btn:disabled { opacity: .35; cursor: default; }
 
+    /* ============ Broken permalink notice ============ */
+    .link-notice { background: var(--gold-soft); border-bottom: 1px solid var(--border); }
+    .link-notice .wrap {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4);
+      padding: var(--sp-3) var(--sp-6); font-size: .86rem; color: var(--gold-text); line-height: 1.5;
+    }
+    .link-notice .icon-btn { flex: none; width: 30px; height: 30px; color: var(--gold-text); }
+    .link-notice .icon-btn svg { width: 14px; height: 14px; }
+
     /* ============ Hero ============ */
     .hero { padding: var(--sp-16) 0 var(--sp-10); }
     .eyebrow {
@@ -797,7 +806,7 @@
       /* Interactive-only chrome that means nothing on paper. */
       .skip-link, .site-nav, #themeToggle, #shortcutsHelp, .filterbar .field, .filterbar .btn-reset,
       .btn-download, #newsBlock, #drawer, #drawer-overlay, #shortcutsModal, #shortcutsOverlay, .sort-icon,
-      #newSinceNote, .badge-new, #backToTop {
+      #newSinceNote, .badge-new, #backToTop, #linkNotice {
         display: none !important;
       }
 
@@ -842,6 +851,19 @@
   </header>
 
   <main id="main">
+    <!-- Shown only when the URL names a trip (a shared permalink) that no longer matches any
+         trip in the loaded dataset — e.g. a stale link from before a data correction renamed
+         or removed that trip. Silently doing nothing here would leave whoever followed the
+         link with no idea why it didn't work. -->
+    <div id="linkNotice" class="link-notice" hidden role="alert">
+      <div class="wrap">
+        <span id="linkNoticeText"></span>
+        <button class="icon-btn link-notice-close" id="linkNoticeClose" type="button" aria-label="Dismiss notice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
     <!-- ============ Hero ============ -->
     <section class="hero" id="top">
       <div class="wrap">
@@ -3362,11 +3384,26 @@ document.addEventListener('click', e => {
   if (btn) filterBy(btn.dataset.key, btn.dataset.value);
 });
 
+// Stale or invalid trip slug in the URL — e.g. a link shared before a data correction renamed
+// or removed that trip. Say so instead of silently doing nothing, and drop it from the URL so
+// a reload or a share of the current address doesn't keep repeating the same dead end.
+function showBrokenTripNotice(badSlug) {
+  state.trip = null;
+  writeUrlState();
+  document.getElementById('linkNoticeText').innerHTML =
+    `The trip link you followed (<code>${esc(badSlug)}</code>) doesn't match any trip in the current dataset — it may have been renamed or corrected. Showing the full tracker instead.`;
+  document.getElementById('linkNotice').hidden = false;
+}
+document.getElementById('linkNoticeClose').addEventListener('click', () => {
+  document.getElementById('linkNotice').hidden = true;
+});
+
 // If the URL names a trip (a shared permalink), open its drawer once data is loaded.
 function openTripFromUrl() {
   if (!state.trip) return;
   const trip = trips.find(t => t.slug === state.trip);
   if (trip) { lastFocusedRow = null; openDrawer(trip, {push: false}); }
+  else showBrokenTripNotice(state.trip);
 }
 
 // Restore filter + drawer state on browser back/forward

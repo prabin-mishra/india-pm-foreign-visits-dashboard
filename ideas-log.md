@@ -2880,3 +2880,57 @@ tiers untouched — the change is scoped to `state.sortKey`/`state.sortDir` and 
 calls; nothing in the fetch/mirror/fallback chain, filter logic, or markup changed.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-20 — Surface a notice when a shared trip permalink doesn't resolve
+
+**Shipped.** The four candidates named in the run prompt (drawer focus trap, deferred Plotly,
+accessible chart data tables, sortable registry columns) are all already live — same stale-list
+finding as every recent log. Brainstormed fresh across all seven dimensions: a `manifest.json` for
+proper Android "Add to Home Screen" support (mobile/discoverability — favicon and apple-touch-icon
+exist since 08-14 but no manifest), lazy-initializing the six below-the-fold charts with an
+`IntersectionObserver` (performance — real win, but riskier than a one-day slot given the
+click-to-filter/download-button/table wiring on all eight charts), a registry horizontal-scroll
+fade (mobile, rejected twice already, 09-12/09-14), `og:image` width/height and
+`robots.txt`/`sitemap.xml`/canonical (SEO, rejected on marginal-payoff grounds well over thirty
+times running), an RSS/Atom feed of new trips (discoverability, needs a new pipeline build step,
+out of scope), and a per-trip data-completeness badge (trust, flagged 09-14, still underspecified).
+
+None of those beat a correctness gap none of the prior logs had named: `openTripFromUrl()` looks up
+`state.trip` against the loaded `trips` array and, if nothing matches, does precisely nothing — no
+drawer, no message, no explanation. A `?trip=…` permalink is this project's citation mechanism for
+journalists and researchers (added 08-04, still the only per-trip deep link the site offers), and a
+stale one — after a slug-changing data correction like 08-31's canonical-country fix, or just a typo
+in a pasted link — silently strands whoever followed it on what looks like an unrelated, unfiltered
+homepage with no clue why. That's a trust problem for exactly the audience this site is built for,
+and it was small enough to fix outright rather than just flag.
+
+Added a dismissible `role="alert"` banner (`#linkNotice`) at the top of `<main>`, styled with the
+same gold/warning tokens already used for the stale-refresh and "reported" badges. A new
+`showBrokenTripNotice(slug)` helper — called from `openTripFromUrl()` when the slug lookup fails —
+names the bad slug, explains it may have been renamed or corrected, and clears `trip` from both
+`state` and the URL via the existing `writeUrlState()` so reloading or re-sharing the address doesn't
+repeat the same dead end. Deliberately left the `popstate` handler's parallel (and much rarer)
+not-found branch untouched: calling `writeUrlState()`'s `history.pushState` from inside a `popstate`
+callback risks corrupting the back/forward stack, a risk not worth taking for an edge case of an
+edge case when the existing "close the drawer" behavior there is already harmless.
+
+**Runners-up**
+- *`manifest.json` for Android home-screen install* — real, safe, and fresh (never proposed before),
+  but a "nice to have" against a correctness bug that actively strands the site's own citation links.
+- *Lazy chart initialization via `IntersectionObserver`* — genuine perceived-performance win, but
+  bigger and riskier than a one-day slot given how much (click-to-filter, PNG download, data-table
+  generation) is wired to each of the eight charts' init.
+- *Registry horizontal-scroll fade*, *`og:image`/`robots.txt`/`sitemap.xml`*, *RSS/Atom feed*,
+  *data-completeness badge* — all rejected again on the same grounds as prior logs (see above).
+
+**Verification:** `node --check` on both real inline script blocks — clean. Playwright (Plotly
+`react`/`newPlot` stubbed to return an element with working `.on`/`.emit`, `cdn.plot.ly` and the
+Google Fonts stylesheet blocked, same as every prior log) at 1280px and 375px: a normal load leaves
+`#linkNotice` hidden; `?trip=does-not-exist-xyz` shows it with the correct slug-naming message and
+rewrites the URL back to the bare path; clicking the dismiss button hides it again; a real trip slug
+still opens the drawer normally with the notice staying hidden. All eight charts leave their loading
+state, no horizontal scroll at either width, console clean bar the pre-existing sandbox-only CDN
+blocks noted in every prior log. All three fallback tiers untouched — the change reads `trips` (any
+tier) and touches only `state.trip`/the URL/one new banner element, nothing in the fetch chain.
+
+**Files touched:** `index.html`, `ideas-log.md`
