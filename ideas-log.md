@@ -2934,3 +2934,60 @@ blocks noted in every prior log. All three fallback tiers untouched — the chan
 tier) and touches only `state.trip`/the URL/one new banner element, nothing in the fetch chain.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-21 — Web app manifest + iOS meta trio for "Add to Home Screen" installability
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as every recent log. Brainstormed fresh across all seven dimensions:
+`manifest.json` for Android install (mobile/discoverability — named fresh as a runner-up
+yesterday, still open), lazy chart init via `IntersectionObserver` (performance, rejected
+repeatedly as riskier than a one-day slot given how much is wired to each of the eight charts'
+init), a registry horizontal-scroll fade (mobile, rejected three times already), `og:image`
+width/height + `robots.txt`/`sitemap.xml`/canonical (SEO, rejected on marginal-payoff grounds
+well over thirty times running), an RSS/Atom feed of new trips (discoverability, needs a new
+pipeline build step, out of scope for a display-only day), and a per-trip data-completeness
+badge (trust, still underspecified — flagged repeatedly since 09-14 without a mockup).
+
+Confirmed the gap in code before picking it: the page has had favicon/apple-touch-icon since
+08-14 and full OG/Twitter/JSON-LD metadata since well before that, but no `<link rel="manifest">`
+and no `apple-mobile-web-app-*` meta tags at all — so "Add to Home Screen" on Android produces a
+bare browser-chrome shortcut instead of an installed app icon, and iOS Safari (which ignores the
+manifest for this purpose) gets no home-screen branding hook whatsoever. For a civic dashboard
+whose own CLAUDE.md names "mobile experience" and "discoverability" as explicit improvement
+dimensions, that's a real, fully-open gap — and it's genuinely fresh, not a repeat: no prior log
+proposed a manifest until it surfaced as yesterday's top runner-up.
+
+Added `manifest.json` (name/short_name/description, `start_url`/`scope` set to `"."` so it
+resolves relative to wherever the page is actually served — GitHub Pages subpath or a bare
+`python3 -m http.server` root alike — `display: "standalone"`, `background_color`/`theme_color`,
+two icon entries) plus a `<link rel="manifest">` and the `apple-mobile-web-app-capable` /
+`-title` / `-status-bar-style` meta trio in `<head>`. Generated `icon-192.png` and `icon-512.png`
+with the exact same map-pin mark (teal square, white circle + triangle) as the existing
+favicon/apple-touch-icon, via a small pure-stdlib rasterizer (4x4 supersampled point-in-shape
+test against the same coordinates as the inline favicon SVG, zlib-compressed into PNG chunks) —
+same approach the 08-14 log used, no image library available in this environment, no new
+dependency. Pure additive `<head>`/static-asset change: no JS behavior touched, no data read.
+
+**Runners-up**
+- *Lazy chart initialization via `IntersectionObserver`* — genuine perceived-performance win, but
+  bigger and riskier than a one-day slot given click-to-filter, PNG download, and data-table
+  generation are all wired to each of the eight charts' init.
+- *Registry horizontal-scroll fade*, *`og:image`/`robots.txt`/`sitemap.xml`*, *RSS/Atom feed*,
+  *data-completeness badge* — all rejected again on the same grounds as prior logs (see above).
+
+**Verification:** `node --check` on both real inline script blocks — clean. `python3 -c
+"import json; json.load(...)"` confirms `manifest.json` is valid JSON; both new PNGs verified as
+correct-sized (192x192, 512x512) 8-bit RGB PNGs. Served locally (`python3 -m http.server`):
+`index.html`, `manifest.json`, `icon-192.png`, `icon-512.png` all resolve `200`. Playwright
+(Plotly `react`/`newPlot` stubbed to return the container element with working `.on`/`.emit`;
+`cdn.plot.ly` and the Google Fonts stylesheet blocked, same as every prior log) at 1280px and
+375px: `<link rel="manifest">` resolves to the served `manifest.json`, `apple-mobile-web-app-
+capable` reads `"yes"`, all 8 charts (9 `role="img"` containers counting the flight-globe SVG)
+leave their loading state, all 45 registry rows render, no horizontal scroll at either width.
+Console clean bar the pre-existing, sandbox-only Google Fonts network block noted in every prior
+log. All three fallback tiers untouched — the change is two new static files plus five `<head>`
+tags, entirely independent of which tier populates `trips`.
+
+**Files touched:** `index.html`, `manifest.json` (new), `icon-192.png` (new), `icon-512.png`
+(new), `ideas-log.md`

@@ -1,0 +1,14 @@
+{
+  "name": "India PM Foreign Visits Tracker",
+  "short_name": "PM Visits",
+  "description": "Independent, open dataset tracking every foreign visit by India's Prime Ministers — countries, dates, duration, and multi-country tours.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f6f4ef",
+  "theme_color": "#0e6b70",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
