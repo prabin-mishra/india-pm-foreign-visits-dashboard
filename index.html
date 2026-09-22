@@ -3024,6 +3024,7 @@ function renderOutcomesChart(rows) {
   if (!el || !window.Plotly) return;
   if (!outcomes) {
     el.classList.remove('chart-loading');
+    Plotly.purge(el);
     el.innerHTML = '<p class="oc-sentence" style="padding:16px">Outcome data is unavailable right now.</p>';
     if (foot) foot.textContent = '';
     return;
@@ -3050,7 +3051,10 @@ function renderOutcomesChart(rows) {
     text: emptyText, showarrow: false, x: 0.5, y: 0.5, xref: 'paper', yref: 'paper',
     font: {family: 'Inter, system-ui, sans-serif', size: 13, color: c.axis},
   }] : [];
-  el.innerHTML = '';
+  // Clear only the "unavailable" placeholder. Wiping an existing plot's DOM leaves Plotly's
+  // state on the div, so Plotly.react() then patches nodes that no longer exist and the
+  // chart goes blank on every re-render after the first (i.e. on any filter change).
+  if (!el._fullLayout) el.innerHTML = '';
   Plotly.react('outcomesChart', [{
     type: 'scatter', mode: 'markers', orientation: 'h',
     x: diffs, y: measured.map(r => r.label),

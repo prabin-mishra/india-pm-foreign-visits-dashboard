@@ -2991,3 +2991,15 @@ tags, entirely independent of which tier populates `trips`.
 
 **Files touched:** `index.html`, `manifest.json` (new), `icon-192.png` (new), `icon-512.png`
 (new), `ideas-log.md`
+
+## 2026-09-22 — Fix: "Around the visits" chart blank after any filter change (user-requested)
+
+Not a daily idea — a bug fix requested by the maintainer. `renderOutcomesChart` ran
+`el.innerHTML = ''` before every `Plotly.react()`. That removes the plot's SVG but leaves Plotly's
+state on the div, so every render after the first patched nodes that no longer existed and drew
+nothing, while the footer counts still updated. Now the div is cleared only when it holds the
+"unavailable" placeholder (no `_fullLayout`), and that placeholder branch calls `Plotly.purge` first.
+Checked: year filter, PM filter, indicator switch and clearing filters all redraw; no console
+errors; no overflow at 375px.
+
+**Files touched:** `index.html`, `ideas-log.md`
