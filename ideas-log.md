@@ -3002,4 +3002,78 @@ nothing, while the footer counts still updated. Now the div is cleared only when
 Checked: year filter, PM filter, indicator switch and clearing filters all redraw; no console
 errors; no overflow at 375px.
 
+## 2026-09-22 — Footer link to the site's own changelog
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as every recent log. Read the full 54-entry backlog before brainstorming,
+since this project has now shipped or explicitly rejected almost every obvious idea across all
+seven dimensions. Confirmed several once-open items are actually already done and just missing
+from the run prompt's candidate list: the "Compact columns" toggle already persists to
+`localStorage` (`regCompactCols`, predates and is explicitly mirrored by 09-19's sort-order
+persistence), KPI sparklines already carry a `sr-only` per-year text description alongside the
+`aria-hidden` SVG, and the mobile nav's truncated-looking label ("Analys…") is the intentional
+09-11 scroll-fade affordance, not a bug. Brainstormed fresh: a "visits by region" (continent)
+rollup chart (new way to read the data — real, but an 8th chart on an already dense analysis
+grid, and needs an authored country→continent table with defensible edge-case calls for
+transcontinental countries; sized for its own day with a mockup, not today), lazy-loading the
+six below-the-fold charts via `IntersectionObserver` (performance — re-flagged since 08-16,
+still riskier than a one-day slot given how much is wired to each chart's init), a per-trip
+data-completeness badge (trust — flagged repeatedly since 09-14, still underspecified), a
+multi-select PM/country filter (interactivity — flagged 09-08, changes the filter-state shape
+used by URL sync, sort, and CSV export; too big for a day), an RSS/Atom feed of new trips
+(discoverability — needs a new pipeline build step, out of scope for a display-only change), and
+`og:image` width/height meta tags (SEO — rejected on marginal-payoff grounds well over forty
+times running).
+
+Landed on a trust gap this project *is* its own best evidence for: a public, dated log of exactly
+what changed and why, every single day since 08-02 — but nothing on the live site pointed a
+visitor to it. This exact idea was named once before, as a 09-11 runner-up ("'Site changelog'
+link surfacing recent improvements from this log"), and rejected there for a specific reason:
+that version proposed *surfacing recent improvements* — some curated, human-written summary of
+"what's new" rendered on the page — which would need its own upkeep step every future cycle,
+separate from this log. That objection doesn't apply to what shipped today. This is a single
+static `<a>` pointing straight at `ideas-log.md` itself, the file this exact cycle already
+appends to and pushes every day — there is no second list to keep in sync, no summary to write,
+no new per-day step at all. The footer already links the data sources, the raw JSON, and the
+GitHub repo, but a reader has no way to discover that the repo's history is this detailed without
+already knowing to look for `ideas-log.md` by name. For the journalists and researchers this
+dashboard is built for, "is this actively and carefully maintained, or was it built once and
+abandoned" is exactly the kind of credibility signal CLAUDE.md names as a dimension, and it's
+answered by content that already exists — no new copy to write, no new judgment call, no
+partisan-framing risk of any kind.
+
+Added one link, `Site changelog`, to the existing flat `<a>` list in `.site-footer .links`,
+pointing at `ideas-log.md` on GitHub (`target="_blank" rel="noopener"`, matching every neighboring
+link's pattern exactly), placed after `GitHub` and before `Report a data issue` so the grouping
+stays sensible (source → data exports → code → project history → user action). No new element,
+no new CSS, no JS at all.
+
+**Runners-up**
+- *"Visits by region" continent chart* — real, fresh analytical view, but an 8th chart plus a new
+  authored geographic table is more than a one-day, single-idea slot should carry; worth its own
+  cycle.
+- *Lazy chart init via `IntersectionObserver`* — re-flagged since 08-16; still riskier than a
+  one-day slot given click-to-filter/PNG-download/data-table wiring on all eight charts.
+- *Per-trip data-completeness badge* — flagged repeatedly since 09-14; still underspecified.
+- *Multi-select PM/country filters* — flagged 09-08; reshapes URL/sort/CSV-export state, too big
+  for a day.
+- *RSS/Atom feed of new trips* — flagged repeatedly since 09-02; needs a new pipeline build step,
+  out of scope for a display-only change.
+- *`og:image` width/height meta tags* — rejected for the umpteenth time on the same "real but
+  marginal for a single-URL site" grounds as every prior log.
+
+**Verification:** `new Function()` syntax-checked both real inline `<script>` blocks — clean.
+Served locally (`python3 -m http.server`) and driven with Playwright (Plotly's CDN and the Google
+Fonts stylesheet routed to fail, same sandbox restriction noted in every prior log) at 1280px and
+375px: all 45 registry rows render (data loads from `data/visits.json`, tier one), the new
+`Site changelog` link resolves to
+`https://github.com/prabin-mishra/india-pm-foreign-visits-dashboard/blob/main/ideas-log.md` with
+`rel="noopener"` and `target="_blank"` intact, sits inline with the other five footer links with
+no wrapping or overlap with the back-to-top button at either width, and is unaffected by the print
+stylesheet (footer links were never in its interactive-chrome suppress-list, so this one behaves
+identically to its neighbors). Console clean bar the pre-existing, sandbox-only `cdn.plot.ly`/
+Google Fonts network blocks every prior log has hit. All three fallback tiers untouched — the
+change is one `<a>` tag in static markup, reachable regardless of which tier populates `trips`.
+
 **Files touched:** `index.html`, `ideas-log.md`
