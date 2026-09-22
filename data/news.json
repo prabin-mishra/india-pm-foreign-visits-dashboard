@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-21T08:45:36Z",
+  "generated": "2026-09-22T08:23:25Z",
   "status": "recent",
   "reported": null,
   "trip": {
@@ -39,7 +39,7 @@
     },
     {
       "title": "PM Modi concludes two-nation visit to Uzbekistan, Kyrgyzstan,",
-      "source": "theprint.in",
+      "source": "ThePrint",
       "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQT24wT0RMUzZMdDRpZTRhRnZYTnJhMGxRN3ctN3MzSFJLcHI0dWFjTWV0RlZBYnVGcUk4TldBNm5TV3J5M2dJM29wZGRqRXJFdHV6T1QybHhQcGZ4RmNocXpzblNvemxzVXBHZ1BiWFFnOURFNGRsWFFnQjNMRDNvb1ZybVJnazFwcDNDcUJpZXl1MHdlUFQ3RmlR0gGfAUFVX3lxTE8zNldDeDA0M1NURndwZmtpU2lIeVJrOUt0dlFpajQ4Q3NpT3lfZlFkMXpuaW5HVmZYYjVqSmlMV3c2OVYzZWIwNXNQZllpM2t0dEZXWG0zY1BzN2FfMGR6MldickJRNU9CdHNLU1RfbG1pYUR4UjhOVVFyeHJ3VTdNQUNfem5NbVpoMUN0V05CRE1jT3lLQjZjZWFkVksxNA?oc=5",
       "date": "2026-09-01",
       "dateSource": "rss"
@@ -60,6 +60,9 @@
     }
   ],
   "seen": {
+    "fcb99370c9f3": "2026-09-22",
+    "b8eb00d9b67f": "2026-09-21",
+    "dc0fc4e12166": "2026-09-21",
     "3b2f8fc7e0c5": "2026-09-20",
     "c0d743e45f57": "2026-09-20",
     "1f9883a1771a": "2026-09-19",
@@ -507,6 +510,7 @@
     "3faf8b88fdaf": "2026-09-12",
     "3639e460f592": "2026-09-12",
     "deaec91c84f1": "2026-09-12",
+    "24ddde88e445": "2026-09-12",
     "9c6d7740f12b": "2026-09-11",
     "c2a566fae942": "2026-09-11",
     "f04619666990": "2026-09-11",
@@ -855,10 +859,6 @@
     "ebedabc5ef86": "2026-09-08",
     "ad3b94647aed": "2026-09-08",
     "74e4bd1b9b88": "2026-09-08",
-    "7e767accfa5d": "2026-09-08",
-    "dd6eb69cb5e8": "2026-09-08",
-    "ebe31d68542a": "2026-09-08",
-    "d658472fb78c": "2026-09-08",
-    "2a13a50ea5a7": "2026-09-08"
+    "7e767accfa5d": "2026-09-08"
   }
 }
