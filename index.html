@@ -236,11 +236,11 @@
     .panel-head-right { display: flex; align-items: center; gap: var(--sp-2); flex: none; }
     .chart-dl-btn {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; border-radius: var(--radius-sm); flex: none;
+      width: 32px; height: 32px; border-radius: var(--radius-sm); flex: none;
       border: 1px solid var(--border); background: transparent; color: var(--text-3); cursor: pointer;
       transition: background .18s ease, color .18s ease;
     }
-    .chart-dl-btn svg { width: 13px; height: 13px; }
+    .chart-dl-btn svg { width: 15px; height: 15px; }
     .chart-dl-btn:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
     .chart-dl-btn:disabled { opacity: .35; cursor: default; }
 
@@ -520,10 +520,14 @@
       font-size: .7rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-2);
       white-space: nowrap;
     }
+    /* Padding grows the clickable/tappable area to meet the 24px CSS-pixel target-size
+       floor (measured at ~18px tall before this); the matching negative margin cancels
+       the padding's effect on layout, so the header row's visible height/spacing is
+       unchanged — only the hit area grows. */
     .th-sort {
       display: inline-flex; align-items: center; gap: 5px;
       font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
-      background: none; border: none; padding: 0; margin: 0; cursor: pointer;
+      background: none; border: none; padding: 5px 4px; margin: -5px -4px; cursor: pointer;
     }
     .th-sort:hover { color: var(--text); }
     .sort-icon { font-size: .75em; opacity: .55; }

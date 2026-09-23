@@ -3077,3 +3077,68 @@ Google Fonts network blocks every prior log has hit. All three fallback tiers un
 change is one `<a>` tag in static markup, reachable regardless of which tier populates `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-23 — Fix undersized touch/click targets on chart-download and registry-sort buttons
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as every recent log. Read the backlog (54 entries) before brainstorming: the
+sort/citation/caveats/print/manifest backlogs are all cleared, and the repeat-rejected items
+(robots.txt/sitemap/canonical, `og:image` dimensions, lazy chart init, RSS feed, continent chart,
+data-completeness badge, multi-select filters) haven't gained anything new to change those calls.
+Brainstormed fresh across all seven dimensions and measured before picking, rather than guessing:
+inspected every small interactive control's actual rendered box with Playwright instead of eyeballing
+CSS. Two concrete, previously-unflagged defects turned up in that measurement, both in controls used
+on every single page visit: the registry's six sortable column-header buttons (`.th-sort`) measured
+**17.9px tall** — a real WCAG 2.5.8 "Target Size (Minimum)" AA failure, not a judgment call — and the
+eight per-chart PNG-download buttons (`.chart-dl-btn`) sat exactly on the 24px floor with zero margin
+for real-world mobile tapping, well under the 38–44px the site's own header icon buttons and
+back-to-top button already use as their standard.
+
+Fixed both the same way: grew the clickable area without changing anything visually. `.chart-dl-btn`
+goes from 24×24 to 32×32 (icon 13px → 15px) — still compact enough to tile eight-wide across chart
+panel headers, but comfortably past the AA floor. `.th-sort` keeps its zero visual footprint (no
+background/box on the button itself) and instead gets `padding: 5px 4px` paired with an equal and
+opposite `margin: -5px -4px` — the classic invisible-hit-area-expansion trick — so the header row's
+rendered height and spacing are byte-identical to before, and only the tappable/clickable area grows,
+confirmed to 27.9px tall. Two rules, no JS touched, no new dependency.
+
+Other candidates considered and dropped: the "visits by region" continent chart (still needs an
+authored country→continent table, its own day per 09-22); lazy chart init via
+`IntersectionObserver` (still riskier than a one-day slot, flagged since 08-16); a per-trip
+data-completeness badge (still underspecified since 09-14); `og:image` width/height and
+robots.txt/sitemap/canonical (rejected on marginal-payoff grounds well over forty times running);
+search-input debounce (checked again — 45 rows, not a real perf problem, correctly rejected since
+08-20). Target-size fixing won because it's the only fresh find backed by an actual measurement
+against a named standard (WCAG 2.5.8), touches controls on the page's two busiest surfaces
+(every chart panel, the whole registry header row), and is fully reversible CSS with zero
+non-partisan-framing risk.
+
+**Runners-up**
+- *"Visits by region" continent chart* — real, fresh analytical view; still needs its own day for
+  the geographic-table authoring work, unchanged from the 09-22 call.
+- *Lazy chart init via `IntersectionObserver`* — re-flagged since 08-16; still riskier than a
+  one-day slot given click-to-filter/PNG-download/data-table wiring on all eight charts.
+- *Per-trip data-completeness badge* — flagged repeatedly since 09-14; still underspecified.
+- *`og:image` width/height + robots.txt/sitemap/canonical* — rejected on the same "marginal
+  payoff for a single-URL site" grounds as every prior log.
+- *Search-input debounce* — re-checked; 45-row dataset, full re-render per keystroke is not a
+  measurable perf problem, correctly rejected since 08-20.
+
+**Verification:** `new Function()` syntax check on both real inline `<script>` blocks — clean (this
+was a CSS-only change; neither script was touched). Playwright against the served page (Plotly
+`react`/`newPlot` stubbed with a working `.on()` no-op so click-to-filter wiring doesn't throw;
+`cdn.plot.ly`/Google Fonts routed to fail, the same sandbox restriction noted in every prior log)
+at 1280px and 375px, light and dark: `.chart-dl-btn` measures 32×32 at both widths with no overflow
+or wrapping in any of the eight chart-panel heads, including the tightest one ("Around the visits",
+which packs a `<label>` + `<select>` + this button in one row — wraps cleanly to its own line at
+375px, no clipping); `.th-sort` measures 64.6×27.9 (height now past the 24px AA floor, up from
+17.9) with the header row's visual height and the six column labels' position unchanged from
+before; clicking a sort header still sorts and flips `aria-sort` correctly; the download button's
+`disabled` state still clears once a chart "loads." No horizontal scroll at 375px. 5 KPI cards,
+11 panels, all 45 registry rows render. Console clean bar the two pre-existing, sandbox-only
+`cdn.plot.ly`/Google Fonts network blocks noted in every prior log. All three fallback tiers
+untouched — this is a pure CSS sizing change to two button classes, independent of which tier
+populates `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
