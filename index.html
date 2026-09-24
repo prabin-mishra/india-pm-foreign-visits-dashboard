@@ -186,6 +186,11 @@
       background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 0 0 var(--radius-sm) 0;
     }
     .skip-link:focus { left: 0; }
+    /* --accent is deliberately lightened in dark mode for use as link/text colour on a dark
+       background; measured 2.46:1 white-on-accent here, below WCAG AA's 4.5:1 floor for this
+       element's solid-fill-plus-white-text pattern (unique to this control — everywhere else
+       pairs --accent-soft fills with --accent text). Pin a darker fixed teal instead. */
+    [data-theme="dark"] .skip-link { background: #0e6b70; }
 
     /* Screen-only byline shown at the top of a printed page for citation; see @media print. */
     .print-byline { display: none; }

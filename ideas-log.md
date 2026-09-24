@@ -3142,3 +3142,59 @@ untouched — this is a pure CSS sizing change to two button classes, independen
 populates `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-24 — Fix dark-mode `.skip-link` WCAG AA contrast failure
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as recent logs. Read the 54-entry backlog first; the repeat-rejected items
+(continent chart, lazy chart init, data-completeness badge, multi-select filters, RSS feed,
+`og:image` dimensions, robots.txt/sitemap/canonical) haven't gained anything new to change those
+calls. Brainstormed fresh across all seven dimensions, then measured rather than eyeballed: ran a
+scripted WCAG contrast pass (leaf-node text/background pairs, both themes, actual computed
+`rgb()` values, correct large-text threshold) over all 456 rendered text nodes instead of
+spot-checking. Light theme came back clean. Dark theme returned exactly one failure: the
+`.skip-link` — "Skip to content", the very first Tab stop on every page load — measured **2.46:1**
+white-on-accent, well under the 4.5:1 AA floor for normal text. Root cause: `--accent` is
+deliberately *lightened* in dark mode (`#56b3ba`) so it reads as link/text colour against the dark
+background; `.skip-link` is the one place in the whole stylesheet that instead uses `--accent` as
+a *solid fill* with white text — every other accent-background usage pairs the translucent
+`--accent-soft` with `--accent` text, a different and already-safe combination. That's why a
+one-of-a-kind bug survived 53 prior days of review: the control sits at `left: -9999px` until
+keyboard-focused, so it's invisible to screenshots and casual visual QA, and its colour pattern
+isn't repeated anywhere else a sweep would naturally re-check.
+
+Fixed with one scoped override: `[data-theme="dark"] .skip-link { background: #0e6b70; }`, pinning
+the skip-link's dark-mode background to the same fixed dark teal light mode already uses (and
+already passes contrast with), rather than following `--accent`. Verified 6.25:1 — clears AA with
+room, doesn't touch AAA overreach. No other rule, token, or theme changed.
+
+**Runners-up**
+- *`rel="noopener"` missing on 3 of 20 `target="_blank"` links* (both raw-JSON download links,
+  found during the same sweep) — real inconsistency with the other 17 links, but same-origin
+  targets mean no actual reverse-tabnabbing exposure, and it's a different defect class than the
+  contrast fix; too minor and too unrelated to bundle into one day's idea. Flagging for a future
+  cycle.
+- *Service worker for offline caching* — would extend the manifest's installability into real
+  offline support, but a caching layer risks quietly becoming a fourth, stickier data source on
+  top of the three-tier fallback the guardrails protect; needs its own day and explicit thought
+  about invalidation, not a same-day add-on.
+- *"Visits by region" continent chart* — still needs an authored country→continent table, flagged
+  since 09-22, unchanged.
+- *Lazy chart init via `IntersectionObserver`* — still riskier than a one-day slot, flagged since
+  08-16.
+- *New hero fact (e.g. "average trips per year")* — considered, but the facts strip already covers
+  most-visited/longest-trip/longest-gap/most-common-month; a fifth incremental fact was the
+  weakest, least-differentiated candidate against a freshly measured, universally-hit AA failure.
+
+**Verification:** `new Function()` syntax check on both real inline `<script>` blocks — clean
+(CSS-only change; neither script touched). Playwright against the served page at 1280px and
+375px, light and dark: scripted contrast scan over all 456 leaf text nodes returns **0 failures**
+in both themes (was 1 in dark before the fix); tabbing to the skip-link shows it fully on-screen,
+readable, `rgb(14,107,112)` background in both themes and both widths, matching what light theme
+already used; no horizontal overflow at 375px. Console clean bar the two pre-existing,
+sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in every prior log. All three
+fallback tiers untouched — pure CSS change to one selector, independent of which tier populates
+`trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
