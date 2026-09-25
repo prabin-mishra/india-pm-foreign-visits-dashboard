@@ -3198,3 +3198,78 @@ fallback tiers untouched — pure CSS change to one selector, independent of whi
 `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-25 — UN voting as a third indicator in the "Around the visits" chart
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as every recent log. Read the 55-entry backlog before brainstorming; the
+repeat-rejected items (continent chart, lazy chart init, data-completeness badge, multi-select
+filters, RSS feed, `og:image` dimensions, robots.txt/sitemap/canonical) haven't gained anything
+new to change those calls. Brainstormed fresh across all seven dimensions: a live
+`prefers-color-scheme` listener so the theme follows an OS-level scheme change when the user
+hasn't manually overridden it (real gap, thin value — a dashboard tab is rarely left open across
+a dusk transition); the three `target="_blank"` links still missing `rel="noopener"` (flagged
+09-24, real but same-origin so no actual exposure); and, while re-reading the outcomes feed code
+from the 09-05 build, a genuinely fresh find: `data/outcomes.json` has carried UN General
+Assembly voting data since 09-05, fully computed and shown per trip in the drawer
+(`ungaWindow`/`ungaSentence`), but the cross-trip "Around the visits" chart's indicator dropdown
+only ever offered the two indicators that shipped with it that day (goods trade, research
+co-authorship) — UN voting was left as drawer-only, invisible in the aggregate view, and nothing
+in the log had named this gap before.
+
+Chose the UN-voting gap: it's "a new way to read the data" using computation and copy that
+already exist and are already vetted (the descriptive, non-causal sentence templates from
+`docs/outcome-indicators.md` carry over unchanged), it's fully reversible display logic with no
+data-provenance touch, and — unlike the continent chart repeatedly deferred as "an 8th chart,
+needs its own day" — this is a third option on a chart that already exists, not a new one.
+
+The one real complication: UNGA has no India-wide baseline by design (the voting feed carries
+only visited-country dyads — see `ungaWindow`'s own comment), so it can't reuse trade/coauth's
+"dyad minus India-wide" plot unchanged. Added an `OC_META` table keyed by indicator holding each
+one's display name, "flat" threshold (5pp for trade/coauth's India-wide comparison; UNGA reuses
+the 3-point threshold already hardcoded in the drawer's own `ungaSentence`), axis title, and
+sentence function, and branched the four things that actually differ between the two shapes: the
+plotted value (`dyad − india` vs `post − pre`), the shaded "no change" band width, the footer
+sentence's wording ("above/below India-wide" vs "increased/decreased"), and the data-table
+columns ("This country/India-wide/Difference" vs "Before/After/Change"). Everything else — the
+scatter trace, click-to-open-trip, the empty-state annotations shipped 09-06, the accessible data
+table — is unmodified and shared across all three indicators.
+
+Caught in verification, fixed in the same commit: the chart `<div>`'s static `aria-label` read
+"…relative to India-wide change…", true for trade/coauth but wrong for the new UN-voting option;
+generalized it to drop the India-wide-specific claim.
+
+**Runners-up**
+- *Live `prefers-color-scheme` sync* — real gap (the theme is read once at load, never re-checked
+  if the OS scheme changes while the tab is open and the user hasn't manually toggled), but
+  thinner, more theoretical value than a fresh analytical view built from data already on the
+  page.
+- *`rel="noopener"` on 3 links* — flagged 09-24 as real but minor since the targets are
+  same-origin (`data/visits.json`, `data/outcomes.json`); still true, still outranked.
+- *"Visits by region" continent chart* — still needs an authored country→continent table and its
+  own day as an 8th chart, flagged since 09-22, unchanged.
+- *Lazy chart init via `IntersectionObserver`* — still riskier than a one-day slot, flagged since
+  08-16.
+- *Per-trip data-completeness badge* — flagged repeatedly since 09-14; still underspecified.
+
+**Verification:** `node --check` on all real inline `<script>` blocks (JSON-LD fails as always,
+not JS) — clean. Served locally (`python3 -m http.server`) and driven with Playwright, Plotly
+stubbed with a working `react`/`newPlot`/`.on()` no-op since `cdn.plot.ly` is blocked in this
+sandbox (same restriction every prior log has hit), Google Fonts routed to fail: all 8 charts
+(the 7 pre-existing plus outcomes) initialize; the indicator `<select>` now lists Goods trade /
+Research co-authorship / UN voting; switching to UN voting updates the axis title, the shaded
+band to ±3, the footer to "increased/decreased/about unchanged" wording, and the table to
+Before/After/Change columns, with the first row's numbers (80% → 73%, −7 pp) matching the hover
+text and the drawer's own sentence for that same trip exactly; switching back to Goods trade
+restores the original axis title, ±5 band, and India-wide wording byte-for-byte. Opened a trip
+drawer directly (bypassing the registry's country-tag buttons, which intercept a naive center
+click) and confirmed its independent UN-voting row still renders correctly, unaffected. No
+horizontal scroll at 375px; dark mode renders the updated panel head and footer with the same
+tokens as light. Console clean bar the pre-existing, sandbox-only Google Fonts network block
+noted in every prior log. All three fallback tiers untouched — the change reads only
+`data/outcomes.json` (an additive feed, not a fourth registry tier per the 09-05 log) and the
+already-normalized `trips`/`filtered()` arrays, identically regardless of which tier populated
+`trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
