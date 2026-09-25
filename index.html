@@ -987,8 +987,8 @@
             <div id="calHeatmapTableWrap"></div>
           </div>
           <div class="panel wide">
-            <div class="panel-head"><h3>Around the visits</h3><span class="panel-head-right"><label class="sub" for="ocIndicator">Change after each visit, relative to India-wide — </label><select id="ocIndicator" class="oc-select" aria-label="Indicator"><option value="trade">Goods trade</option><option value="coauth">Research co-authorship</option></select><button class="chart-dl-btn" type="button" data-chart="outcomesChart" data-filename="around-the-visits" aria-label="Download around-the-visits chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
-            <div id="outcomesChart" class="chart-loading" style="min-height:220px" role="img" aria-label="Dot plot of change in the chosen indicator after each visit, relative to India-wide change; click a dot to open that trip"></div>
+            <div class="panel-head"><h3>Around the visits</h3><span class="panel-head-right"><label class="sub" for="ocIndicator">Change after each visit — </label><select id="ocIndicator" class="oc-select" aria-label="Indicator"><option value="trade">Goods trade</option><option value="coauth">Research co-authorship</option><option value="unga">UN voting</option></select><button class="chart-dl-btn" type="button" data-chart="outcomesChart" data-filename="around-the-visits" aria-label="Download around-the-visits chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div id="outcomesChart" class="chart-loading" style="min-height:220px" role="img" aria-label="Dot plot of change in the chosen indicator after each visit; click a dot to open that trip"></div>
             <p class="oc-foot" id="outcomesFoot" aria-live="polite"></p>
             <div id="outcomesTableWrap"></div>
           </div>
@@ -3015,15 +3015,31 @@ function outcomePanelHtml(trip) {
   </div>`;
 }
 
-// --- cross-trip view: one dot per visit-country, change relative to India-wide ----------------
+// --- cross-trip view: one dot per visit-country --------------------------------------------
+// trade/coauth compare each country's change against India's overall change over the same
+// window (dyad minus baseline); UNGA has no India-wide baseline by design (see ungaWindow), so
+// it instead plots the raw before-to-after change in voting agreement. OC_META carries every
+// piece of copy and math that differs between the two shapes so renderOutcomesChart doesn't
+// have to branch more than once per fact.
 let ocIndicator = 'trade';
+const OC_META = {
+  trade:  {name: 'goods trade', flatPP: OC_FLAT_PP, hasBaseline: true,
+           axisTitle: 'Change in goods trade after the visit, minus India-wide change (percentage points)',
+           sentence: r => tradeSentence(r.country, r.w)},
+  coauth: {name: 'research co-authorship', flatPP: OC_FLAT_PP, hasBaseline: true,
+           axisTitle: 'Change in research co-authorship after the visit, minus India-wide change (percentage points)',
+           sentence: r => coauthSentence(r.country, r.w)},
+  unga:   {name: 'UN General Assembly voting agreement with India', flatPP: 3, hasBaseline: false,
+           axisTitle: 'Change in UN General Assembly voting agreement with India after the visit (percentage points)',
+           sentence: r => ungaSentence(r.country, r.w)},
+};
 function outcomeRows(rows) {
+  const windowFor = {trade: tradeWindow, coauth: coauthWindow, unga: ungaWindow}[ocIndicator];
   const out = [];
   rows.slice().sort((a, b) => a.start.localeCompare(b.start)).forEach(trip => {
     trip.countries.forEach(country => {
       if (!outcomes || !outcomes.countries[country]) return;
-      const w = ocIndicator === 'trade' ? tradeWindow(trip, country) : coauthWindow(trip, country);
-      out.push({trip, country, w, label: `${trip.start.slice(0, 7)} ${country}`});
+      out.push({trip, country, w: windowFor(trip, country), label: `${trip.start.slice(0, 7)} ${country}`});
     });
   });
   return out;
@@ -3040,15 +3056,16 @@ function renderOutcomesChart(rows) {
     return;
   }
   const c = chartTheme();
+  const meta = OC_META[ocIndicator];
   const all = outcomeRows(rows);
   const measured = all.filter(r => r.w.state === 'ok');
   const open = all.filter(r => r.w.state === 'open');
   const na = all.filter(r => r.w.state === 'na');
-  const diffs = measured.map(r => r.w.dyad - r.w.india);
-  const rose = diffs.filter(d => d >= OC_FLAT_PP).length, fell = diffs.filter(d => d <= -OC_FLAT_PP).length;
+  const diffs = measured.map(r => meta.hasBaseline ? r.w.dyad - r.w.india : r.w.post - r.w.pre);
+  const rose = diffs.filter(d => d >= meta.flatPP).length, fell = diffs.filter(d => d <= -meta.flatPP).length;
   const flat = diffs.length - rose - fell;
-  const name = ocIndicator === 'trade' ? 'goods trade' : 'research co-authorship';
-  const sentence = r => ocIndicator === 'trade' ? tradeSentence(r.country, r.w) : coauthSentence(r.country, r.w);
+  const name = meta.name;
+  const sentence = meta.sentence;
   // Same gap the 08-20 fix closed on the other six charts — a filter/search combination
   // with nothing to plot used to just render bare axes with no explanation. This chart
   // didn't exist yet on 08-20, and it has a second empty case the others don't: filtered
@@ -3076,10 +3093,10 @@ function renderOutcomesChart(rows) {
     height: Math.max(220, measured.length * 22 + 90),
     margin: {l: 150, r: 20, t: 10, b: 44},
     annotations: emptyNote,
-    xaxis: {title: {text: `Change in ${name} after the visit, minus India-wide change (percentage points)`, font: {size: 11}},
+    xaxis: {title: {text: meta.axisTitle, font: {size: 11}},
             gridcolor: c.grid, zeroline: true, zerolinecolor: c.axis, zerolinewidth: 1.5, ticksuffix: ' pp'},
     yaxis: {autorange: 'reversed', gridcolor: c.grid, tickfont: {size: 11}, automargin: true},
-    shapes: [{type: 'rect', xref: 'x', yref: 'paper', x0: -OC_FLAT_PP, x1: OC_FLAT_PP, y0: 0, y1: 1,
+    shapes: [{type: 'rect', xref: 'x', yref: 'paper', x0: -meta.flatPP, x1: meta.flatPP, y0: 0, y1: 1,
               fillcolor: c.grid, opacity: .35, line: {width: 0}}],
     hovermode: 'closest', showlegend: false,
   }), {displayModeBar: false, responsive: true});
@@ -3093,14 +3110,22 @@ function renderOutcomesChart(rows) {
     });
   }
   if (foot) {
-    foot.textContent = `Of ${all.length} visit-country pairs in view: ${rose} above India-wide, ${fell} below, ${flat} about the same, ${open.length} window${open.length === 1 ? '' : 's'} still open, ${na.length} not measurable. Shaded band = within ${OC_FLAT_PP} points of India-wide. Positions describe change relative to India's overall figure, not the effect of a visit; half the dots would sit left of zero even if visits changed nothing.`;
+    foot.textContent = meta.hasBaseline
+      ? `Of ${all.length} visit-country pairs in view: ${rose} above India-wide, ${fell} below, ${flat} about the same, ${open.length} window${open.length === 1 ? '' : 's'} still open, ${na.length} not measurable. Shaded band = within ${meta.flatPP} points of India-wide. Positions describe change relative to India's overall figure, not the effect of a visit; half the dots would sit left of zero even if visits changed nothing.`
+      : `Of ${all.length} visit-country pairs in view: ${rose} increased, ${fell} decreased, ${flat} about unchanged, ${open.length} window${open.length === 1 ? '' : 's'} still open, ${na.length} not measurable. Shaded band = change smaller than ${meta.flatPP} points (no detectable shift). Voting positions are sticky and move with the resolution mix, not with one visit; this is context, not an outcome of the trip.`;
   }
-  renderChartTable('outcomesTableWrap', `${name} around each visit, relative to India-wide`,
-    ['Visit', 'This country', 'India-wide', 'Difference', 'State'],
-    all.map(r => [r.label,
+  renderChartTable('outcomesTableWrap',
+    meta.hasBaseline ? `${name} around each visit, relative to India-wide` : `${name} around each visit`,
+    meta.hasBaseline ? ['Visit', 'This country', 'India-wide', 'Difference', 'State'] : ['Visit', 'Before', 'After', 'Change', 'State'],
+    all.map(r => meta.hasBaseline ? [r.label,
       r.w.state === 'ok' ? pct(r.w.dyad) : '—',
       r.w.state === 'ok' ? pct(r.w.india) : '—',
       r.w.state === 'ok' ? `${Math.round(r.w.dyad - r.w.india)} pp` : '—',
+      r.w.state === 'ok' ? 'measured' : r.w.state === 'open' ? `window closes ${/^\d{4}-\d{2}$/.test(r.w.closes) ? ymLabel(r.w.closes) : r.w.closes}` : `not measurable: ${r.w.reason}`]
+    : [r.label,
+      r.w.state === 'ok' ? `${Math.round(r.w.pre)}%` : '—',
+      r.w.state === 'ok' ? `${Math.round(r.w.post)}%` : '—',
+      r.w.state === 'ok' ? `${Math.round(r.w.post - r.w.pre)} pp` : '—',
       r.w.state === 'ok' ? 'measured' : r.w.state === 'open' ? `window closes ${/^\d{4}-\d{2}$/.test(r.w.closes) ? ymLabel(r.w.closes) : r.w.closes}` : `not measurable: ${r.w.reason}`]));
 }
 document.getElementById('ocIndicator').addEventListener('change', e => {
