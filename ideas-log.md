@@ -3273,3 +3273,73 @@ already-normalized `trips`/`filtered()` arrays, identically regardless of which 
 `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-26 — Colorblind-safe pattern fill on the two-series bar charts
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all confirmed already live in
+the current code, same stale-list finding as every recent log. Read the full backlog before
+brainstorming fresh: the perennial items (continent chart, lazy chart init, data-completeness
+badge, multi-select filters, `og:image` dimensions, `robots.txt`/sitemap/canonical, RSS feed)
+haven't gained anything new to change those calls, and the drawer's chronological prev/next is
+intentionally unfiltered by design (see its own 08-07-era comment), not a bug.
+
+Brainstormed fresh: an iOS/Android PWA safe-area (`viewport-fit=cover` + `env(safe-area-inset-*)`)
+pass for the standalone "Add to Home Screen" mode the manifest already enables; the `<link
+rel="canonical">` question re-examined specifically in light of the URL-state feature (filters now
+produce many `?pm=&year=&country=…` variants of the one page, a materially different fact than
+the "single-URL site" reasoning every prior canonical rejection relied on); the 3 remaining
+`target="_blank"` links still missing `rel="noopener"` (flagged 09-24, still real but same-origin);
+and, while re-reading the two grouped/stacked bar charts ("PM comparison", "Single vs multi-country
+tours"), a fresh, measurable find: both distinguish their two data series by hue alone
+(`c.primary` vs `c.secondary`) — a direct instance of WCAG 1.4.1 (Use of Color) — while the
+"Trips over time" line chart right above them already avoids exactly this by giving its second
+line a dot-dash style and a diamond marker on top of its own color. Nothing in the log had named
+this inconsistency before.
+
+Chose the pattern-fill fix: it's a concrete, standards-citable accessibility gap (not the vaguer,
+already-covered "chart needs an accessible alternative" ground the data tables and `role="img"`
+labels handle for non-visual access — this is about sighted colorblind users of the visual chart
+itself), it's a one-line-per-trace, fully reversible Plotly config change with zero data or
+non-partisan-framing risk, and it directly extends a pattern the site already established for the
+same reason on an adjacent chart rather than introducing a new convention.
+
+Added `marker.pattern = {shape: '/', fgcolor: 'rgba(0,0,0,.4)', bgcolor: c.secondary, size: 6,
+solidity: .45}` to the second trace only (`Unique countries` in PM comparison, `Multi-country` in
+the year-over-year chart), leaving the first trace solid — mirroring the "first series plain,
+second series marked" convention the line chart already uses. The semi-transparent black hatch
+was picked over a theme-token color because it needs contrast against `c.secondary` itself (gold
+`#c8930f` light / `#d9a83e` dark), not against the page background, and both are light/mid enough
+for a dark hatch to read in either theme.
+
+**Runners-up**
+- *iOS/Android PWA safe-area pass* — real gap (no `viewport-fit=cover`, no safe-area padding,
+  despite `display: "standalone"` in the manifest), but harder to verify with confidence in this
+  sandbox (no real device, no accurate standalone-chrome emulation) than a config change whose
+  effect is directly inspectable in the render tree — flagging for a future cycle rather than
+  shipping something under-verified.
+- *`<link rel="canonical">` reconsidered for the URL-state filter variants* — the new reasoning is
+  real, but it's still the same tag named in the `robots.txt`/sitemap/canonical bundle rejected on
+  marginal-payoff grounds well over forty times; picking it today would read as relitigating that
+  call rather than a genuinely separate idea, so it stays parked.
+- *`rel="noopener"` on 3 links* — flagged 09-24; still real but same-origin, still outranked.
+- *"Visits by region" continent chart* — still needs an authored country→continent table and its
+  own day, flagged since 09-22.
+- *Lazy chart init via `IntersectionObserver`* — still riskier than a one-day slot, flagged since
+  08-16.
+- *Per-trip data-completeness badge* — flagged repeatedly since 09-14; still underspecified.
+
+**Verification:** `node --check` on both real inline `<script>` blocks — clean (JSON-LD isn't
+JS, as always). Served locally (`python3 -m http.server`) and driven with Playwright, Plotly
+stubbed with a working `react`/`newPlot`/`.on()`/`purge()` no-op since `cdn.plot.ly` is blocked in
+this sandbox (same restriction every prior log has hit), Google Fonts routed to fail: across
+light/dark × 1280px/375px, all 8 charts initialize, no horizontal scroll at 375px, and the console
+is clean bar the two pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks noted in
+every prior log. Inspected the actual trace objects Plotly received: `pattern.shape === '/'` is
+present only on `Unique countries` and `Multi-country` (never on `Total trips` or
+`Single-country`), with `bgcolor` correctly following the live theme's `c.secondary` (`#c8930f`
+light, `#d9a83e` dark via the same `colorScheme` emulation) and `fgcolor`/`size`/`solidity` passed
+through unchanged. All three fallback tiers untouched — the change touches only chart trace
+styling, independent of which tier populated `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`

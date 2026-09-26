@@ -1748,13 +1748,16 @@ async function renderChartsInner(rows) {
     ['Country', 'Visits'],
     ranking.map(([country, n]) => [country, fmt(n)]), 'country');
 
-  // PM comparison — grouped bar: trips and unique countries per PM
+  // PM comparison — grouped bar: trips and unique countries per PM. The second series gets a
+  // diagonal-hatch pattern (WCAG 1.4.1 — color isn't the only way to tell two series apart),
+  // matching the dash+diamond-marker treatment already used for the second line in the
+  // "Trips over time" chart above.
   const pmNames     = [...new Set(rows.map(t => t.pm))].sort();
   const pmTrips     = pmNames.map(pm => rows.filter(t => t.pm === pm).length);
   const pmCountries = pmNames.map(pm => new Set(rows.filter(t => t.pm === pm).flatMap(t => t.countries)).size);
   Plotly.react('pmCompare', [
     {type: 'bar', name: 'Total trips',      x: pmNames, y: pmTrips,     marker: {color: c.primary},   hovertemplate: '%{x}<br>Trips: %{y} — click to filter<extra></extra>'},
-    {type: 'bar', name: 'Unique countries', x: pmNames, y: pmCountries, marker: {color: c.secondary}, hovertemplate: '%{x}<br>Countries: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Unique countries', x: pmNames, y: pmCountries, marker: {color: c.secondary, pattern: {shape: '/', fgcolor: 'rgba(0,0,0,.4)', bgcolor: c.secondary, size: 6, solidity: .45}}, hovertemplate: '%{x}<br>Countries: %{y} — click to filter<extra></extra>'},
   ], baseLayout(c, {
     barmode: 'group', bargap: .4,
     margin: {t: 10, l: 34, r: 10, b: 30},
@@ -1775,7 +1778,7 @@ async function renderChartsInner(rows) {
   const multi  = years.map(yr => rows.filter(t => String(t.year) === yr && t.visitType === 'Multi-country').length);
   Plotly.react('yoyChart', [
     {type: 'bar', name: 'Single-country', x: years, y: single, marker: {color: c.primary},   hovertemplate: '%{x} Single-country: %{y} — click to filter<extra></extra>'},
-    {type: 'bar', name: 'Multi-country',  x: years, y: multi,  marker: {color: c.secondary}, hovertemplate: '%{x} Multi-country: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Multi-country',  x: years, y: multi,  marker: {color: c.secondary, pattern: {shape: '/', fgcolor: 'rgba(0,0,0,.4)', bgcolor: c.secondary, size: 6, solidity: .45}}, hovertemplate: '%{x} Multi-country: %{y} — click to filter<extra></extra>'},
   ], baseLayout(c, {
     barmode: 'stack', bargap: .45,
     margin: {t: 10, l: 34, r: 10, b: 30},
