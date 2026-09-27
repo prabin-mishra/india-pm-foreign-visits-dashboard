@@ -3343,3 +3343,57 @@ through unchanged. All three fallback tiers untouched — the change touches onl
 styling, independent of which tier populated `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-27 — Fix undersized touch/click targets on the methodology caveat disclosures
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as every recent log. Read the 57-entry backlog before brainstorming: the
+repeat-rejected items (continent chart, lazy chart init via `IntersectionObserver`, per-trip
+data-completeness badge, `og:image` dimensions, robots.txt/sitemap/canonical, RSS feed,
+multi-select filters, registry horizontal-scroll fade, per-chart CSV export, FAQPage schema)
+haven't gained anything new to change those calls. Brainstormed fresh across all seven
+dimensions, and — following the exact method that found the 09-23 target-size bug — measured
+every small interactive control's real rendered box with Playwright instead of eyeballing CSS,
+across ~20 selectors site-wide (chart buttons, nav links, selects, disclosure triangles, icon
+buttons, footer links).
+
+That measurement turned up one previously-unflagged, concrete WCAG 2.5.8 "Target Size (Minimum)"
+AA failure: the six `<details><summary>` disclosure triggers under "Reading the numbers
+correctly" in Methodology (`.caveat summary`) measured **19.7px tall** — the same class of bug
+fixed on 09-23 for `.th-sort`/`.chart-dl-btn`, just on a surface that fix never touched. The
+adjacent `.chart-data` "View data table" disclosures (used by all 8 charts) were already fine at
+28px; only the methodology caveats were under the 24px floor.
+
+Fixed with the identical invisible-hit-area-expansion technique 09-23 established for
+`.th-sort`: `padding: 4px 0` grows the clickable/focusable box, an equal `margin: -4px 0` cancels
+it back out in the document-flow sense, so every caveat row's visual height and spacing stay
+byte-identical while the real hit area grows to 27.7px. No visual, structural, or behavioral
+change otherwise — same CSS-only shape of fix as the precedent it follows.
+
+**Runners-up**
+- *"Visits by region" continent chart* — still needs an authored country→continent table and its
+  own day, flagged since 09-22.
+- *Lazy chart init via `IntersectionObserver`* — still riskier than a one-day slot, flagged since
+  08-16.
+- *Per-trip data-completeness badge* — flagged repeatedly since 09-14; still underspecified.
+- *`rel="noopener"` on 3 same-origin `target="_blank"` links* — flagged 09-24, still real but
+  minor, still outranked by an actual measured AA failure.
+- *`og:image` width/height + robots.txt/sitemap/canonical* — rejected on the same "marginal
+  payoff for a single-URL site" grounds as every prior log.
+
+**Verification:** `node --check` on both real inline `<script>` blocks — clean (this was a
+CSS-only change; neither script was touched; the JSON-LD block fails as always, expected — it's
+JSON, not JS). Served locally (`python3 -m http.server`) and driven with Playwright (`Plotly.react`/
+`newPlot` stubbed to resolve the target element with a working `.on()` no-op, `cdn.plot.ly` and the
+Google Fonts stylesheet routed to fail, the same sandbox restriction every prior log has hit): all
+6 `.caveat summary` triggers measure 27.7px tall (up from 19.7px) at 1280px and 375px, light and
+dark alike, with every row's visual position and spacing pixel-identical to before in both the
+closed and opened states — confirmed by screenshotting the caveats panel in all four combinations.
+No horizontal scroll at 375px. All 8 charts initialize, all 5 KPI cards and all registry rows
+render, console clean bar the pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network blocks
+noted in every prior log. All three fallback tiers untouched — the change is a single CSS rule on
+a static methodology panel, independent of which tier populates `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
+

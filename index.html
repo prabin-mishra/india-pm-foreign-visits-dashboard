@@ -589,6 +589,11 @@
       cursor: pointer; font: 600 .88rem/1.4 var(--font-ui); color: var(--text);
       list-style: none; display: flex; align-items: baseline; gap: var(--sp-2);
       border-radius: var(--radius-sm);
+      /* Invisible hit-area expansion (same technique as .th-sort, 09-23): the text's own
+         line-height renders at ~20px, under WCAG 2.5.8's 24px target-size minimum. Padding
+         grows the clickable/focusable box; the equal negative margin keeps every caveat row's
+         visual height and spacing exactly as before. */
+      padding: 4px 0; margin: -4px 0;
     }
     .caveat summary::-webkit-details-marker { display: none; }
     .caveat summary::before { content: '▸'; font-size: .65em; color: var(--accent); flex: none; transition: transform .15s ease; position: relative; top: -1px; }
