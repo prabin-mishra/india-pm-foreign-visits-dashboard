@@ -3397,3 +3397,81 @@ a static methodology panel, independent of which tier populates `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+
+## 2026-09-28 — PWA safe-area inset pass for standalone "Add to Home Screen" mode
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as every recent log. Read the 60-entry backlog before brainstorming: the
+repeat-rejected items (continent chart, lazy chart init, per-trip data-completeness badge,
+multi-select filters, RSS feed, `og:image` dimensions, robots.txt/sitemap/canonical, registry
+horizontal-scroll fade, FAQPage schema) haven't gained anything new to change those calls.
+Brainstormed fresh across all seven dimensions: `rel="noopener"` on the 3 remaining same-origin
+`target="_blank"` links (flagged 09-24 through 09-27, still real but minor and still outranked);
+`og:image` width/height meta tags (same standing rejection); a whole-dashboard native share
+button beside the theme toggle (thinner value than the existing per-trip share, which already
+covers the sharpest sharing need); and the iOS/Android PWA safe-area pass named a strong
+candidate in the 09-26 log and shelved only because "no real device, no accurate standalone-chrome
+emulation" made it hard to verify with confidence.
+
+Resolved exactly that verification gap instead of picking around it: Chromium's DevTools protocol
+(`Emulation.setSafeAreaInsetsOverride`) lets a headless Chromium report real notch/home-indicator
+inset values to `env()`, independent of any physical device — confirmed working in this sandbox
+before committing to the idea. That turned a "can't verify" rejection into a fully-measurable one,
+so it earned today's slot: `manifest.json` already declares `"display": "standalone"`, but nothing
+in the page ever set `viewport-fit=cover` or read `env(safe-area-inset-*)`, so a phone with a notch
+or a bottom home-indicator gesture bar would run this as an installed app with its header, the
+right-edge drawer, and the floating back-to-top button either padded under an inset-blind browser
+letterbox or sitting flush against hardware that isn't there in a normal tab.
+
+Added four `--safe-{top,right,bottom,left}` custom properties (each `env(safe-area-inset-*, 0px)`,
+so every consumer is a no-op in a normal browser tab) and applied them at every edge-anchored fixed
+or sticky element found by inspecting all five `position: fixed`/`sticky` rules and their mobile
+media-query overrides: the sticky header's height/top-padding (with the sticky filter bar and
+`scroll-padding-top` updated to match its new height), the fixed back-to-top button's corner offset
+(both its desktop and its `max-width:640px` override), the full-height right-edge trip drawer's
+padding and close-button position (both its desktop and its `max-width:640px` override — the
+mobile override was a second, easy-to-miss copy of the same padding rule), the keyboard-focus-only
+skip-link's top offset, and the shared `.wrap` rule's left/right padding (both its desktop and
+mobile-media-query copies) for the landscape case where a notch sits on a side edge instead of the
+top. The centered shortcuts modal and the two full-screen scrim overlays were deliberately left
+alone — they don't dock to a physical edge, so there's nothing for a hardware inset to intrude on.
+
+**Runners-up**
+- *`rel="noopener"` on 3 same-origin `target="_blank"` links* — flagged 09-24 through 09-27, still
+  real but minor, still outranked by a measurably-verifiable mobile-experience gap.
+- *`og:image` width/height + robots.txt/sitemap/canonical* — rejected on the same "marginal payoff
+  for a single-URL site" grounds as every prior log.
+- *Whole-dashboard native share button* — the per-trip share/copy-link/copy-citation trio (09-07,
+  08-07, 08-12) already covers the audience's sharpest sharing need; a page-level share button adds
+  little over the browser's own address-bar share affordance.
+- *"Visits by region" continent chart*, *lazy chart init via `IntersectionObserver`*, *per-trip
+  data-completeness badge* — all still open on the same grounds as every prior log naming them.
+
+**Verification:** `node --check` on both real inline `<script>` blocks — clean; this was a
+CSS/meta-only change, neither script's logic was touched. Served locally
+(`python3 -m http.server`) and driven with Playwright (Plotly stubbed with working
+`react`/`newPlot`/`.on()`/`downloadImage()` no-ops, `cdn.plot.ly` and Google Fonts routed to fail,
+the same sandbox restriction every prior log has hit). Used a live Chrome DevTools Protocol session
+(`Emulation.setSafeAreaInsetsOverride`) to simulate real inset values rather than guessing from the
+CSS: with all insets at 0 (an ordinary browser tab), header height/padding, filter-bar offset, and
+back-to-top corner position measured byte-identical to the pre-change values (60px / 0px / 60px /
+16px / 16px) — confirming zero behavior change for the overwhelming majority of visitors. With a
+notch-and-home-indicator profile (top 47px, bottom 34px), the header grew to exactly 107px
+(60+47) with 47px of top padding, the filter bar's sticky offset tracked it to 107px, and the
+back-to-top button's bottom offset became exactly 50px (16+34) while its untouched right offset
+stayed 16px. Opening the trip drawer under the same profile at 375px (the mobile
+`max-width:640px` override) measured padding of exactly 71/24/58/24px (24±47 top, 24±0 right,
+24±34 bottom, 24±0 left) and a close-button position of 63px/16px — this caught a real miss on the
+first pass: the mobile override had its own hardcoded `padding: var(--sp-6)` with no inset added,
+which would have silently undone the desktop fix below 640px; fixed in the same commit. The
+keyboard-only skip-link measured `top: 47px` when focused under the same profile. A left-notch
+landscape profile (left 44px) measured the header's `.wrap` padding at 44px/16px (left/right),
+confirming the side-edge case. A full reload back at 0 insets re-confirmed all 8 charts initialize,
+all 5 KPI cards and all 45 registry rows render, and there's no horizontal scroll — repeated across
+1280px/375px × light/dark, console clean bar the pre-existing, sandbox-only
+`cdn.plot.ly`/Google Fonts network blocks noted in every prior log. All three fallback tiers
+untouched — the change is CSS custom properties and position/padding values only, independent of
+which tier populates `trips`.
+
+**Files touched:** `index.html`, `ideas-log.md`
