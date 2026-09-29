@@ -227,8 +227,15 @@
     .site-nav a {
       color: var(--text-2); text-decoration: none; font-size: .88rem; font-weight: 500;
       padding: 7px 11px; border-radius: var(--radius-sm); white-space: nowrap;
+      border-bottom: 2px solid transparent; /* reserved so the active underline below adds no layout shift */
     }
     .site-nav a:hover { color: var(--text); background: var(--surface-2); }
+    /* Scrollspy "you are here": color, weight and an underline together (not color alone,
+       per 09-16's forced-colors pass) so a sighted user always sees which section they're in;
+       aria-current carries the same fact to assistive tech. */
+    .site-nav a[aria-current="location"] {
+      color: var(--accent); background: var(--accent-soft); font-weight: 700; border-bottom-color: var(--accent);
+    }
     .icon-btn {
       display: inline-flex; align-items: center; justify-content: center;
       width: 38px; height: 38px; border-radius: var(--radius-sm); flex: none;
@@ -3292,6 +3299,43 @@ if (navEl) {
   navEl.addEventListener('scroll', updateNavFade, {passive: true});
   window.addEventListener('resize', updateNavFade);
 }
+
+// Scrollspy: marks the in-view section's nav link aria-current="location" so the same tab
+// bar that already orients a mobile user horizontally (the fade hint above) also tells
+// anyone — mobile or desktop — which of Analysis/Registry/Methodology they're currently in.
+// IntersectionObserver rather than a scroll listener: no per-frame work, and a percentage
+// rootMargin (a thin band roughly mid-viewport) sidesteps needing the sticky header's exact
+// height, which already varies with --safe-top (09-28) and page zoom.
+(function initScrollspy() {
+  if (!('IntersectionObserver' in window)) return; // no-op: nav still works, just without the highlight
+  const navSectionLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'));
+  const sections = navSectionLinks
+    .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+    .filter(Boolean);
+  if (sections.length < 2) return;
+  const setCurrent = (id) => {
+    navSectionLinks.forEach(a => {
+      if (a.getAttribute('href') === '#' + id) {
+        a.setAttribute('aria-current', 'location');
+        // Below 640px .site-nav is its own horizontally-scrolling tab bar (see the fade hint
+        // above); without this, the highlighted link can sit off-screen and the indicator
+        // that matters most on mobile is invisible there. `inline`-only nearest scroll keeps
+        // the page itself from moving — the link is always vertically in view already.
+        a.scrollIntoView({
+          inline: 'nearest', block: 'nearest',
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        });
+      } else a.removeAttribute('aria-current');
+    });
+  };
+  const visible = new Set();
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+    const topmost = sections.find(s => visible.has(s.id));
+    if (topmost) setCurrent(topmost.id);
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  sections.forEach(s => spy.observe(s));
+})();
 
 // Back to top: appears once the page has scrolled past roughly one viewport, since below
 // that the header/in-page nav are already the faster way up. `shown` guards against writing

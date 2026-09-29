@@ -3475,3 +3475,77 @@ untouched — the change is CSS custom properties and position/padding values on
 which tier populates `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-09-29 — Scrollspy: highlight the current section in the sticky nav
+
+**Shipped.** Re-checked the four candidates the run prompt suggested (drawer focus trap,
+deferred Plotly, accessible chart data tables, sortable registry columns) — all four confirmed
+already live in the current `index.html`, same stale-list finding every recent log has hit.
+Also confirmed a first fresh idea, SRI (`integrity="…"`) on the pinned `cdn.plot.ly` `<script>`,
+was never logged before and is genuinely valuable (the tag already carries `crossorigin`, i.e.
+was half set up for it) — but this sandbox's egress proxy blocks `cdn.plot.ly` outright (`curl`
+returns a 403 CONNECT failure), so there was no way to fetch the exact pinned file and compute a
+correct hash. Shipping a guessed hash would make every real browser refuse to load Plotly and
+blank all six charts for every visitor — an unverifiable one-day change with a severe failure
+mode, unlike 09-28's safe-area work where a DevTools override closed the same kind of
+verification gap. Shelved, not rejected; worth revisiting if this sandbox's network policy ever
+allows reaching that host.
+
+Brainstormed fresh across the remaining six dimensions before converging: the scrollspy nav
+highlight below; `rel="noopener"` on the 2 same-origin `data/*.json` `target="_blank"` links
+(flagged since 09-24, still real, still minor since same-origin has near-zero opener risk);
+`og:image` width/height + `robots.txt`/`sitemap.xml`/canonical (rejected on marginal-payoff
+grounds 40+ times running); registry horizontal-scroll fade on mobile (flagged repeatedly, real
+but minor, outranked); a continent/region chart (standing rejection — redundant with the
+existing map + ranking bar chart); a whole-dashboard native share button (thin value over the
+existing per-trip share per 09-28's analysis).
+
+Picked the scrollspy: the sticky header's `.site-nav` (Analysis / Registry / Methodology) never
+indicated which section was actually in view, on a single long page where that's the only
+wayfinding signal besides scroll position. Below 640px `.site-nav` is already a horizontally-
+scrolling "tab bar" (09-11's fade-hint feature) — a natural fit for a "current tab" treatment,
+and useful independent of screen size once a signal exists for assistive tech via
+`aria-current="location"`.
+
+Implementation: an `IntersectionObserver` (no scroll-event listener, no per-frame cost) with a
+percentage `rootMargin` (`-45% 0px -50% 0px`, a thin band roughly mid-viewport) watches the three
+`<section>`s the nav links point to; whichever is intersecting that band gets its nav link marked
+`aria-current="location"`. Percentage margins sidestep needing the sticky header's exact pixel
+height, which already varies with `--safe-top` (09-28) and page zoom. The active link gets color +
+bold weight + an underline together, never color alone (per 09-16's forced-colors pass), with the
+underline pre-reserved via a transparent `border-bottom` on every link so lighting it up causes no
+layout shift. Testing surfaced a real mobile gap before shipping: `.site-nav`'s own horizontal
+scroll position never followed the active link, so on a 375px viewport the highlighted tab could
+sit entirely off-screen — exactly the case where the indicator matters most. Fixed by calling
+`scrollIntoView({inline: 'nearest', block: 'nearest', behavior: …})` on the newly-active link,
+`block: 'nearest'` keeping it from touching the page's own vertical scroll (the link is always
+vertically visible already, only its horizontal position within the narrow tab-bar container
+needs adjusting), and the reduced-motion check matching the same inline pattern used elsewhere
+in this file rather than introducing a shared helper.
+
+**Runners-up**
+- *SRI hash on the pinned Plotly CDN script* — real and never logged before, shelved on an
+  unverifiable-in-this-sandbox basis (see above), not a value judgment against the idea itself.
+- *`rel="noopener"`*, *`og:image`/`robots.txt`/`sitemap.xml`/canonical*, *registry horizontal-
+  scroll fade* — all real but minor, outranked on the same grounds logged repeatedly before.
+- *Continent/region chart*, *whole-dashboard share button* — standing rejections, no new
+  information since their last logging.
+
+**Verification:** `node --check` on both real inline `<script>` blocks — clean. Served locally
+(`python3 -m http.server`) and driven with Playwright (Plotly stubbed with a `newPlot`/`react`
+mock that attaches `.on()`/`purge()` directly to the target element, matching how the real
+library mutates the chart `<div>`; `cdn.plot.ly` and Google Fonts routed to fail/abort, the same
+sandbox restriction every prior log has hit). At both 1280px and 375px, light and dark: all 9
+`role="img"` chart panels initialize with zero left in the `.chart-loading` state, all 45
+registry rows render, the status chip reads "Verified pipeline data" (tier 1, `data/visits.json`,
+confirming the fallback chain loads normally — untouched either way, since this diff is CSS plus
+one new self-contained `IntersectionObserver` function with no reads of `trips`/fallback state),
+and there's no horizontal page scroll. Scrolling programmatically into `#analysis`, `#registry`,
+and `#methodology` in turn (and back) correctly moved `aria-current="location"` to exactly one
+matching nav link each time, in both directions, at both viewport widths; at 375px the tab bar's
+own `scrollLeft` was confirmed to move with each transition, bringing at least the start of the
+active link's label into its ~48px-wide visible window (a pre-existing header-space constraint
+from 08-21/09-11, not something today's change could or should redesign) rather than leaving it
+scrolled fully out of view as before this fix. Console stayed clean throughout, net of the
+sandbox-only `cdn.plot.ly`/Google Fonts network failures noted in every prior log. `git diff`
+confirms the change touches nothing outside `.site-nav` CSS and this one new JS function.
