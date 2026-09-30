@@ -3476,6 +3476,78 @@ which tier populates `trips`.
 
 **Files touched:** `index.html`, `ideas-log.md`
 
+## 2026-09-30 — Sync the "Around the visits" indicator to the URL
+
+**Shipped.** Checked the run prompt's four suggested candidates (drawer focus trap, deferred
+Plotly, accessible chart data tables, sortable registry columns) — all already live, same
+stale-list finding as every recent log. Read the 60-entry backlog before brainstorming fresh: the
+perennial rejects (continent chart, lazy chart init, per-trip data-completeness badge,
+`og:image` dimensions, `robots.txt`/sitemap/canonical, RSS feed, multi-select filters, registry
+horizontal-scroll fade, `rel="noopener"` on 3 same-origin links) haven't gained anything new to
+change those calls.
+
+Brainstormed fresh across all seven dimensions: a weekday-departure hero fact (thin, facts row
+already covers seasonality via "most common month"); a service worker for true offline caching on
+top of the manifest (real, but a new caching layer is bigger than a one-day slot and risks
+fighting the existing three-tier fallback rather than complementing it); an `.ics` "add to
+calendar" download per trip (solves a problem nobody has for a page about past diplomatic visits);
+`dvh`/`svh` units for mobile viewport units (checked — the page already avoids raw `vh` entirely,
+nothing to fix); and, while re-reading `writeUrlState`/`readUrlState`, a concrete, previously
+unflagged gap: every filter, the search box, and the open trip drawer round-trip through the URL
+so a link reproduces exactly what the sender saw — except the "Around the visits" panel's own
+Goods trade / Research co-authorship / UN voting `<select>`, which always resets to Goods trade on
+load. A journalist sharing "look at the UN-voting read of this chart" currently can't — the
+recipient lands back on trade every time.
+
+Picked it: it's a real inconsistency in a shareability contract the site already makes explicit
+everywhere else, it's small (mirrors the exact `readUrlState`/`writeUrlState` pattern already used
+for the four filter fields), fully reversible, and carries zero non-partisan-framing or
+data-provenance risk — the indicator picks a lens on the same neutral trade/co-authorship/voting
+data, not a value judgment.
+
+Implementation: `readUrlState()` gained one validated branch reading `?oc=`, checked against
+`OC_META`'s own keys (`trade`/`coauth`/`unga`) so a malformed, stale, or hand-typed value falls
+back to the built-in `trade` default instead of desyncing the chart from the `<select>`;
+`writeUrlState()` gained the mirror `p.set('oc', …)`, omitted when the value is the default (same
+"omit if default" convention every other param already follows); and the indicator's own `change`
+handler now calls `writeUrlState()` alongside its existing re-render. `ocIndicator` is a
+module-level variable, not part of `state`, so it deliberately stays independent of "Reset
+filters" — confirmed a Reset with `?oc=unga` in the URL clears the filter params but keeps `oc`,
+matching how the existing filter/sort independence already works elsewhere on the page.
+
+**Runners-up**
+- *Weekday-departure hero fact* — real but thin; the facts row already surfaces seasonality via
+  "most common departure month," and a second calendar-shaped fact adds little on top of it.
+- *Service worker for offline caching* — the manifest already enables "Add to Home Screen"
+  (09-21) and the embedded snapshot already guarantees offline correctness (tier 3); a caching
+  layer on top is a real idea but reshapes how the page loads, bigger than a one-day, high
+  side-effect-risk change to slot in today.
+- *Per-trip `.ics` "add to calendar" download* — mechanically easy, but the dataset is
+  overwhelmingly past visits; "add a 2019 diplomatic trip to your calendar" isn't a real use case.
+- *`dvh`/`svh` mobile viewport units* — checked the CSS directly: the page never uses raw `vh`,
+  so there's no bug to fix here.
+- *Perennial backlog items* (continent chart, lazy chart init, data-completeness badge, SEO
+  meta bundle, RSS feed, multi-select filters, registry scroll fade, `rel="noopener"`) — no new
+  information since their last logging; still parked for the same reasons.
+
+**Verification:** `node --check` on both real inline `<script>` blocks — clean (JSON-LD fails as
+always, expected — it's JSON, not JS). Served locally (`python3 -m http.server`) and driven with
+Playwright, `cdn.plot.ly` stubbed with a working `newPlot`/`react`/`.on()`/`purge()` mock and
+Google Fonts routed to fail (same sandbox restrictions every prior log has hit): loading with no
+`oc` param leaves the select at `trade`; `?oc=unga` sets the select and chart to UN voting on
+first paint; `?oc=bogus` falls back cleanly to `trade` with no console error; selecting "Research
+co-authorship" from the dropdown updates the URL to `?oc=coauth`, and selecting back to "Goods
+trade" removes the param entirely; loading `?oc=unga&pm=Narendra+Modi` and clicking "Reset
+filters" clears `pm` but leaves `oc=unga` in the URL and the select showing UN voting — filters
+and the indicator behave as the independent controls they are. Across 1280px/375px × light/dark:
+all 8 charts initialize, all 5 KPI cards and all 45 registry rows render, no horizontal scroll,
+and the console is clean bar the pre-existing, sandbox-only `cdn.plot.ly`/Google Fonts network
+blocks noted in every prior log. Status chip confirms tier 1 (`data/visits.json`) loads normally.
+`git diff` confirms the change is four small edits to `readUrlState`/`writeUrlState`/the one
+`change` listener — nothing in the fetch/mirror/fallback chain, filter logic, or markup touched.
+
+**Files touched:** `index.html`, `ideas-log.md`
+
 ## 2026-09-29 — Scrollspy: highlight the current section in the sticky nav
 
 **Shipped.** Re-checked the four candidates the run prompt suggested (drawer focus trap,

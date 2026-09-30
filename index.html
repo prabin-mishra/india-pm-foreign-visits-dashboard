@@ -1428,6 +1428,16 @@ function readUrlState() {
   if (p.has('type'))    state.visitType = p.get('type');
   if (p.has('q'))       state.q         = p.get('q');
   state.trip = p.get('trip') || null;
+  // "Around the visits" indicator: same shareable-view treatment as the filters above, so a
+  // link to (say) the UN-voting read of the chart shows the recipient that view instead of
+  // silently resetting to the default. Validated against OC_META's own keys — a malformed,
+  // stale, or hand-edited value falls back to the built-in 'trade' default rather than leaving
+  // the chart/select mismatched or throwing.
+  if (p.has('oc') && Object.prototype.hasOwnProperty.call(OC_META, p.get('oc'))) {
+    ocIndicator = p.get('oc');
+    const ocEl = document.getElementById('ocIndicator');
+    if (ocEl) ocEl.value = ocIndicator;
+  }
 }
 
 function writeUrlState() {
@@ -1438,6 +1448,7 @@ function writeUrlState() {
   if (state.visitType !== 'All') p.set('type',    state.visitType);
   if (state.q)                   p.set('q',       state.q);
   if (state.trip)                p.set('trip',    state.trip);
+  if (ocIndicator     !== 'trade') p.set('oc',    ocIndicator);
   const qs = p.toString();
   history.pushState(null, '', qs ? '?' + qs : location.pathname);
 }
@@ -3160,6 +3171,7 @@ function renderOutcomesChart(rows) {
 }
 document.getElementById('ocIndicator').addEventListener('change', e => {
   ocIndicator = e.target.value;
+  writeUrlState();
   renderOutcomesChart(filtered());
 });
 
