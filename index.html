@@ -473,8 +473,14 @@
     .news-src { display: flex; align-items: center; gap: 8px; font-size: .74rem; color: var(--text-3); }
     .news-src .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-3); }
     .news-src .pub { font-weight: 600; color: var(--text-2); }
-    .news-title { font-size: .92rem; font-weight: 500; line-height: 1.4; color: var(--text);
-      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    /* No line-clamp: `-webkit-line-clamp` fixes a *line count*, so widening line-height,
+       letter-spacing or word-spacing (WCAG 1.4.12's required text-spacing overrides) can push
+       a headline that fit in 3 lines into a 4th that then renders fully clipped, with no
+       ellipsis or "more" affordance to show it happened — real content silently disappears for
+       a reader using those settings. The full headline is always in the DOM and in `title`
+       (see renderNews below); letting it wrap naturally costs only row-height uniformity in
+       the grid, never content. */
+    .news-title { font-size: .92rem; font-weight: 500; line-height: 1.4; color: var(--text); }
     .news-card .go { margin-top: auto; font-size: .76rem; font-weight: 600; color: var(--accent); }
     .news-empty { font-size: .86rem; color: var(--text-3); padding: var(--sp-4) 0; grid-column: 1 / -1; margin: 0; }
 

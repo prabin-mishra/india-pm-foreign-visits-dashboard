@@ -3621,3 +3621,68 @@ from 08-21/09-11, not something today's change could or should redesign) rather 
 scrolled fully out of view as before this fix. Console stayed clean throughout, net of the
 sandbox-only `cdn.plot.ly`/Google Fonts network failures noted in every prior log. `git diff`
 confirms the change touches nothing outside `.site-nav` CSS and this one new JS function.
+
+## 2026-10-01 — Fix: news headlines can silently lose content under WCAG 1.4.12 text spacing
+
+**Shipped.** The run prompt's four suggested candidates (drawer focus trap, deferred Plotly,
+accessible chart data tables, sortable registry columns) are all still live, as every recent log
+has found. Re-checked the SRI-hash idea for the pinned `cdn.plot.ly` script (`curl` still gets a
+403 CONNECT failure from this sandbox's egress proxy, no change since 09-29) and FAQPage JSON-LD
+on the caveats section (still a dead channel — Google restricted FAQ rich results to authoritative
+government/health sites in August 2023, the standing call since 08-31) — neither earns a different
+answer today.
+
+Brainstormed fresh instead of only re-running the backlog: an accessibility audit the log hadn't
+run before, WCAG reflow (1.4.10) and text-spacing (1.4.12) at the two success criteria's actual
+test values, rather than just the 375px viewport check every prior log already does. Verified
+1.4.10 first — at a 320px CSS width the page itself never gains horizontal scroll; the registry
+table scrolling in its own container is the explicit "data table" exception the criterion allows,
+so nothing to fix there. 1.4.12 found a real, previously unlogged bug: injecting the criterion's
+required override (`line-height: 1.5`, `letter-spacing: 0.12em`, `word-spacing: 0.16em`,
+`paragraph-spacing: 2em`) onto the live page showed `.news-title` clipping content — `scrollHeight`
+exceeding `clientHeight` by a full line. The cause: `-webkit-line-clamp: 3` fixes a *line count*,
+not a height, so widening the spacing pushes some headlines that fit in exactly 3 lines at normal
+spacing into a 4th that then renders completely hidden by the paired `overflow: hidden` — with no
+ellipsis or "more" affordance to signal it happened. That's real content disappearing for a reader
+using an OS or browser text-spacing accommodation, on a site whose whole premise is being a
+trustworthy public record.
+
+Picked it as today's idea: previously unlogged, genuinely accessibility-relevant (unlike most of
+the exhausted backlog below), a single self-contained CSS rule, and trivially reversible. Fix:
+dropped `display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+overflow: hidden;` from `.news-title` entirely rather than just raising the clamp count — raising
+it only narrows the window a long enough headline could still hit, where removing it closes the
+failure mode for any future spacing override, not just the criterion's specific test values. The
+full headline was already in the DOM and in the `title` tooltip (`renderNews`, unchanged); letting
+it wrap naturally costs only card-height uniformity in the `.news-grid`, never content — confirmed
+visually acceptable in both 3-column desktop and 1-column mobile screenshots.
+
+**Runners-up**
+- *SRI hash on the pinned Plotly CDN script* — re-checked, still unverifiable in this sandbox
+  (`cdn.plot.ly` 403s at the proxy), same shelved status as 09-29.
+- *FAQPage JSON-LD on the methodology caveats* — re-checked against current Google guidance, still
+  a dead channel, same standing rejection since 08-31.
+- *WCAG 1.4.10 Reflow at 320px* — audited as part of today's pass; already compliant (the
+  registry table's horizontal scroll is the criterion's own documented exception), nothing to fix.
+- *Perennial backlog* (continent/region chart, lazy chart init via `IntersectionObserver`,
+  per-trip data-completeness badge, multi-select filters, RSS feed, `og:image` width/height,
+  robots.txt/sitemap.xml/canonical, registry horizontal-scroll fade, `rel="noopener"` on the
+  remaining same-origin links, whole-dashboard share button) — no new information since their last
+  logging to change any of those calls.
+
+**Verification:** `node --check`-equivalent syntax check (`new Function(...)`) on both real inline
+`<script>` blocks — clean. Served locally (`python3 -m http.server`) and driven with Playwright
+(Plotly stubbed with a `newPlot`/`react` mock that attaches `.on()` directly to the target element,
+`cdn.plot.ly` and Google Fonts routed to fail/abort, the same sandbox restriction every prior log
+has hit). Re-ran the WCAG 1.4.12 override test after the fix: the `.news-title` clipping is gone —
+the only elements left with `scrollHeight > clientHeight` under `overflow: hidden` are the
+page's existing `.sr-only` spans and the registry's hidden table caption, which are deliberately
+1px-collapsed for screen readers by design, not a content-loss bug. At 1280px and 375px, light and
+dark: all 8 charts finish initializing (`.chart-loading` cleared), all 45 registry rows render, all
+6 "Latest coverage" cards render with their title text matching their `title` attribute exactly
+(full headline, not a truncated prefix), and there's no horizontal page scroll at either width.
+Console stayed clean bar the pre-existing, sandbox-only Google Fonts network block noted in every
+prior log. `git diff` confirms the change is one CSS rule (plus its explanatory comment) in
+`.news-title` — nothing in the fetch/mirror/fallback chain, filter logic, or any JS was touched.
+
+**Files touched:** `index.html`, `ideas-log.md`
