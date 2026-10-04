@@ -3337,12 +3337,17 @@ if (navEl) {
         a.setAttribute('aria-current', 'location');
         // Below 640px .site-nav is its own horizontally-scrolling tab bar (see the fade hint
         // above); without this, the highlighted link can sit off-screen and the indicator
-        // that matters most on mobile is invisible there. `inline`-only nearest scroll keeps
-        // the page itself from moving — the link is always vertically in view already.
-        a.scrollIntoView({
-          inline: 'nearest', block: 'nearest',
-          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        });
+        // that matters most on mobile is invisible there. Scrolls the nav element itself, never
+        // a.scrollIntoView(): that also scrolls the viewport, which cancels an in-flight smooth
+        // scroll from a nav click as soon as it crosses into a new section (first click from the
+        // hero stalled at the top of Analysis instead of reaching Registry).
+        if (navEl && navEl.scrollWidth > navEl.clientWidth) {
+          const navRect = navEl.getBoundingClientRect(), aRect = a.getBoundingClientRect();
+          navEl.scrollTo({
+            left: navEl.scrollLeft + (aRect.left - navRect.left) - (navRect.width - aRect.width) / 2,
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          });
+        }
       } else a.removeAttribute('aria-current');
     });
   };
