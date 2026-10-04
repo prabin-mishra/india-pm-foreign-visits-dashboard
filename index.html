@@ -770,6 +770,11 @@
          wordmark shrinks slightly to free up room, both stay fixed-size and fully visible,
          and the nav becomes a horizontally-scrollable strip taking whatever space is left
          between them — same pattern as an app tab bar. */
+      .site-header .wrap { gap: var(--sp-2); }
+      /* The wordmark, two 40px icon buttons and three --sp-6 gaps left the nav ~33px at 375px
+         (only "Ana…" showing). Tighter gaps plus dropping the keyboard-shortcuts button — a
+         touch screen has no use for it; the `?` key still opens the dialog — leaves ~125px. */
+      #shortcutsHelp { display: none; }
       .wordmark { flex: none; gap: 0; }
       .wordmark .tag { display: none; }
       .wordmark .name { font-size: .92rem; }
