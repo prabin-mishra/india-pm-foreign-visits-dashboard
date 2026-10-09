@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-08T10:16:13Z",
+  "generated": "2026-10-09T10:17:16Z",
   "status": "recent",
   "reported": null,
   "trip": {
@@ -24,8 +24,15 @@
       "dateSource": "rss"
     },
     {
+      "title": "PM Modi’s Visit to Uzbekistan and the Kyrgyz Republic: Implications for India",
+      "source": "India Narrative",
+      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPVW9EbG04WFdCOXl4MkZLMUdFdFVMS1p4ZTlIeE5pbDFHSlhNTG1uclE4bmwyMUVEdkRNdktaMnprT3FuRU1HeTVCZ3JTaG0xVVBManFkaHdxUFZTOUJ0NnduVTJiYnhiVXB3cUJBT1hSUDlYQWVIMjhZUjZfaktsbjAzWFN4eXN5SzNoVXQ2cUJqT3RMVTBubW5Za2NXb3Y1WnE1cVJKcmhKNjlncVNNZWhSejFYQQ?oc=5",
+      "date": "2026-09-03",
+      "dateSource": "rss"
+    },
+    {
       "title": "PM Modi’s Uzbekistan Visit: Uranium, Trade and New Ties",
-      "source": "https://www.usthadian.com/",
+      "source": "usthadian.com",
       "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQVUJWWUtIbXk4RXhsd183WVRfNVdCMzA1QXJuX2kwT19sRTExT0R6N0g4dkhnM19WdEY2Yjl5bWdOVnJaWjBSbUlaNjY5UkxzV1hBdkxrcVdTdmN5V1RmNXh4YjRGa1R6a2FXdzZtZmVmZk5vX2JlSXFhRjdKOW03THdrSnR5Zw?oc=5",
       "date": "2026-09-02",
       "dateSource": "rss"
@@ -50,20 +57,18 @@
       "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOazNYek16M1J6eXZneTVqZU82U3lLdE0zdC05Rjh5cGVKUll4TWtiSU51Ti10dTJfdUNUMVVGUHFLSnhXNmlrV1JwM3dUeE1CRmFSY3RrZ1hybDlaaFJ0cng5V1dRelRaQ2xRNjRQc0NaajBRc3BKSWN2d0RhSXFja25mSVhPYTFLODJ4RlVTZmtOaVY3LUp2Rld5S2xsalBtcExnOE9HNnBhT1BNN2pVTWplMDBrZm9uZjdnSUg3OFBVNFBiZUZFc2J6MDRLUQ?oc=5",
       "date": "2026-08-31",
       "dateSource": "rss"
-    },
-    {
-      "title": "India, Uzbekistan agree to deepen ties, explore strategic partnership during PM Modi’s state visit",
-      "source": "DD India",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQWGpVX1YwQ3FZa215WlJ6VVV1TDM4R2JXVThnQ0hRSmt4NlpYaHY2SklCbGpBaU03aHA0TXJESzN4UU5WSU9WWEZhcVkxWnJLci1QVWVMZU8yZWxPeHlvZ2ZLazc5TVY3akRlODhKMXIyWnNORjFCZDJyQ3kycERScElVVVUxNS1EYzJ4LU1WYXJCWE0yNEFLN2lVUHNzanJlVmJBXzBIWC13WkhoY3BWdHExUTdGSThZMm52WEptYnUxbXct?oc=5",
-      "date": "2026-08-31",
-      "dateSource": "rss"
     }
   ],
   "seen": {
+    "8b6912499b9a": "2026-10-09",
     "060e2c1228ef": "2026-10-08",
     "0d0a6cd90210": "2026-10-08",
     "d39e2b1e6d4f": "2026-10-08",
     "2c2da1d3bf41": "2026-10-08",
+    "20a69ad3e68e": "2026-10-08",
+    "c8642ab90ea6": "2026-10-08",
+    "fee7db9969ee": "2026-10-08",
+    "e9c73e041ad1": "2026-10-08",
     "3258af9cc2c0": "2026-10-07",
     "4d5198108f99": "2026-10-07",
     "1ab13a7e76aa": "2026-10-07",
@@ -94,6 +99,8 @@
     "850eba104b49": "2026-10-07",
     "1e259c359da2": "2026-10-07",
     "63a604a166ed": "2026-10-07",
+    "1550b21e50e4": "2026-10-07",
+    "9844013e56e2": "2026-10-07",
     "0cd17d8a3125": "2026-10-06",
     "8eece13d8027": "2026-10-06",
     "0609a14b87e1": "2026-10-06",
@@ -286,7 +293,7 @@
     "d0f3c8752a0f": "2026-09-18",
     "ccfc210f9ffe": "2026-09-18",
     "45578edbe32e": "2026-09-18",
-    "6251fcbc8bba": "2026-09-18",
+    "11a7ebe1957f": "2026-09-18",
     "cba603e4be1a": "2026-09-17",
     "56e64f972524": "2026-09-17",
     "5916c32e7454": "2026-09-17",
@@ -728,6 +735,7 @@
     "b3a8280fa557": "2026-09-12",
     "e49d29fa13cf": "2026-09-12",
     "8f1614a2f2ae": "2026-09-12",
+    "1e3cca6b33ac": "2026-09-12",
     "f22122fe9030": "2026-09-11",
     "9c6d7740f12b": "2026-09-11",
     "c2a566fae942": "2026-09-11",
@@ -851,14 +859,6 @@
     "5e2c2ee20baf": "2026-09-11",
     "9778721ef899": "2026-09-11",
     "18a50e032046": "2026-09-11",
-    "604d06f6d481": "2026-09-11",
-    "93db6e434103": "2026-09-11",
-    "66ee643ab03a": "2026-09-11",
-    "b10fe8059f72": "2026-09-11",
-    "16c6612e0d82": "2026-09-11",
-    "b44075db169e": "2026-09-11",
-    "457fa243815a": "2026-09-11",
-    "3c16548a06a6": "2026-09-11",
-    "b0dd3e2bb900": "2026-09-11"
+    "604d06f6d481": "2026-09-11"
   }
 }
