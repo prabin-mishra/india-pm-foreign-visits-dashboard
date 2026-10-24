@@ -3686,3 +3686,25 @@ prior log. `git diff` confirms the change is one CSS rule (plus its explanatory 
 `.news-title` — nothing in the fetch/mirror/fallback chain, filter logic, or any JS was touched.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-10-24 — Automatic day/night theme (user-requested)
+
+**Shipped.** The site already had a dark theme and toggle, seeded from the OS once at load. Followed
+industry practice (honour `prefers-color-scheme`, which phones/desktops switch on their own
+dusk/dawn schedule, rather than guessing from the clock, which ignores timezone and user settings):
+(1) head script sets `data-theme` before first paint, removing the light flash for dark users;
+(2) a `change` listener on the OS preference re-themes live while the user has no saved choice;
+(3) toggling to the theme the OS already uses clears the stored override, returning to auto;
+(4) `color-scheme` on `:root` / dark so native scrollbars and controls match; localStorage access
+wrapped in try/catch. The toggle UI and saved explicit choices behave as before.
+
+**Runners-up.** Sunrise/sunset clock-based switching — rejected: wrong without location, fights OS
+settings. Three-state Auto/Light/Dark control — rejected: new UI for a gain the revert-to-auto rule
+already covers.
+
+**Verification.** Local server + browser pane: dark OS loads dark with nothing stored; toggle
+stores/clears overrides correctly; synthetic OS `change` events re-theme in auto mode and are
+ignored under an explicit choice (this harness doesn't deliver real emulated `change` events);
+8 charts render, no console errors, no horizontal scroll at 375px. Data/fallback code untouched.
+
+**Files touched:** `index.html`, `ideas-log.md`

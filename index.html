@@ -4,6 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>India PM Foreign Visits Tracker</title>
+  <!-- Set data-theme before first paint so dark-mode visitors never see a light flash. Same
+       rule as the theme logic near the end of the page: saved choice, else the OS setting
+       (which phones/desktops switch automatically at dusk/dawn when "Auto" appearance is on). -->
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (t !== 'dark' && t !== 'light') {
+        t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <!-- Favicon: a plain map-pin mark in the site's accent teal, inline as SVG so modern
        browsers get a crisp icon with no extra request; PNGs cover Apple touch icons and
        any crawler/older browser that expects a conventional favicon file. -->
@@ -85,6 +98,7 @@
   <style>
     /* ============ Design tokens ============ */
     :root {
+      color-scheme: light; /* native scrollbars/form controls follow the theme; dark set below */
       /* Color — light ("paper") */
       --bg:            #f6f4ef;
       --surface:       #fdfcfa;
@@ -143,6 +157,7 @@
       --safe-left:   env(safe-area-inset-left, 0px);
     }
     [data-theme="dark"] {
+      color-scheme: dark;
       --bg:            #14130f;
       --surface:       #1b1a15;
       --surface-2:     #23211a;
@@ -3276,11 +3291,13 @@ async function loadTrips() {
   openTripFromUrl();
 }
 
-// Theme: saved preference, else system
+// Theme: saved explicit choice wins; otherwise follow the OS (live, so an OS-scheduled
+// day/night switch applies without a reload). Storage can throw in private modes.
+const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+const savedTheme = () => { try { return localStorage.getItem('theme'); } catch (e) { return null; } };
 let dark = (() => {
-  const saved = localStorage.getItem('theme');
-  if (saved) return saved === 'dark';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const saved = savedTheme();
+  return (saved === 'dark' || saved === 'light') ? saved === 'dark' : systemDark.matches;
 })();
 
 function applyTheme() {
@@ -3295,10 +3312,21 @@ function applyTheme() {
 applyTheme();
 document.getElementById('themeToggle').onclick = () => {
   dark = !dark;
-  localStorage.setItem('theme', dark ? 'dark' : 'light');
+  // Choosing the theme the OS already uses returns to "auto" (no stored override).
+  try {
+    if (dark === systemDark.matches) localStorage.removeItem('theme');
+    else localStorage.setItem('theme', dark ? 'dark' : 'light');
+  } catch (e) {}
   applyTheme();
   render();
 };
+systemDark.addEventListener('change', e => {
+  const saved = savedTheme();
+  if (saved === 'dark' || saved === 'light') return; // explicit choice stays put
+  dark = e.matches;
+  applyTheme();
+  render();
+});
 
 document.getElementById('resetFilters').addEventListener('click', resetFilters);
 document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
