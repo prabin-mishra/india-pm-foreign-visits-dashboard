@@ -584,8 +584,8 @@
       border-radius: var(--radius-sm);
     }
     .chart-data summary::-webkit-details-marker { display: none; }
-    .chart-data summary::before { content: '▸'; font-size: .65em; transition: transform .15s ease; }
-    .chart-data[open] summary::before { transform: rotate(90deg); }
+    .chart-data summary::before { content: '+'; font-size: 1.1em; font-weight: 700; width: 1em; text-align: center; }
+    .chart-data[open] summary::before { content: '−'; }
     .chart-data summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .chart-data summary:hover { text-decoration: underline; }
     .chart-data-scroll {
@@ -613,10 +613,13 @@
     table { width: 100%; border-collapse: collapse; font-size: .88rem; }
     caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
     th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    /* Header: bold caps over a strong hairline. The ground colour (not transparent) is needed
+       because th is sticky and rows scroll underneath it. Table text stays left-aligned — dense
+       tabular data is the documented exception to the system's centred layout. */
     th {
-      background: var(--surface-2); position: sticky; top: 0; z-index: 1;
-      font-size: .7rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-2);
-      white-space: nowrap;
+      background: var(--bg); position: sticky; top: 0; z-index: 1;
+      font-size: .75rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-2);
+      white-space: nowrap; border-bottom: 1px solid var(--border-strong);
     }
     /* Padding grows the clickable/tappable area to meet the 24px CSS-pixel target-size
        floor (measured at ~18px tall before this); the matching negative margin cancels
@@ -666,15 +669,19 @@
     /* ============ Methodology ============ */
     .method { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
     .method .panel { padding: var(--sp-6); }
+    /* Tier number as a round ring badge (50px, 4px ring). Its meaning is the digit, not the
+       ring, so it reads the same in greyscale. */
     .method .n {
-      font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; color: var(--gold-text);
-      display: block; margin-bottom: var(--sp-3); font-variant-numeric: tabular-nums;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: var(--control); height: var(--control); border: var(--ring) solid currentColor; border-radius: var(--radius-round);
+      font-family: var(--font-display); font-weight: 700; font-size: 1.125rem; color: var(--text-2);
+      margin-bottom: var(--sp-4); font-variant-numeric: tabular-nums;
     }
-    .method h3 { font: 600 .95rem/1.35 var(--font-ui); margin: 0 0 var(--sp-2); }
+    .method h3 { font: 700 1rem/1.35 var(--font-ui); margin: 0 0 var(--sp-2); }
     .method p { font-size: .87rem; color: var(--text-2); line-height: 1.6; margin: 0; }
 
     .caveats { margin-top: var(--sp-8); max-width: 62ch; }
-    .caveats-title { font: 600 1rem/1.35 var(--font-ui); margin: 0 0 var(--sp-2); }
+    .caveats-title { font: 700 1.125rem/1.35 var(--font-ui); margin: 0 0 var(--sp-2); }
     .caveats-sub { font-size: .85rem; color: var(--text-3); line-height: 1.6; margin: 0 0 var(--sp-4); }
     .caveat { border-top: 1px solid var(--border); padding: var(--sp-3) 0; }
     .caveat:last-child { border-bottom: 1px solid var(--border); }
@@ -689,17 +696,17 @@
       padding: 4px 0; margin: -4px 0;
     }
     .caveat summary::-webkit-details-marker { display: none; }
-    .caveat summary::before { content: '▸'; font-size: .65em; color: var(--accent); flex: none; transition: transform .15s ease; position: relative; top: -1px; }
-    .caveat[open] summary::before { transform: rotate(90deg); }
+    .caveat summary::before { content: '+'; font-size: 1.1em; font-weight: 700; width: 1em; text-align: center; flex: none; }
+    .caveat[open] summary::before { content: '−'; }
     .caveat summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .caveat summary:hover { color: var(--accent-strong); }
+    .caveat summary:hover { text-decoration: underline; }
     .caveat p { font-size: .87rem; color: var(--text-2); line-height: 1.65; margin: var(--sp-2) 0 0; padding-left: 1.1em; }
 
     /* ============ Footer ============ */
-    .site-footer { margin-top: var(--sp-16); border-top: 1px solid var(--border); padding: var(--sp-8) 0 var(--sp-12); }
-    .site-footer .wrap { display: flex; flex-wrap: wrap; gap: var(--sp-4) var(--sp-8); align-items: baseline; justify-content: space-between; }
-    .site-footer, .site-footer a { color: var(--text-3); font-size: .82rem; }
-    .site-footer .links { display: flex; flex-wrap: wrap; gap: var(--sp-5); }
+    .site-footer { margin-top: var(--sp-16); border-top: 1px solid var(--border-strong); padding: var(--sp-8) 0 var(--sp-12); }
+    .site-footer .wrap { display: flex; flex-direction: column; gap: var(--sp-4); align-items: center; text-align: center; }
+    .site-footer, .site-footer a { color: var(--text-2); font-size: .875rem; }
+    .site-footer .links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-3) var(--sp-5); }
 
     /* ============ Drawer ============ */
     #drawer-overlay {
@@ -724,11 +731,11 @@
       border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px;
       background: transparent; cursor: pointer; transition: background .18s ease, color .18s ease, border-color .18s ease;
     }
-    .drawer-chrono-btn:hover, .drawer-chrono-btn:focus-visible { background: var(--surface-2); color: var(--accent); }
+    .drawer-chrono-btn:hover, .drawer-chrono-btn:focus-visible { background: var(--text); color: var(--bg); }
     .drawer-chrono-btn[disabled] { opacity: .35; cursor: default; pointer-events: none; }
     .drawer-chrono-btn .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .drawer-eyebrow { font-size: .68rem; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--gold-text); margin: var(--sp-6) 0 var(--sp-2); }
-    .drawer-title { font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; line-height: 1.15; letter-spacing: -.01em; margin: 0 0 var(--sp-5); text-wrap: balance; }
+    .drawer-title { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; line-height: 1.2; letter-spacing: 0; margin: 0 0 var(--sp-5); text-wrap: balance; }
     .drawer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; margin-bottom: var(--sp-6); }
     .drawer-grid > div { background: var(--surface-2); padding: var(--sp-3) var(--sp-4); }
     .drawer-grid .l { font-size: .68rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
@@ -778,7 +785,7 @@
       transition: opacity .2s ease, transform .2s ease;
     }
     #shortcutsModal.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, -50%); }
-    .shortcuts-title { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; margin: 0 0 var(--sp-5); }
+    .shortcuts-title { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; margin: 0 0 var(--sp-5); }
     .shortcuts-list { display: flex; flex-direction: column; gap: var(--sp-3); margin: 0; }
     .shortcuts-list > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4); }
     .shortcuts-list dt { display: flex; gap: 4px; flex: none; }
