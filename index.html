@@ -898,6 +898,16 @@
       }
     }
 
+    /* Band reveal: opacity 0→1 and a 12px rise over 400ms, once, as a band first scrolls into
+       view. Only the JS in initBandReveal ever sets data-reveal, and only on bands that start
+       below the fold and only when motion is allowed — so with no JS, no IntersectionObserver, or
+       reduced motion, nothing is hidden. Nothing loops or autoplays. */
+    @media (prefers-reduced-motion: no-preference) {
+      .band[data-reveal] { transition: opacity .4s ease, transform .4s ease; }
+      .band[data-reveal="pending"] { opacity: 0; transform: translateY(12px); }
+      .band[data-reveal="done"] { opacity: 1; transform: none; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
@@ -915,6 +925,10 @@
     @media (forced-colors: active) {
       .days-bar { border: 1px solid CanvasText; }
       .live-dot { border: 1px solid CanvasText; }
+      /* Filled pills and the black Stage bands lose their background fill when colours are forced,
+         so each keeps a CanvasText outline / edge to stay distinct from its surroundings. */
+      .live-pill.ongoing, .t-multi { border: 1px solid CanvasText; }
+      .band { border-block: 1px solid CanvasText; }
     }
 
     /* ============ Print ============
@@ -938,11 +952,15 @@
       }
 
       /* Interactive-only chrome that means nothing on paper. */
-      .skip-link, .site-nav, #themeToggle, #shortcutsHelp, .filterbar .field, .filterbar .btn-reset,
+      .scroll-cue, .skip-link, .site-nav, #themeToggle, #shortcutsHelp, .filterbar .field, .filterbar .btn-reset,
       .btn-download, #newsBlock, #drawer, #drawer-overlay, #shortcutsModal, #shortcutsOverlay, .sort-icon,
       #newSinceNote, .badge-new, #backToTop, #linkNotice {
         display: none !important;
       }
+
+      /* Screen-only sizing and motion: no full-viewport hero, and a band is never left hidden. */
+      .hero { min-height: 0 !important; }
+      .band[data-reveal] { opacity: 1 !important; transform: none !important; }
 
       /* Sticky positioning has no meaning across paginated output and can duplicate chrome. */
       .site-header, .filterbar, th { position: static !important; backdrop-filter: none !important; }
@@ -3545,6 +3563,21 @@ if (navEl) {
     if (topmost) setCurrent(topmost.id);
   }, { rootMargin: '-45% 0px -50% 0px' });
   sections.forEach(s => spy.observe(s));
+})();
+
+// Band reveal (see the motion rule above): bands that start below the fold fade/rise in once as
+// they approach the viewport. Skipped entirely without IntersectionObserver or under reduced
+// motion, and never applied to a band that is already on screen, so nothing visible is ever
+// hidden. Printing reveals everything first.
+(function initBandReveal() {
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const bands = Array.from(document.querySelectorAll('.band')).filter(b => b.getBoundingClientRect().top >= window.innerHeight);
+  if (!bands.length) return;
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.dataset.reveal = 'done'; io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -8% 0px' });
+  bands.forEach(b => { b.dataset.reveal = 'pending'; io.observe(b); });
+  window.addEventListener('beforeprint', () => bands.forEach(b => { b.dataset.reveal = 'done'; }));
 })();
 
 // Back to top: appears once the page has scrolled past roughly one viewport, since below

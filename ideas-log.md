@@ -3708,3 +3708,43 @@ ignored under an explicit choice (this harness doesn't deliver real emulated `ch
 8 charts render, no console errors, no horizontal scroll at 375px. Data/fallback code untouched.
 
 **Files touched:** `index.html`, `ideas-log.md`
+
+## 2026-10-25 — Infographic redesign on the black/white "Paper / Stage" design system (user-requested)
+
+**Shipped.** Whole-site re-skin of `index.html` onto the user's design system, cut into six
+separately committed steps so any stop point is coherent: (1) tokens re-pointed (same variable
+names, new values), Poppins 300/400/700, no shadows/gradients/blur; (2) centred Paper title hero
+with an inline-SVG scroll cue, KPIs as big-figure StatFigures in a Stage band under a hairline-framed
+question; (3) statements, underline filters, 44px round controls, hue-free live-card states;
+(4) all 8 charts greyscale with every value printed, direct labels instead of legends, starred
+caption + `Source · Note · As of` line under each, opaque PNG export; (5) registry header,
+numbered ring badges for the three data tiers, +/− disclosures, centred footer; (6) one-shot band
+reveal, print/forced-colors upkeep. Copy, data, filters and click-to-filter are unchanged.
+
+**Deliberate calls.** No accent hue: ongoing / press-reported / fallback-tier / multi-country meaning
+now rides on text label plus fill-vs-outline and solid-vs-dashed shape (checked under
+`grayscale(1)`). Copy stays English — the system's voice rules are applied, not its German.
+Centring applies to hero, statements, KPIs and chart captions; the registry table, filters,
+methodology `<details>` and drawer stay left-aligned. Stage map ramp starts at `#808080`, not the
+system's `#4c4c4c`, because `#4c4c4c` vs land `#333` was 1.5:1 (now 3.2:1). Captions state what is
+measured and add one neutral caveat (e.g. PM terms differ in length); nothing ranks or praises.
+Duration chart subtitle "Nights away" → "Days away" to match its caption and Methodology.
+
+**Runners-up.** Scroll-scrubbed Lottie hero — rejected: no autoplay/looping motion, no new asset.
+Per-chart "About" InfoPanel — dropped: needed more than the ~60-line budget (drawer helpers are not
+reusable without a refactor). Keeping teal for links/status — rejected: breaks the system and
+relies on colour alone. Live-mirror "As of" date via a new field — rejected: would touch `loadTrips`;
+the date is read from the existing status line instead (omitted on undated tiers).
+
+**Verification.** Inline scripts parse; data tests pass; no console errors at 1024 and 375px, light
+and dark; no horizontal scroll at 375px; contrast script over token pairs (text ≥ 4.5, graphics ≥ 3;
+grey-500 never used as text); 8 charts finish; click-to-filter (ranking, yoy), zero-row note, PNG
+export (opaque black) and drawer focus/inert/Esc checked; tier 1 (pipeline), tier 2 (live mirror,
+data/ withheld) and tier 3 (embedded snapshot, mirror URL broken in a scratch copy) all render with
+the right badge; `data/`, `scripts/`, `.github/`, `loadTrips()` untouched. Not testable here:
+real `forced-colors` and `prefers-reduced-motion` emulation (CSS reasoned, JS skips the reveal).
+
+**Follow-ups (not done).** `manifest.json` still has teal/warm-paper colours; `icon-192/512.png`,
+`apple-touch-icon.png`, `favicon.png` and `preview.png` (OG image) are still the old palette.
+
+**Files touched:** `index.html`, `ideas-log.md`
