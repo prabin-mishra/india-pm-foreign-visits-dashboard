@@ -200,7 +200,8 @@
       --ch-secondary:  #808080;
       --ch-grid:       #333333;
       --ch-axis:       #ffffff;
-      --ch-map-low:    #4c4c4c;
+      --ch-map-low:    #808080; /* lifted from the DS grey-700: a once-visited country must stay >=3:1 against
+                                  --ch-land (#808080 on #333333 = 3.2:1); #4c4c4c was only 1.5:1 */
       --ch-land:       #333333;
 
       --shadow-drawer: none;
@@ -292,12 +293,12 @@
     .panel-head-right { display: flex; align-items: center; gap: var(--sp-2); flex: none; }
     .chart-dl-btn {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: var(--radius-sm); flex: none;
-      border: 1px solid var(--border); background: transparent; color: var(--text-3); cursor: pointer;
+      width: 44px; height: 44px; border-radius: var(--radius-round); flex: none;
+      border: 1px solid var(--border-strong); background: transparent; color: var(--text-2); cursor: pointer;
       transition: background .18s ease, color .18s ease;
     }
-    .chart-dl-btn svg { width: 15px; height: 15px; }
-    .chart-dl-btn:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+    .chart-dl-btn svg { width: 18px; height: 18px; }
+    .chart-dl-btn:hover:not(:disabled) { background: var(--text); color: var(--bg); }
     .chart-dl-btn:disabled { opacity: .35; cursor: default; }
 
     /* ============ Broken permalink notice ============ */
@@ -380,7 +381,7 @@
     /* Bands alternate Paper and Stage down the page; data-band="stage" (tokens above) forces the
        black ground in both themes. Content is visible by default — the reveal motion in the
        motion section only ever adds to this, it never hides anything until observed. */
-    .band { padding: var(--sp-16) 0; background: var(--bg); color: var(--text); }
+    .band, .section.band { padding: var(--sp-16) 0; background: var(--bg); color: var(--text); }
     /* Statement: Light 300, centred, framed by two 1px hairlines the width of the text block
        (fit-content shrinks the box to its longest line) — no box, no underline. */
     .statement {
@@ -558,22 +559,27 @@
       color: var(--text-3); display: block; margin-bottom: var(--sp-2);
     }
 
-    .charts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+    .charts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--chart-gap); }
     .panel {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
-      padding: var(--sp-5) var(--sp-5) var(--sp-3);
+      padding: var(--panel-pad) var(--panel-pad) var(--sp-3);
       min-width: 0; /* grid items don't shrink below content size by default; without this a wide
                        chart-data table pushes the whole page into horizontal scroll */
     }
     .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-2); }
-    .panel-head h3 { font: 600 .95rem/1.3 var(--font-ui); margin: 0; }
-    .panel-head .sub { font-size: .78rem; color: var(--text-3); text-align: right; }
+    .panel-head h3 { font: 700 1rem/1.3 var(--font-ui); margin: 0; }
+    .panel-head .sub { font-size: .8125rem; color: var(--text-3); text-align: right; }
+    /* Starred caption + source line under every chart: what is measured, by whom, as of when.
+       Centred like the other infographic copy; the figures themselves are printed on the marks. */
+    .chart-cap { text-align: center; font-size: .9375rem; font-weight: 700; line-height: 1.4; margin: var(--sp-3) auto 2px; max-width: 70ch; }
+    .chart-cap::before { content: "*" / ""; margin-right: 3px; }
+    .chart-src { text-align: center; font-size: .8125rem; line-height: 1.5; color: var(--text-2); margin: 0 auto var(--sp-2); max-width: 70ch; }
     .wide { grid-column: 1 / -1; }
 
     /* ============ Chart data tables (screen-reader / low-vision access) ============ */
     .chart-data { margin-top: var(--sp-2); }
     .chart-data summary {
-      cursor: pointer; font-size: .78rem; font-weight: 600; color: var(--accent);
+      cursor: pointer; font-size: .8125rem; font-weight: 700; color: var(--text);
       list-style: none; display: inline-flex; align-items: center; gap: 5px; padding: 4px 2px;
       border-radius: var(--radius-sm);
     }
@@ -581,7 +587,7 @@
     .chart-data summary::before { content: '▸'; font-size: .65em; transition: transform .15s ease; }
     .chart-data[open] summary::before { transform: rotate(90deg); }
     .chart-data summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .chart-data summary:hover { color: var(--accent-strong); }
+    .chart-data summary:hover { text-decoration: underline; }
     .chart-data-scroll {
       overflow-x: auto; margin-top: var(--sp-2); border: 1px solid var(--border);
       border-radius: var(--radius-md); max-height: 260px; overflow-y: auto;
@@ -827,7 +833,7 @@
       .wrap { padding: 0 max(var(--sp-4), var(--safe-right)) 0 max(var(--sp-4), var(--safe-left)); }
       .hero { padding: var(--sp-8) 0 var(--sp-6); }
       .scroll-cue svg { height: 80px; }
-      .band { padding: var(--sp-12) 0; }
+      .band, .section.band { padding: var(--sp-12) 0; }
       .statement { margin-bottom: var(--sp-8); }
       /* Below 640px there isn't room for the nav at full size next to the wordmark and
          theme toggle, so it used to just disappear (display:none) — no way to jump to a
@@ -1061,7 +1067,7 @@
     </div>
 
     <!-- ============ Analysis ============ -->
-    <section class="section" id="analysis">
+    <section class="section band" id="analysis" data-band="stage">
       <div class="wrap">
         <div class="section-head is-statement">
           <span class="section-eyebrow">01 — Analysis</span>
@@ -1072,42 +1078,58 @@
           <div class="panel">
             <div class="panel-head"><h3>Trip frequency map</h3><span class="panel-head-right"><span class="sub">Country touches in view — click a country to filter</span><button class="chart-dl-btn" type="button" data-chart="map" data-filename="trip-frequency-map" aria-label="Download trip frequency map as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="map" class="chart-loading" style="height:400px" role="img" aria-label="Choropleth map of PM visit frequency by country"></div>
+            <p class="chart-cap">Country touches per country in the current view; a lighter shade means more visits.</p>
+            <p class="chart-src">Source: PM India registry · Note: A multi-country trip counts once for each country it includes.<span class="asof"></span></p>
             <div id="mapTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>Trips over time</h3><span class="panel-head-right"><span class="sub">Trips &amp; countries, per month</span><button class="chart-dl-btn" type="button" data-chart="timeline" data-filename="trips-over-time" aria-label="Download trips over time chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="timeline" class="chart-loading" style="height:400px" role="img" aria-label="Line chart of trips and unique countries visited per month"></div>
+            <p class="chart-cap">Trips and distinct countries visited, by month of departure.</p>
+            <p class="chart-src">Source: PM India registry · Note: Months with no recorded trips have no point.<span class="asof"></span></p>
             <div id="timelineTableWrap"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Most visited countries</h3><span class="panel-head-right"><span class="sub">Top 15 in view — click a bar to filter</span><button class="chart-dl-btn" type="button" data-chart="ranking" data-filename="most-visited-countries" aria-label="Download most visited countries chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
-            <div id="ranking" class="chart-loading" style="height:360px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
+            <div id="ranking" class="chart-loading" style="height:420px" role="img" aria-label="Horizontal bar chart of top destination countries"></div>
+            <p class="chart-cap">The 15 countries with the most visits in the current view.</p>
+            <p class="chart-src">Source: PM India registry · Note: A multi-country trip adds one visit to each of its countries.<span class="asof"></span></p>
             <div id="rankingTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>PM comparison</h3><span class="panel-head-right"><span class="sub">Trips vs unique countries — click a bar to filter</span><button class="chart-dl-btn" type="button" data-chart="pmCompare" data-filename="pm-comparison" aria-label="Download PM comparison chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="pmCompare" class="chart-loading" style="height:320px" role="img" aria-label="Grouped bar chart comparing trips and unique countries per PM"></div>
+            <p class="chart-cap">Total trips and distinct countries visited, by Prime Minister.</p>
+            <p class="chart-src">Source: PM India registry · Note: Terms differ in length, so totals are not like-for-like.<span class="asof"></span></p>
             <div id="pmCompareTableWrap"></div>
           </div>
           <div class="panel">
             <div class="panel-head"><h3>Single vs multi-country tours</h3><span class="panel-head-right"><span class="sub">By year — click a bar to filter</span><button class="chart-dl-btn" type="button" data-chart="yoyChart" data-filename="single-vs-multi-country-tours" aria-label="Download single vs multi-country tours chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="yoyChart" class="chart-loading" style="height:320px" role="img" aria-label="Stacked bar chart of trips by year and visit type"></div>
+            <p class="chart-cap">Trips per year, split into single-country and multi-country.</p>
+            <p class="chart-src">Source: PM India registry · Note: The latest year may be incomplete.<span class="asof"></span></p>
             <div id="yoyTableWrap"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Travel calendar</h3><span class="panel-head-right"><span class="sub">Trip density by year and month</span><button class="chart-dl-btn" type="button" data-chart="calHeatmap" data-filename="travel-calendar" aria-label="Download travel calendar chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="calHeatmap" class="chart-loading" style="height:280px" role="img" aria-label="Heatmap of trip density by year and month"></div>
+            <p class="chart-cap">Number of trips per start month, by year; blank cells mean no recorded trips.</p>
+            <p class="chart-src">Source: PM India registry · Note: A trip is counted in the month it starts.<span class="asof"></span></p>
             <div id="calHeatmapTableWrap"></div>
           </div>
           <div class="panel wide">
             <div class="panel-head"><h3>Around the visits</h3><span class="panel-head-right"><label class="sub" for="ocIndicator">Change after each visit — </label><select id="ocIndicator" class="oc-select" aria-label="Indicator"><option value="trade">Goods trade</option><option value="coauth">Research co-authorship</option><option value="unga">UN voting</option></select><button class="chart-dl-btn" type="button" data-chart="outcomesChart" data-filename="around-the-visits" aria-label="Download around-the-visits chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="outcomesChart" class="chart-loading" style="min-height:220px" role="img" aria-label="Dot plot of change in the chosen indicator after each visit; click a dot to open that trip"></div>
+            <p class="chart-cap">Change in the chosen indicator after each visit.</p>
+            <p class="chart-src">Source: MEA outcome lists, UN Comtrade, OpenAlex, UNGA voting data, EXIM Bank · Note: Describes what changed around a visit, never what caused it.<span class="asof" data-asof="outcomes"></span></p>
             <p class="oc-foot" id="outcomesFoot" aria-live="polite"></p>
             <div id="outcomesTableWrap"></div>
           </div>
           <div class="panel wide">
-            <div class="panel-head"><h3>Trip length</h3><span class="panel-head-right"><span class="sub">Nights away, bucketed — current filters</span><button class="chart-dl-btn" type="button" data-chart="durationChart" data-filename="trip-length-distribution" aria-label="Download trip length chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
+            <div class="panel-head"><h3>Trip length</h3><span class="panel-head-right"><span class="sub">Days away, bucketed — current filters</span><button class="chart-dl-btn" type="button" data-chart="durationChart" data-filename="trip-length-distribution" aria-label="Download trip length chart as PNG" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0-4-4m4 4 4-4"/><path d="M4 19h16"/></svg></button></span></div>
             <div id="durationChart" class="chart-loading" style="height:300px" role="img" aria-label="Bar chart of trip count by length of stay, current filters"></div>
+            <p class="chart-cap">Number of trips by length of stay, current filters.</p>
+            <p class="chart-src">Source: PM India registry · Note: Days is an inclusive count of the registry’s start and end dates.<span class="asof"></span></p>
             <div id="durationTableWrap"></div>
           </div>
         </div>
@@ -1662,8 +1684,11 @@ function renderKpis(rows) {
 }
 
 // Read chart colors from CSS custom properties so charts follow the active theme
-function chartTheme() {
-  const css = getComputedStyle(document.documentElement);
+// `el` is the element whose tokens to read: the analysis band forces the Stage palette in both
+// themes, and custom properties set by [data-band="stage"] are invisible to documentElement.
+const CHART_FONT = 'Poppins, system-ui, sans-serif';
+function chartTheme(el) {
+  const css = getComputedStyle(el || document.documentElement);
   const v = name => css.getPropertyValue(name).trim();
   return {
     primary: v('--ch-primary'), secondary: v('--ch-secondary'),
@@ -1675,9 +1700,11 @@ function chartTheme() {
 
 function baseLayout(c, extra = {}) {
   return Object.assign({
-    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-    font: {family: 'Inter, system-ui, sans-serif', size: 12, color: c.axis},
-    hoverlabel: {bgcolor: c.surface, bordercolor: c.border, font: {family: 'Inter, system-ui, sans-serif', size: 12, color: c.text}},
+    // Opaque paper (the band's own ground) so the PNG download is not a transparent image
+    // whose white marks vanish on a white viewer.
+    paper_bgcolor: c.bg, plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: CHART_FONT, size: 12, color: c.axis},
+    hoverlabel: {bgcolor: c.surface, bordercolor: c.border, font: {family: CHART_FONT, size: 12, color: c.text}},
     xaxis: {gridcolor: c.grid, zerolinecolor: c.grid, linecolor: c.grid, tickcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, linecolor: c.grid, tickcolor: 'rgba(0,0,0,0)'},
   }, extra);
@@ -1733,6 +1760,19 @@ const DURATION_BUCKETS = [
   {label: '8–14 days', test: d => d >= 8 && d <= 14},
   {label: '15+ days',  test: d => d >= 15},
 ];
+// "As of" for the source line under each chart. Read from the status line the loader already
+// writes ("… updated YYYY-MM-DD") so no change to the data-loading chain is needed; tiers that
+// carry no date (live mirror, embedded snapshot) simply leave it out. The outcomes chart has its
+// own feed, so it reads that feed's generation date instead.
+function renderChartSources() {
+  const m = /updated (\d{4}-\d{2}-\d{2})/.exec((document.getElementById('updateStatus') || {}).textContent || '');
+  const registry = m ? fmtDate(m[1]) : '';
+  const oc = outcomes && outcomes.meta && typeof outcomes.meta.generated === 'string' ? outcomes.meta.generated.slice(0, 10) : '';
+  document.querySelectorAll('.chart-src .asof').forEach(el => {
+    const d = el.dataset.asof === 'outcomes' ? (/^\d{4}-\d{2}-\d{2}$/.test(oc) ? fmtDate(oc) : '') : registry;
+    el.textContent = d ? ` · As of ${d}` : '';
+  });
+}
 function revealChart(id) {
   document.getElementById(id).classList.remove('chart-loading');
   const btn = document.querySelector(`.chart-dl-btn[data-chart="${id}"]`);
@@ -1769,7 +1809,8 @@ async function renderCharts(rows) {
 }
 
 async function renderChartsInner(rows) {
-  const c = chartTheme();
+  const c = chartTheme(document.getElementById('analysis'));
+  renderChartSources();
   const cfg = {displayModeBar: false, responsive: true};
   const countryCounts = rows.flatMap(t => t.countries).reduce((m, x) => ((m[x] = (m[x] || 0) + 1), m), {});
   // A filter/search combination with zero matches is a real, reachable state (the registry
@@ -1780,15 +1821,24 @@ async function renderChartsInner(rows) {
   const emptyNote = rows.length ? [] : [{
     text: 'No trips match the current filters', showarrow: false,
     x: 0.5, y: 0.5, xref: 'paper', yref: 'paper',
-    font: {family: 'Inter, system-ui, sans-serif', size: 13, color: c.axis},
+    font: {family: CHART_FONT, size: 13, color: c.axis},
   }];
+  // Direct labels beside the last mark replace colour-matched legends. Series are told apart by
+  // lightness, line style and these printed names, so the charts read the same in greyscale.
+  const endLabel = (x, y, text, yshift = 0) => ({
+    x, y, text, showarrow: false, xanchor: 'left', xshift: 10, yshift,
+    font: {family: CHART_FONT, size: 12, color: c.axis},
+  });
 
   Plotly.react('map', [{
     type: 'choropleth', locationmode: 'country names',
     locations: Object.keys(countryCounts), z: Object.values(countryCounts),
     colorscale: [[0, c.mapLow], [1, c.primary]],
     marker: {line: {color: c.bg, width: .5}},
-    showscale: false,
+    // Printed scale so the ramp is readable as numbers, not just as shades.
+    showscale: true,
+    colorbar: {orientation: 'h', x: .5, xanchor: 'center', y: .03, yanchor: 'bottom', len: .35, thickness: 8,
+               outlinewidth: 0, tickfont: {family: CHART_FONT, size: 11, color: c.axis}, tickformat: 'd', nticks: 5},
     hovertemplate: '%{location}: %{z} visit(s) — click to filter<extra></extra>',
   }], baseLayout(c, {
     margin: {t: 0, l: 0, r: 0, b: 0},
@@ -1821,27 +1871,31 @@ async function renderChartsInner(rows) {
   const mx = months.map(m => m + '-01');
   const tripsY = months.map(m => mTrips[m]);
   const ctryY = months.map(m => mCountries[m].size);
+  const lastM = mx.length - 1;
+  const tlLabels = lastM < 0 ? [] : [
+    endLabel(mx[lastM], tripsY[lastM], `Trips ${tripsY[lastM]}`, tripsY[lastM] >= ctryY[lastM] ? 8 : -8),
+    endLabel(mx[lastM], ctryY[lastM], `Countries ${ctryY[lastM]}`, ctryY[lastM] > tripsY[lastM] ? 8 : -8),
+  ];
   Plotly.react('timeline', [
     {
       type: 'scatter', mode: 'lines+markers', name: 'Trips',
       x: mx, y: tripsY,
       line: {color: c.primary, width: 2.5, shape: 'spline', smoothing: .6},
       marker: {size: 6, color: c.primary},
-      fill: 'tozeroy', fillcolor: c.primary + '14',
       hovertemplate: '%{x|%b %Y}: %{y} trip(s)<extra></extra>',
     },
     {
       type: 'scatter', mode: 'lines+markers', name: 'Countries',
       x: mx, y: ctryY,
-      line: {color: c.secondary, width: 2, shape: 'spline', smoothing: .6, dash: 'dot'},
+      line: {color: c.secondary, width: 2, shape: 'spline', smoothing: .6, dash: 'dash'},
       marker: {size: 5.5, color: c.secondary, symbol: 'diamond'},
       hovertemplate: '%{x|%b %Y}: %{y} countr%{customdata}<extra></extra>',
       customdata: ctryY.map(v => v === 1 ? 'y' : 'ies'),
     },
   ], baseLayout(c, {
-    margin: {t: 26, l: 34, r: 10, b: 35},
-    annotations: emptyNote,
-    legend: {orientation: 'h', y: 1.18, x: 0, font: {size: 12}},
+    margin: {t: 10, l: 34, r: 100, b: 35},
+    annotations: [...emptyNote, ...tlLabels],
+    showlegend: false,
     xaxis: {gridcolor: 'rgba(0,0,0,0)', linecolor: c.grid, tickcolor: 'rgba(0,0,0,0)'},
     yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...tripsY, ...ctryY))},
   }), cfg);
@@ -1851,20 +1905,25 @@ async function renderChartsInner(rows) {
     months.map((m, i) => [`${MONTHS_SHORT[Number(m.slice(5, 7)) - 1]} ${m.slice(0, 4)}`, fmt(tripsY[i]), fmt(ctryY[i])]));
 
   const ranking = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).slice(0, 15);
+  const rkVals = ranking.map(r => r[1]).reverse();
+  const rkMax = Math.max(1, ...rkVals);
+  const rkBar = .75; // bar thickness as a share of its row; the track behind it is drawn at the same thickness
   Plotly.react('ranking', [{
     type: 'bar', orientation: 'h',
-    x: ranking.map(r => r[1]).reverse(), y: ranking.map(r => r[0]).reverse(),
+    x: rkVals, y: ranking.map(r => r[0]).reverse(),
     marker: {color: c.primary},
-    text: ranking.map(r => r[1]).reverse(), textposition: 'outside',
-    textfont: {family: 'Inter, system-ui, sans-serif', size: 12, color: c.axis},
+    text: rkVals, textposition: 'outside',
+    textfont: {family: CHART_FONT, size: 12, color: c.axis},
     cliponaxis: false,
     hovertemplate: '%{y}: %{x} visit(s) — click to filter<extra></extra>',
   }], baseLayout(c, {
     margin: {t: 0, l: 150, r: 30, b: 30},
     annotations: emptyNote,
-    xaxis: {gridcolor: c.grid, zerolinecolor: c.grid, dtick: intDtick(Math.max(1, ...ranking.map(r => r[1])))},
+    shapes: rkVals.map((_, i) => ({type: 'rect', xref: 'x', yref: 'y', x0: 0, x1: rkMax * 1.12, y0: i - rkBar / 2, y1: i + rkBar / 2,
+                                    fillcolor: c.grid, line: {width: 0}, layer: 'below'})),
+    xaxis: {gridcolor: 'rgba(0,0,0,0)', zerolinecolor: c.grid, range: [0, rkMax * 1.12], dtick: intDtick(rkMax)},
     yaxis: {gridcolor: 'rgba(0,0,0,0)'},
-    bargap: .35,
+    bargap: 1 - rkBar,
   }), cfg);
   revealChart('ranking');
   wireChartClick('ranking', p => p && ['country', p.y]);
@@ -1872,23 +1931,28 @@ async function renderChartsInner(rows) {
     ['Country', 'Visits'],
     ranking.map(([country, n]) => [country, fmt(n)]), 'country');
 
-  // PM comparison — grouped bar: trips and unique countries per PM. The second series gets a
-  // diagonal-hatch pattern (WCAG 1.4.1 — color isn't the only way to tell two series apart),
-  // matching the dash+diamond-marker treatment already used for the second line in the
-  // "Trips over time" chart above.
+  // PM comparison — grouped bar: trips and unique countries per PM. The two series differ in
+  // lightness (solid foreground vs grey), and are named directly beside the last group rather
+  // than in a legend, so nothing depends on colour (WCAG 1.4.1) and the page reads the same
+  // in greyscale. Every bar carries its own value.
   const pmNames     = [...new Set(rows.map(t => t.pm))].sort();
   const pmTrips     = pmNames.map(pm => rows.filter(t => t.pm === pm).length);
   const pmCountries = pmNames.map(pm => new Set(rows.filter(t => t.pm === pm).flatMap(t => t.countries)).size);
+  const pmLast = pmNames.length - 1, pmMax = Math.max(1, ...pmTrips, ...pmCountries);
+  // The series name rides on the last group's own value label ("Trips<br>45"), so the name
+  // always sits on the mark it describes however many PMs are in view.
+  const pmText = (vals, name) => vals.map((v, i) => i === pmLast ? `${name}<br>${v}` : v);
+  const barText = {textposition: 'outside', textfont: {family: CHART_FONT, size: 12, color: c.axis}, cliponaxis: false};
   Plotly.react('pmCompare', [
-    {type: 'bar', name: 'Total trips',      x: pmNames, y: pmTrips,     marker: {color: c.primary},   hovertemplate: '%{x}<br>Trips: %{y} — click to filter<extra></extra>'},
-    {type: 'bar', name: 'Unique countries', x: pmNames, y: pmCountries, marker: {color: c.secondary, pattern: {shape: '/', fgcolor: 'rgba(0,0,0,.4)', bgcolor: c.secondary, size: 6, solidity: .45}}, hovertemplate: '%{x}<br>Countries: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Total trips',      x: pmNames, y: pmTrips,     marker: {color: c.primary},   text: pmText(pmTrips, 'Trips'),         ...barText, hovertemplate: '%{x}<br>Trips: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Unique countries', x: pmNames, y: pmCountries, marker: {color: c.secondary}, text: pmText(pmCountries, 'Countries'), ...barText, hovertemplate: '%{x}<br>Countries: %{y} — click to filter<extra></extra>'},
   ], baseLayout(c, {
     barmode: 'group', bargap: .4,
-    margin: {t: 10, l: 34, r: 10, b: 30},
+    margin: {t: 10, l: 34, r: 30, b: 30},
     annotations: emptyNote,
-    legend: {orientation: 'h', y: 1.18, x: 0, font: {size: 12}},
-    xaxis: {gridcolor: 'rgba(0,0,0,0)'},
-    yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...pmTrips, ...pmCountries))},
+    showlegend: false,
+    xaxis: {type: 'category', gridcolor: 'rgba(0,0,0,0)'},
+    yaxis: {gridcolor: c.grid, range: [0, pmMax * 1.3], dtick: intDtick(pmMax)},
   }), cfg);
   revealChart('pmCompare');
   wireChartClick('pmCompare', p => p && ['pm', p.x]);
@@ -1900,16 +1964,24 @@ async function renderChartsInner(rows) {
   const years  = [...new Set(rows.map(t => String(t.year)))].sort();
   const single = years.map(yr => rows.filter(t => String(t.year) === yr && t.visitType === 'Single-country').length);
   const multi  = years.map(yr => rows.filter(t => String(t.year) === yr && t.visitType === 'Multi-country').length);
+  const yoyLast = years.length - 1, yoyMax = Math.max(1, ...years.map((_, i) => single[i] + multi[i]));
+  const yoyLabels = yoyLast < 0 ? [] : [
+    ...(single[yoyLast] ? [endLabel(yoyLast + .5, single[yoyLast] / 2, 'Single')] : []),
+    ...(multi[yoyLast] ? [endLabel(yoyLast + .5, single[yoyLast] + multi[yoyLast] / 2, 'Multi')] : []),
+  ];
+  // Segment values are printed inside the bars in the ground colour (black on the Stage), which
+  // clears 4.5:1 on both the white and the grey segment; zero-height segments print nothing.
+  const segText = {textposition: 'inside', insidetextanchor: 'middle', textfont: {family: CHART_FONT, size: 12, color: c.bg}};
   Plotly.react('yoyChart', [
-    {type: 'bar', name: 'Single-country', x: years, y: single, marker: {color: c.primary},   hovertemplate: '%{x} Single-country: %{y} — click to filter<extra></extra>'},
-    {type: 'bar', name: 'Multi-country',  x: years, y: multi,  marker: {color: c.secondary, pattern: {shape: '/', fgcolor: 'rgba(0,0,0,.4)', bgcolor: c.secondary, size: 6, solidity: .45}}, hovertemplate: '%{x} Multi-country: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Single-country', x: years, y: single, marker: {color: c.primary},   text: single.map(v => v || ''), ...segText, hovertemplate: '%{x} Single-country: %{y} — click to filter<extra></extra>'},
+    {type: 'bar', name: 'Multi-country',  x: years, y: multi,  marker: {color: c.secondary}, text: multi.map(v => v || ''),  ...segText, hovertemplate: '%{x} Multi-country: %{y} — click to filter<extra></extra>'},
   ], baseLayout(c, {
     barmode: 'stack', bargap: .45,
-    margin: {t: 10, l: 34, r: 10, b: 30},
-    annotations: emptyNote,
-    legend: {orientation: 'h', y: 1.18, x: 0, font: {size: 12}},
+    margin: {t: 10, l: 34, r: 60, b: 30},
+    annotations: [...emptyNote, ...yoyLabels],
+    showlegend: false,
     xaxis: {type: 'category', gridcolor: 'rgba(0,0,0,0)'},
-    yaxis: {gridcolor: c.grid, dtick: intDtick(Math.max(1, ...years.map((_, i) => single[i] + multi[i])))},
+    yaxis: {gridcolor: c.grid, range: [0, yoyMax * 1.08], dtick: intDtick(yoyMax)},
   }), cfg);
   revealChart('yoyChart');
   wireChartClick('yoyChart', p => p && ['year', p.x]);
@@ -1925,10 +1997,17 @@ async function renderChartsInner(rows) {
       return rows.filter(t => t.month === mon).length;
     })
   );
+  const heatMax = Math.max(1, ...heatZ.flat());
   Plotly.react('calHeatmap', [{
     type: 'heatmap',
     x: MONTHS_SHORT, y: allYears.map(String), z: heatZ,
-    colorscale: [[0, c.mapLow], [1, c.primary]],
+    // 0 sits on the track grey; any trip starts the ramp at --ch-map-low, so an empty month never
+    // reads as a one-trip month. Counts are printed in the ground colour (black on the Stage),
+    // which clears 4.5:1 on the whole grey-to-white ramp.
+    zmin: 0, zmax: heatMax,
+    colorscale: [[0, c.grid], [0.0001, c.mapLow], [1, c.primary]],
+    text: heatZ.map(r => r.map(v => v || '')), texttemplate: '%{text}',
+    textfont: {family: CHART_FONT, size: 12, color: c.bg},
     hovertemplate: '%{y} %{x}: %{z} trip(s)<extra></extra>',
     xgap: 3, ygap: 3,
     showscale: false,
@@ -1947,20 +2026,23 @@ async function renderChartsInner(rows) {
   // No click-to-filter here: unlike map/ranking/pmCompare/yoyChart, duration isn't one of
   // the existing filter fields (pm/year/country/visitType), so there's no target to filter to.
   const durationCounts = DURATION_BUCKETS.map(b => rows.filter(t => b.test(t.days)).length);
+  const durMax = Math.max(1, ...durationCounts), durBar = .65;
   Plotly.react('durationChart', [{
     type: 'bar',
     x: DURATION_BUCKETS.map(b => b.label), y: durationCounts,
     marker: {color: c.primary},
     text: durationCounts, textposition: 'outside',
-    textfont: {family: 'Inter, system-ui, sans-serif', size: 12, color: c.axis},
+    textfont: {family: CHART_FONT, size: 12, color: c.axis},
     cliponaxis: false,
     hovertemplate: '%{x}: %{y} trip(s)<extra></extra>',
   }], baseLayout(c, {
     margin: {t: 10, l: 34, r: 10, b: 30},
     annotations: emptyNote,
+    shapes: durationCounts.map((_, i) => ({type: 'rect', xref: 'x', yref: 'y', x0: i - durBar / 2, x1: i + durBar / 2, y0: 0, y1: durMax * 1.2,
+                                            fillcolor: c.grid, line: {width: 0}, layer: 'below'})),
     xaxis: {type: 'category', gridcolor: 'rgba(0,0,0,0)'},
-    yaxis: {gridcolor: c.grid, zerolinecolor: c.grid, rangemode: 'tozero', dtick: intDtick(Math.max(1, ...durationCounts))},
-    bargap: .35,
+    yaxis: {gridcolor: 'rgba(0,0,0,0)', zerolinecolor: c.grid, range: [0, durMax * 1.2], dtick: intDtick(durMax)},
+    bargap: 1 - durBar,
   }), cfg);
   revealChart('durationChart');
   renderChartTable('durationTableWrap', 'Trip count by length of stay, current filters',
@@ -3182,7 +3264,8 @@ function renderOutcomesChart(rows) {
     if (foot) foot.textContent = '';
     return;
   }
-  const c = chartTheme();
+  const c = chartTheme(document.getElementById('analysis'));
+  renderChartSources();
   const meta = OC_META[ocIndicator];
   const all = outcomeRows(rows);
   const measured = all.filter(r => r.w.state === 'ok');
@@ -3203,25 +3286,29 @@ function renderOutcomesChart(rows) {
     : !measured.length ? `No visits in view have a measurable ${name} window yet` : '';
   const emptyNote = emptyText ? [{
     text: emptyText, showarrow: false, x: 0.5, y: 0.5, xref: 'paper', yref: 'paper',
-    font: {family: 'Inter, system-ui, sans-serif', size: 13, color: c.axis},
+    font: {family: CHART_FONT, size: 13, color: c.axis},
   }] : [];
   // Clear only the "unavailable" placeholder. Wiping an existing plot's DOM leaves Plotly's
   // state on the div, so Plotly.react() then patches nodes that no longer exist and the
   // chart goes blank on every re-render after the first (i.e. on any filter change).
   if (!el._fullLayout) el.innerHTML = '';
   Plotly.react('outcomesChart', [{
-    type: 'scatter', mode: 'markers', orientation: 'h',
+    type: 'scatter', mode: 'markers+text', orientation: 'h',
     x: diffs, y: measured.map(r => r.label),
     marker: {color: c.primary, size: 10, line: {color: c.surface, width: 1.5}},
+    // Each dot prints its own rounded change; the hover keeps the full sentence.
+    text: diffs.map(d => { const r = Math.round(d); return `${r > 0 ? '+' : r < 0 ? '−' : ''}${Math.abs(r)} pp`; }),
+    textposition: 'middle right',
+    textfont: {family: CHART_FONT, size: 11, color: c.axis}, cliponaxis: false,
     customdata: measured.map(r => r.trip.slug),
-    text: measured.map(r => sentence(r)),
-    hovertemplate: '%{text}<extra></extra>',
+    hovertext: measured.map(r => sentence(r)),
+    hovertemplate: '%{hovertext}<extra></extra>',
   }], baseLayout(c, {
     height: Math.max(220, measured.length * 22 + 90),
-    margin: {l: 150, r: 20, t: 10, b: 44},
+    margin: {l: 150, r: 60, t: 10, b: 44},
     annotations: emptyNote,
     xaxis: {title: {text: meta.axisTitle, font: {size: 11}},
-            gridcolor: c.grid, zeroline: true, zerolinecolor: c.axis, zerolinewidth: 1.5, ticksuffix: ' pp'},
+            gridcolor: c.grid, zeroline: true, zerolinecolor: c.secondary, zerolinewidth: 2, ticksuffix: ' pp'},
     yaxis: {autorange: 'reversed', gridcolor: c.grid, tickfont: {size: 11}, automargin: true},
     shapes: [{type: 'rect', xref: 'x', yref: 'paper', x0: -meta.flatPP, x1: meta.flatPP, y0: 0, y1: 1,
               fillcolor: c.grid, opacity: .35, line: {width: 0}}],
