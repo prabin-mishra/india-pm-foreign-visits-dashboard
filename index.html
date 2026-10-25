@@ -309,20 +309,35 @@
     .link-notice .icon-btn { flex: none; width: 30px; height: 30px; color: var(--gold-text); }
     .link-notice .icon-btn svg { width: 14px; height: 14px; }
 
-    /* ============ Hero ============ */
-    .hero { padding: var(--sp-16) 0 var(--sp-10); }
-    .eyebrow {
-      font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
-      color: var(--gold-text); margin: 0 0 var(--sp-4);
+    /* ============ Hero ============
+       Paper title screen. The design system centres everything, so the hero, statements,
+       KPI figures and chart captions are centred; the registry table, filters, methodology
+       <details> and drawer deliberately stay left-aligned (dense tabular / long-form text is
+       harder to scan centred). Type sizes are the system's desktop maxima wrapped in clamp()
+       so nothing overflows a 375px screen. */
+    .hero {
+      padding: var(--sp-12) 0 var(--sp-10); text-align: center;
+      min-height: calc(100svh - var(--header-h) - var(--safe-top));
+      display: flex; flex-direction: column; justify-content: center;
     }
+    .byline { font-size: .875rem; font-weight: 400; color: var(--text-2); margin: 0 0 var(--sp-5); }
     .hero h1 {
-      font-family: var(--font-display); font-weight: 600; letter-spacing: -.015em;
-      font-size: clamp(2.2rem, 5.4vw, 3.8rem); line-height: 1.06; margin: 0 0 var(--sp-5); max-width: 21ch;
+      font-family: var(--font-display); font-weight: 400; letter-spacing: 0; color: var(--text);
+      font-size: clamp(1.75rem, 4.2vw, 2.5rem); line-height: 1.25; margin: 0 auto var(--sp-5); max-width: 24ch;
       text-wrap: balance;
     }
-    .hero .lede { color: var(--text-2); font-size: 1.08rem; line-height: 1.65; max-width: 62ch; margin: 0; }
+    .hero .lede { color: var(--text-2); font-size: clamp(1rem, 1.6vw, 1.125rem); line-height: 1.65; max-width: 62ch; margin: 0 auto; }
     .hero .lede a { color: inherit; }
-    .data-status { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); margin-top: var(--sp-6); font-size: .84rem; color: var(--text-3); }
+    /* ScrollCue: a rounded bar over two chevrons, drawn in currentColor so it follows the
+       ground. Static on purpose — the system places motion, it doesn't loop it. */
+    .scroll-cue {
+      display: inline-flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+      margin: var(--sp-8) auto 0; font-size: .875rem; text-decoration: none; color: var(--text-2);
+    }
+    .scroll-cue:hover span { text-decoration: underline; }
+    .scroll-cue svg { height: 120px; width: auto; display: block; }
+    .scroll-cue svg * { fill: none; stroke: currentColor; stroke-width: 4px; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+    .data-status { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--sp-3); margin-top: var(--sp-6); font-size: .84rem; color: var(--text-3); }
     .badge {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: .76rem; font-weight: 600; padding: 4px 10px; border-radius: 999px;
@@ -353,34 +368,46 @@
       display: inline-block; border-radius: 4px; vertical-align: middle;
       background: var(--surface-2); animation: skel-shimmer 1.4s ease infinite;
     }
-    .stat .skeleton.v { width: 3.4em; height: 1.9rem; }
-    .stat .skeleton.l { width: 7em; height: .8rem; margin-top: 8px; }
-    .stat .skeleton.s { width: 9em; height: .76rem; margin-top: 4px; }
+    .stat .skeleton { display: block; margin-inline: auto; }
+    .stat .skeleton.v { width: clamp(80px, 11vw, 130px); height: clamp(40px, 8vw, 64px); }
+    .stat .skeleton.l { width: 7em; height: .8rem; margin-top: 12px; }
+    .stat .skeleton.s { width: 9em; height: .76rem; margin-top: 6px; }
     [role="img"].chart-loading {
       display: block; border-radius: var(--radius-md);
       background: var(--surface-2); animation: skel-shimmer 1.4s ease infinite;
     }
 
-    /* Headline stat strip */
-    .stats {
-      display: grid; grid-template-columns: repeat(5, 1fr);
-      border-block: 1px solid var(--border-strong);
-      margin-top: var(--sp-10);
+    /* Bands alternate Paper and Stage down the page; data-band="stage" (tokens above) forces the
+       black ground in both themes. Content is visible by default — the reveal motion in the
+       motion section only ever adds to this, it never hides anything until observed. */
+    .band { padding: var(--sp-16) 0; background: var(--bg); color: var(--text); }
+    /* Statement: Light 300, centred, framed by two 1px hairlines the width of the text block
+       (fit-content shrinks the box to its longest line) — no box, no underline. */
+    .statement {
+      font-family: var(--font-display); font-weight: 300; line-height: 1.2; letter-spacing: 0;
+      font-size: clamp(1.625rem, 5vw, 3.375rem); text-align: center; text-wrap: balance;
+      width: fit-content; max-width: 100%; margin: 0 auto var(--sp-12); padding: .45em 0;
+      border-block: 1px solid var(--border-strong); color: var(--text);
     }
-    .stat { padding: var(--sp-6) var(--sp-6) var(--sp-6) 0; }
-    .stat + .stat { border-left: 1px solid var(--border); padding-left: var(--sp-6); }
+
+    /* StatFigure strip: big centred figure, starred caption, one-line note. */
+    .stats { display: grid; grid-template-columns: repeat(5, 1fr); text-align: center; }
+    .stat { padding: var(--sp-4) var(--sp-4); }
+    .stat + .stat { border-left: 1px solid var(--border); }
     .stat .v {
-      font-family: var(--font-display); font-weight: 600; font-size: clamp(1.7rem, 3vw, 2.5rem);
-      line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+      font-family: var(--font-display); font-weight: 700; font-size: clamp(2.5rem, 8vw, 4rem);
+      line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: 0;
     }
-    .stat .l { font-size: .8rem; font-weight: 600; color: var(--text-2); margin-top: 6px; }
-    .stat .s { font-size: .76rem; color: var(--text-3); margin-top: 2px; }
+    /* Caption stars are decorative (the empty alt keeps them out of the accessible name). */
+    .stat .l { font-size: .9375rem; font-weight: 700; color: var(--text-2); margin-top: 8px; }
+    .stat .l::before { content: "*" / ""; margin-right: 2px; }
+    .stat .s { font-size: .8125rem; color: var(--text-3); margin-top: 2px; }
     /* Per-year trend beneath each KPI's headline number. Decorative SVG only — the same
        by-year numbers are always available to assistive tech via the adjacent .sr-only text,
        so nothing is lost if the shape itself doesn't render (e.g. under forced-colors, where
        stroke: currentColor already tracks whatever color the OS forces, same as this page's
        other currentColor icons). */
-    .kpi-spark-wrap { margin-top: 8px; line-height: 0; color: var(--accent); }
+    .kpi-spark-wrap { margin-top: 10px; line-height: 0; color: var(--text); }
     .kpi-spark-line { fill: none; stroke: currentColor; stroke-width: 1.4; }
     .kpi-spark-dot { fill: currentColor; }
 
@@ -442,7 +469,7 @@
     .table-wrap.compact-cols [data-col="source"] { display: none; }
 
     /* Highlights line */
-    .facts { display: flex; flex-wrap: wrap; column-gap: var(--sp-6); row-gap: var(--sp-2); padding: var(--sp-5) 0 0; font-size: .86rem; color: var(--text-2); }
+    .facts { display: flex; flex-wrap: wrap; justify-content: center; text-align: center; column-gap: var(--sp-6); row-gap: var(--sp-2); padding: var(--sp-8) 0 0; font-size: .875rem; color: var(--text-2); }
     .fact strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
 
     /* ============ Live trip band ============ */
@@ -784,7 +811,7 @@
     @media (max-width: 1023px) {
       .charts { grid-template-columns: 1fr; }
       .stats { grid-template-columns: repeat(3, 1fr); }
-      .stat:nth-child(3n+1) { border-left: 0; padding-left: 0; }
+      .stat:nth-child(3n+1) { border-left: 0; }
       .method { grid-template-columns: 1fr; }
       .live-card { grid-template-columns: 1fr; }
       .live-visual { order: -1; min-height: 130px; }
@@ -794,7 +821,10 @@
       .oc-row-head { flex-direction: column; align-items: flex-start; gap: 4px; }
       .oc-cells { flex-direction: column; gap: 4px; }
       .wrap { padding: 0 max(var(--sp-4), var(--safe-right)) 0 max(var(--sp-4), var(--safe-left)); }
-      .hero { padding: var(--sp-10) 0 var(--sp-8); }
+      .hero { padding: var(--sp-8) 0 var(--sp-6); }
+      .scroll-cue svg { height: 80px; }
+      .band { padding: var(--sp-12) 0; }
+      .statement { margin-bottom: var(--sp-8); }
       /* Below 640px there isn't room for the nav at full size next to the wordmark and
          theme toggle, so it used to just disappear (display:none) — no way to jump to a
          section on mobile at all. Instead: the decorative "Tracker" badge drops and the
@@ -824,8 +854,9 @@
       .site-nav[data-fade="left"]  { -webkit-mask-image: linear-gradient(to left,  #000 calc(100% - 20px), transparent 100%); mask-image: linear-gradient(to left,  #000 calc(100% - 20px), transparent 100%); }
       .site-nav[data-fade="both"]  { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); }
       .stats { grid-template-columns: 1fr 1fr; }
-      .stat + .stat, .stat:nth-child(3n+1) { border-left: 0; padding-left: 0; }
-      .stat:nth-child(2n) { border-left: 1px solid var(--border); padding-left: var(--sp-5); }
+      .stat + .stat, .stat:nth-child(3n+1) { border-left: 0; }
+      .stat:nth-child(2n) { border-left: 1px solid var(--border); }
+      .stat { padding-inline: var(--sp-2); }
       .filterbar { position: static; }
       .field { flex: 1 1 42%; }
       .field select, .field input[type="search"] { width: 100%; }
@@ -953,7 +984,7 @@
     <!-- ============ Hero ============ -->
     <section class="hero" id="top">
       <div class="wrap">
-        <p class="eyebrow">Independent · Open data · Updated daily</p>
+        <p class="byline">Open data | Updated daily | MIT licence</p>
         <h1>Every foreign visit by India's Prime Minister, on the record.</h1>
         <p class="lede">
           A non-partisan reference tracking where India's Prime Ministers travel, how long each
@@ -967,6 +998,17 @@
           <span id="updateStatus" role="status">Loading visit data…</span>
           <span id="newSinceNote" aria-live="polite"></span>
         </div>
+        <a class="scroll-cue" href="#kpiBand">
+          <svg viewBox="0 0 40 80" aria-hidden="true" focusable="false"><rect x="8" y="3" width="24" height="38" rx="12"/><path d="M11 52 20 61 29 52"/><path d="M11 65 20 74 29 65"/></svg>
+          <span>scroll down</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============ Headline figures (Stage band) ============ -->
+    <section class="band" id="kpiBand" data-band="stage" aria-labelledby="kpiStatement">
+      <div class="wrap">
+        <h2 class="statement" id="kpiStatement">How often does the Prime Minister travel abroad?</h2>
         <div class="stats" id="kpis" aria-label="Headline statistics">
           <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
           <div class="stat"><div class="skeleton v"></div><div class="skeleton l"></div><div class="skeleton s"></div></div>
