@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-18T11:23:29Z",
+  "generated": "2026-11-19T11:21:06Z",
   "status": "reported",
   "reported": {
     "countries": [
@@ -7,7 +7,7 @@
     ],
     "primary": "Philippines",
     "asOf": "2026-11-18",
-    "sourceCount": 43
+    "sourceCount": 38
   },
   "trip": {
     "label": "Philippines",
@@ -23,23 +23,9 @@
   },
   "articles": [
     {
-      "title": "PM Modi Visit Fuels India Philippines Trade and Startup Prospects",
-      "source": "Asianet Newsable",
-      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPdkxlTzVaQ2s2T3R3SlZWWjJEdjhZRGE1SXEzbk0zMTBoZGJ0MENQaU9PdmVHT2w0WFlsc3NkOXhCQXF1RVRTd1MtOC1QRmdUb0tkXzM0TFpMVGltUUo4Q3N6WWEzTnQzbG85XzBqdGNhc0VwZVV1WGJjOHNxa3JVN01jSXRSaS1udU5kT3kwM2JzcWphbXRtVUlZdHZfMmtkNXNBd1cycXBYUFFfWkxMVTRnTVNlZ000STJtbHNNb1RhaFVfTUHSAcsBQVVfeXFMUG80a0ZNVldfd0hqQ0JKRnpiR3pKV0JKRXJscFM4Y1NUOWZyeVlkQzJPTEFVSTJZd1p5NThkWTlfd0lrNm90ZldRX1JKMkVKdHotRzVQM2ItRmZwWGJHQWxGYldfZEhCS21kQk1mWWdEZjQ0U2lvdFZ5OWVRZy1mWWZBRjl4RWhoSGV1NFJoSmxYYl93eVVOdjJpb25JWWF6VldZQU80QWVSZkdvR2wtOGRGSWhqOW85QkNId2NLUnNQRzVyMTAzbjNnaUU?oc=5",
-      "date": "2026-11-18",
-      "dateSource": "rss"
-    },
-    {
-      "title": "PM Modi’s Philippines visit to boost bilateral trade, technology ties; India Business Forum plans startup summit in 2027",
-      "source": "The Tribune",
-      "url": "https://news.google.com/rss/articles/CBMikwJBVV95cUxQclpmZFBtbW9TVzM1ZENPNHNQY1R3dEV5MkhCZWxWcnhlSkxDZ1A4Y25qOW9XV05MYnZFWmdadXFyaHJKYmNkR3JfWXlJNE5nYlMwZU05LUNqU0lpNkh3VzdUQzRnZ3ZkRUtHNE1yc0VwN2dHWnU4am9nVXlnWTJHdEhlSnpDNElGdFYxMGxNTWItaWNUX2I1ZzZ4bUl3MEZ5SzVrS1hqdHplV045M1JwcU1KelYzdlhzTkRXZzhRd3RrUURMRmNqSHhoamNzT1BFU2dFTEZ5N2l1WUpfRWRFbG5BaHpad1VrZ2phc21WWFJtaXBzbFhWd0xid1FKMlBkRngzcVlSNENtNkpNOWF1UkpDVdIBkwJBVV95cUxQclpmZFBtbW9TVzM1ZENPNHNQY1R3dEV5MkhCZWxWcnhlSkxDZ1A4Y25qOW9XV05MYnZFWmdadXFyaHJKYmNkR3JfWXlJNE5nYlMwZU05LUNqU0lpNkh3VzdUQzRnZ3ZkRUtHNE1yc0VwN2dHWnU4am9nVXlnWTJHdEhlSnpDNElGdFYxMGxNTWItaWNUX2I1ZzZ4bUl3MEZ5SzVrS1hqdHplV045M1JwcU1KelYzdlhzTkRXZzhRd3RrUURMRmNqSHhoamNzT1BFU2dFTEZ5N2l1WUpfRWRFbG5BaHpad1VrZ2phc21WWFJtaXBzbFhWd0xid1FKMlBkRngzcVlSNENtNkpNOWF1UkpDVQ?oc=5",
-      "date": "2026-11-18",
-      "dateSource": "rss"
-    },
-    {
-      "title": "Modi's Philippines visit to boost trade, tech ties; India Business Forum plans 2027 startup summit",
-      "source": "MillenniumPost",
-      "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxPcVo0T0FyOHVVaXlZYXAtQ0oxM3ZHaWJxRTMwTmRCV2IySGs5Vl8xYm50d0YtREwtZk1ESEc0cm56cVQtSHE1a1BuaFdGdjE5SXh1cGVIT29RR0p5MGZQN0dLbFFoMzE2SFFxRmxaRUw0d1A0ZVZLTjF4SGRVdFE3Vm1DQ2lyUG9tbmtLSEVxU01PNWdIcy1ZZWxTenlITzhCZ2xnT2k1bmVtaE5MaXMxRm1ONDk2WklRbXhYVFJZZ1FNU2pIVkJGRURnZ09RQkZnSVM1M3NhWmhzQ3hO0gHiAUFVX3lxTE9OTWRneFhaanRDa3FDTkNvNUlYLU9mNFNpVFZjZnNNTnplb2VqUjlqWFdQd3ZiejlPWVhDVWlwYnlkVElGdGY1T0luWWlvYW9rV3RiVkdobGI2YmlmTk5lVXZlZnFWTk9kS2J0cngyNFhxVUcxMUxhQTZqNFhkTjJsY1lhVGhMNnRDNkxuVUdKV2dIaXUySVV1YmRMTV9QamFJTFBtTGhnajc5TEpFZ2lEX3NSTjdvMXhoOTVMckUxOE0xb3pzWC1XS1BZdzdTWnR4MFM2dExWd1hlVDlhZElzcWc?oc=5",
+      "title": "PM Modi Visits The Philippines' Oldest Gurudwara, A 125-Year-Old Sikh Landmark",
+      "source": "NDTV",
+      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOTTJ1YkpVcVdCRWZfSFNTdTY4NkxDZ21idFVibS1PQnQxaURXVko0dmFlb0VndEJPLU5ITWtEWTl5T01aRWlranlwd3dFT0QtTjBWUjhSV3BDRVNjLVprU0p4Z2F1eV90OHRldy1palY2Z2FKVzFzLWlCakpDbUhlQTk0cEhTeUNBRklMLTFwcF9tWFdNSVZXRVNmNE1ndHVpWGhuTUlQdDRhT3IycHFPaklkNNIBuwFBVV95cUxPQkw5WVdfWWEwYmtpUHJJZWlvVzdkMUxfZ29BWkFwVm9TY284YWpjNEVjZW1KdVBMZmoxSUQ4Mkdqak1NcDl5QXBEam1LdkQ0a3d4WU1tRjZLaUxGR0c0Qm9wcFRobGM2c2xuVkV6bWpPanV4bTVCT1ZIQ0JaaVpEYWtndlJTOGxncFdSUFlDY2E2Y242TEFELTNqbW0xeEo5VDJJUVRyWkc2SmxMUXpFNFpnLXBZa3oxZzZj?oc=5",
       "date": "2026-11-18",
       "dateSource": "rss"
     },
@@ -51,9 +37,9 @@
       "dateSource": "rss"
     },
     {
-      "title": "PM Modi departs for India after concluding ‘fruitful’ visit to Philippines",
-      "source": "Social News XYZ",
-      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPUlZaLWxpdDVKZVVqY21PajhwLXRFenZOWmZFVEdWcUQyOGthVTd6YlNjcEdPWktoQkFHaFd5RFVKeDlKVUFqVzFyTW5NaWtQRTFBX2R4Z1Znd0tXR1plWm9ZNmZTdEhYT2JqaVlWSzJDamRoTGhETlhrdEw3SkpuTXZ2RGF3Z2ZROTc5RzU3UXYzVEswbFZGaWpEbXZ3M2d6NjNrT2ZJMWFhV2xtTjRQUtIBsAFBVV95cUxPUlZaLWxpdDVKZVVqY21PajhwLXRFenZOWmZFVEdWcUQyOGthVTd6YlNjcEdPWktoQkFHaFd5RFVKeDlKVUFqVzFyTW5NaWtQRTFBX2R4Z1Znd0tXR1plWm9ZNmZTdEhYT2JqaVlWSzJDamRoTGhETlhrdEw3SkpuTXZ2RGF3Z2ZROTc5RzU3UXYzVEswbFZGaWpEbXZ3M2d6NjNrT2ZJMWFhV2xtTjRQUg?oc=5",
+      "title": "“Entire diaspora excited”: Indians in Philippines gear up to welcome PM Modi during Manila visit",
+      "source": "DD India",
+      "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNZ3d2emlWSVB5ZnVjQzNSZWo2UnN1UHlieVlJUXpnNEhMTDdnUjFMeFh4VjZZazc0T3YzT1ZVdHJjWFdKVmJmdUFEUEF6NXkwVDFsQnJ1dUhqUFpDeXY3d2VERUJVRmdydm9IQ3dLNGQ3U1Q0Z1BmaU5MWGo5VTdSd252QTBpNWthY0tDaXdjWGtzRXFFWmxvNjZVN2VWWHFfbVRPdmlVMnlGMTV0MDhCd2FvcUJ0UkhkNlhXdHVkRk5aQQ?oc=5",
       "date": "2026-11-17",
       "dateSource": "rss"
     },
@@ -63,9 +49,28 @@
       "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxPNFBfeDJhaDEtajRjb01yeTZPN1Z6dzY2cVdaV1VpYTB1UDdSUE5Xbl9hSUtpUTJ0M3d3Tl8zaUNBOWIzYi1kanlFaEladmowTGd1aGhaVE54TmFLWU96bVdIVlhlS09BNWFHQXU1UDBYTUZRdDIwWGhUdHo5RUVjbFJSTVdUQW1wRnFidlhuVUFEU0ViM0tXMERzc0Jnc3VTSUl2U0hWM3ROby04RWZJZGRKeXcyWldYd3F5VU55ckNrVTFIMXA1dnA2blRILUVGb0FZWFhZT3ZuMmF6NWZOSF9hQzh5QTRy?oc=5",
       "date": "2026-11-17",
       "dateSource": "rss"
+    },
+    {
+      "title": "Young girl sings Ram bhajan during PM Modi's Philippines visit | To watch the video of young girl singing | Inshorts",
+      "source": "Inshorts",
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxPb2UwQ0w2QmIxZ3ZzSVVhS3dsbERIZm5QZUxsb2lEMFNsR2QzbGY4UHc0WWswSTh5R3h4ZEF1bkN6cDVaZy0tVTJHcGtDa0psVTVkWjhvNkIxcDktMGJHZ2hScEpMZ0NUZlRZZ045YVVSTDJweTFrV3FheXF1OTdQUXF0X21senhaYVY0ZU0yaE1VeUFyR1FSd2JiM2p0QXk2REZCQ0xQODHSAa4BQVVfeXFMTTk1ZTcyZkM0SWtDallQYkdpTTdLVlh4RFhuWlh4ckVmeVNUUW9ZV0p4bFQteUhYVnRqVU5saHBvYmpsQS0tREh1WnpPSUE5ejVVVTZlLVhGQlZINkZSa0N0ZndDMzA3TmdTNUhQX3VoX0NNWTFaVVV2MzVMU2J2cHE1Qy1mMkFXbjBxM01nYlJaSXR3eG5zbjdaTkMydGkxN1NmeHpXdGlfZ2kxR1ZB?oc=5",
+      "date": "2026-11-17",
+      "dateSource": "rss"
+    },
+    {
+      "title": "Modi departs from Philippines after concluding two-day visit",
+      "source": "Rediff",
+      "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxOMlR4cEg1cEx0MmZUVVIzQkM3SHZ1c05IQ1g1TkdnWDVZaHdqWGdMQlJEbTFpODg4NHBVZklSbzNBWDJOTFVuQnIyOXp0N1NVdDR5amhHb0lXUnRiT3VGWWFVTmF3OFpxQ1VnY3NMd2FYNmRIU2QtUWpoeWpGdVRqcV9CelFhN0UxN1dNZHpyTGRZQzJzSmRpS2JMTGo1b28xZFNpaEd4eFAtLV9PbFh6b25KWUhsVUJmd0ZZRUxsSko1V29JV2c0SDcyb1FoX2U0cTJQdXhaMUNsZm8?oc=5",
+      "date": "2026-11-17",
+      "dateSource": "rss"
     }
   ],
   "seen": {
+    "c90df50da533": "2026-11-19",
+    "67aee37d1627": "2026-11-19",
+    "b67486c1c999": "2026-11-19",
+    "bf0e03849c38": "2026-11-19",
+    "1407e8df94b2": "2026-11-19",
     "941a1deafd9f": "2026-11-18",
     "df95c9793f9f": "2026-11-18",
     "c207b0d4c76d": "2026-11-18",
@@ -99,6 +104,24 @@
     "ab69a1ab7fe1": "2026-11-18",
     "ea5075007269": "2026-11-18",
     "e59939f50b46": "2026-11-18",
+    "f97de9ca1b38": "2026-11-18",
+    "9dcf16c0a9ea": "2026-11-18",
+    "71590e14b4ea": "2026-11-18",
+    "734541333598": "2026-11-18",
+    "a34e50628c02": "2026-11-18",
+    "8f007a10a5fa": "2026-11-18",
+    "97775f10afea": "2026-11-18",
+    "297d0735c2dd": "2026-11-18",
+    "0feac7437ecd": "2026-11-18",
+    "46b298229a53": "2026-11-18",
+    "a189102b8cdb": "2026-11-18",
+    "58b9a8e3b0a6": "2026-11-18",
+    "f17f8a00b4a7": "2026-11-18",
+    "10fcd89a9f94": "2026-11-18",
+    "e7f6129cb288": "2026-11-18",
+    "17e09b1e1194": "2026-11-18",
+    "7c613a135053": "2026-11-18",
+    "fbccbc1e9dda": "2026-11-18",
     "694cc75a3400": "2026-11-17",
     "f9d27dbaee4f": "2026-11-17",
     "e9b22761c3fb": "2026-11-17",
@@ -161,7 +184,6 @@
     "3b448acc99a9": "2026-11-17",
     "eef6d92bd79b": "2026-11-17",
     "3c0cfdd5b85c": "2026-11-17",
-    "d352e4351bfd": "2026-11-17",
     "f21ff65c9460": "2026-11-17",
     "af634949441a": "2026-11-17",
     "64b2974094f7": "2026-11-17",
@@ -217,6 +239,12 @@
     "d173cc0814ad": "2026-11-17",
     "eb4cc5b010c9": "2026-11-17",
     "11bdfbf1ae56": "2026-11-17",
+    "73e7bbf3534c": "2026-11-17",
+    "33d5620eb2d8": "2026-11-17",
+    "5be71ded0ceb": "2026-11-17",
+    "df5994a577b3": "2026-11-17",
+    "13f8dfc81011": "2026-11-17",
+    "d352e4351bfd": "2026-11-16",
     "a8ed17183579": "2026-11-16",
     "e91380882aa0": "2026-11-16",
     "f7b60ac862c7": "2026-11-16",
@@ -378,6 +406,11 @@
     "628757004e37": "2026-11-16",
     "6eb635dc160f": "2026-11-16",
     "6d5cfd831297": "2026-11-16",
+    "4a41f11b790c": "2026-11-16",
+    "2b98483de2e1": "2026-11-16",
+    "8b8c5d67bbdb": "2026-11-16",
+    "b5c89d940dfb": "2026-11-16",
+    "3d283b19c72e": "2026-11-16",
     "6f8af64b1c15": "2026-11-15",
     "a6251741d1e7": "2026-11-15",
     "47741090088c": "2026-11-15",
@@ -832,39 +865,6 @@
     "3246e3df9681": "2026-11-03",
     "93451847a31d": "2026-11-03",
     "ec7687e8b3e3": "2026-11-03",
-    "d2e619da6aca": "2026-11-03",
-    "30e1f967b4f6": "2026-11-03",
-    "7a0772a9d3ba": "2026-11-03",
-    "847c5ee36c92": "2026-11-02",
-    "88eeedf018ac": "2026-11-02",
-    "359fff6794fd": "2026-11-02",
-    "3ed0fcb09029": "2026-11-02",
-    "3bc22c0fcd48": "2026-11-02",
-    "2298963c9bc1": "2026-11-02",
-    "10079e50b776": "2026-11-02",
-    "81f0834b2cca": "2026-11-02",
-    "5d24aaf5b38e": "2026-11-02",
-    "6305a1925986": "2026-11-02",
-    "e346a263bf3e": "2026-11-02",
-    "a9ed6b0fbd38": "2026-11-02",
-    "cb395403acb2": "2026-11-02",
-    "ece3a71ae7d5": "2026-11-02",
-    "218bf0d937f7": "2026-11-02",
-    "aed6c06f212e": "2026-11-02",
-    "12d52f3fccd3": "2026-11-01",
-    "aeefe1d98332": "2026-11-01",
-    "b19cc793d5db": "2026-11-01",
-    "bad885625fae": "2026-11-01",
-    "769a09c52eb7": "2026-11-01",
-    "adebb5f09747": "2026-11-01",
-    "1f8a40453c7d": "2026-11-01",
-    "ae9f302907ee": "2026-11-01",
-    "4c4e3ca748d2": "2026-11-01",
-    "df5cc6d050e5": "2026-11-01",
-    "08b5e8d03cd7": "2026-11-01",
-    "8c0561a7980f": "2026-11-01",
-    "815998fbfc00": "2026-11-01",
-    "091b1c568b06": "2026-11-01",
-    "7bdfa9226d0f": "2026-11-01"
+    "d2e619da6aca": "2026-11-03"
   }
 }
